@@ -1,4 +1,8 @@
 import { motion } from 'framer-motion'
+import { useState } from "react";
+import { searchMusic } from "../services/api";
+import SearchResults from "../components/SearchResults";
+import { useOutletContext } from "react-router-dom"
 import { Search as SearchIcon, TrendingUp, Mic2, Radio, Guitar, Headphones, Piano, Drum } from 'lucide-react'
 
 const genres = [
@@ -35,6 +39,23 @@ const itemVariants = {
  * SearchPage - Browse genres and trending searches.
  */
 export default function SearchPage() {
+  const { setCurrentSong } = useOutletContext()
+  const [query, setQuery] = useState("")
+  const [songs, setSongs] = useState([])
+  const handleSearch = async () => {
+    if (!query.trim()) return
+
+    try {
+        const data = await searchMusic(query)
+
+        console.log(data)
+
+        setSongs(data)
+
+    } catch (err) {
+        console.error(err)
+    }
+  }
   return (
     <motion.div
       variants={pageVariants}
@@ -50,11 +71,17 @@ export default function SearchPage() {
         <div className="relative max-w-2xl group">
           <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500 group-focus-within:text-primary-400 transition-colors" />
           <input
-            type="text"
-            placeholder="What do you want to listen to?"
-            className="w-full h-14 pl-12 pr-6 rounded-2xl bg-surface-900 border border-surface-800 text-base text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-600/50 focus:ring-2 focus:ring-primary-600/20 transition-all duration-200"
-            readOnly
-          />
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                      handleSearch()
+                  }
+              }}
+              placeholder="What do you want to listen to?"
+              className="w-full h-14 pl-12 pr-6 rounded-2xl bg-surface-900 border border-surface-800 text-base text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-600/50 focus:ring-2 focus:ring-primary-600/20 transition-all duration-200"
+        />
         </div>
       </motion.div>
 
@@ -105,6 +132,10 @@ export default function SearchPage() {
           ))}
         </div>
       </motion.section>
+      <SearchResults
+          songs={songs}
+          onSongClick={setCurrentSong}
+      />
     </motion.div>
   )
 }

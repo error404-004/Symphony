@@ -19,7 +19,7 @@ import {
  * MusicPlayer - Fixed bottom music player bar.
  * UI only - no actual playback functionality.
  */
-export default function MusicPlayer() {
+export default function MusicPlayer({ currentSong }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
@@ -68,10 +68,10 @@ export default function MusicPlayer() {
           </motion.div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              Midnight Dreams
+              {currentSong.title}
             </p>
             <p className="text-xs text-surface-400 truncate">
-              The Cosmic Architects
+              {currentSong.artist}
             </p>
           </div>
           {/* Like Button */}

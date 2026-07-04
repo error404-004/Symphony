@@ -1,4 +1,5 @@
 import { Search, Bell, User } from 'lucide-react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
@@ -16,6 +17,7 @@ const pageTitles = {
 export default function TopNav() {
   const location = useLocation()
   const pageTitle = pageTitles[location.pathname] || 'Symphony'
+  const [query, setQuery] = useState("")
 
   return (
     <motion.header
@@ -40,10 +42,11 @@ export default function TopNav() {
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500 group-focus-within:text-primary-400 transition-colors duration-200" />
           <input
-            type="text"
-            placeholder="Search songs, artists, albums..."
-            className="w-full h-10 pl-10 pr-4 rounded-xl bg-surface-900 border border-surface-800 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-600/50 focus:ring-1 focus:ring-primary-600/20 transition-all duration-200"
-            readOnly
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search songs, artists, albums..."
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-surface-900 border border-surface-800 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-600/50 focus:ring-1 focus:ring-primary-600/20 transition-all duration-200"
           />
         </div>
       </div>
