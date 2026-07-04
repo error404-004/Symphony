@@ -1,14 +1,33 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { getPlayer } from "../services/player";
 import { getAudio } from "../services/audio";
 
 const PlayerContext = createContext();
 
 export function PlayerProvider({ children }) {
-  const player = getPlayer();
+    const player = getPlayer();
 
-  const [currentSong, setCurrentSong] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+    const [currentSong, setCurrentSong] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    useEffect(() => {
+        function updateTime() {
+            setCurrentTime(player.currentTime);
+        }
+
+        function loadedMetadata() {
+            setDuration(player.duration);
+        }
+
+        player.addEventListener("timeupdate", updateTime);
+        player.addEventListener("loadedmetadata", loadedMetadata);
+
+        return () => {
+            player.removeEventListener("timeupdate", updateTime);
+            player.removeEventListener("loadedmetadata", loadedMetadata);
+        };
+    }, [player]);
 
   async function playSong(song) {
     try {
@@ -45,6 +64,8 @@ export function PlayerProvider({ children }) {
         playSong,
         pauseSong,
         resumeSong,
+        currentTime,
+        duration,
       }}
     >
       {children}

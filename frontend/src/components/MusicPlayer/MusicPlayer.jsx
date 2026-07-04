@@ -22,16 +22,27 @@ import {
  */
 export default function MusicPlayer({ currentSong }) {
   const {
-  player,
-  isPlaying,
-  pauseSong,
-  resumeSong,
+    player,
+    isPlaying,
+    pauseSong,
+    resumeSong,
+    currentTime,
+    duration,
   } = usePlayer();
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
-  const [progress, setProgress] = useState(35)
   const [isLiked, setIsLiked] = useState(false)
+  const progress =
+    duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  function formatTime(time) {
+    if (!time || isNaN(time)) return "0:00";
+
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }
   return (
     <motion.div
       initial={{ y: 100 }}
@@ -165,9 +176,9 @@ export default function MusicPlayer({ currentSong }) {
 
           {/* Time indicators */}
           <div className="hidden sm:flex items-center gap-2 text-[11px] text-surface-500 font-medium tabular-nums">
-            <span>1:23</span>
+            <span>{formatTime(currentTime)}</span>
             <span className="text-surface-700">/</span>
-            <span>3:45</span>
+            <span>{formatTime(duration)}</span>
           </div>
         </div>
 
