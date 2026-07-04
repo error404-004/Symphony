@@ -1,5 +1,5 @@
 import { Music } from "lucide-react";
-import usePlayer from "../hooks/usePlayer";
+import { usePlayer } from "../context/PlayerContext";
 
 export default function SearchResults({ songs, onSongSelect }) {
   if (songs.length === 0) return null;

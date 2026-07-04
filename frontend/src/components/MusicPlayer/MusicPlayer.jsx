@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from "react";
+import { usePlayer } from "../../context/PlayerContext";
 import { motion } from 'framer-motion'
 import {
   Play,
@@ -20,7 +21,12 @@ import {
  * UI only - no actual playback functionality.
  */
 export default function MusicPlayer({ currentSong }) {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const {
+  player,
+  isPlaying,
+  pauseSong,
+  resumeSong,
+  } = usePlayer();
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
   const [progress, setProgress] = useState(35)
@@ -119,7 +125,13 @@ export default function MusicPlayer({ currentSong }) {
             <motion.button
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={() => {
+                  if (isPlaying) {
+                      pauseSong();
+                    } else {
+                        resumeSong();
+                    }
+              }}
               className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-surface-950 hover:bg-surface-100 transition-colors duration-200 shadow-lg"
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
