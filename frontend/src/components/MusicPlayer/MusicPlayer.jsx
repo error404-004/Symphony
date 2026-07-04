@@ -31,6 +31,9 @@ export default function MusicPlayer({ currentSong }) {
   } = usePlayer();
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
+  useEffect(() => {
+    player.volume = volume / 100;
+  }, []);
   const [isLiked, setIsLiked] = useState(false)
   const progress =
     duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -199,7 +202,15 @@ export default function MusicPlayer({ currentSong }) {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsMuted(!isMuted)}
+              onClick={() => {
+                if (isMuted) {
+                  player.volume = volume / 100;
+                  setIsMuted(false);
+                } else {
+                  player.volume = 0;
+                  setIsMuted(true);
+                }
+              }}
               className="text-surface-400 hover:text-surface-200 transition-colors duration-200"
               aria-label={isMuted ? 'Unmute' : 'Mute'}
             >
@@ -215,8 +226,15 @@ export default function MusicPlayer({ currentSong }) {
               max="100"
               value={isMuted ? 0 : volume}
               onChange={(e) => {
-                setVolume(Number(e.target.value))
-                if (isMuted) setIsMuted(false)
+                const newVolume = Number(e.target.value);
+
+                setVolume(newVolume);
+
+                player.volume = newVolume / 100;
+
+                if (newVolume > 0) {
+                    setIsMuted(false);
+                }
               }}
               className="w-24 h-1 accent-primary-500"
               aria-label="Volume"
