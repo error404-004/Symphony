@@ -134,7 +134,7 @@ export default function SearchPage() {
       </motion.section>
       <SearchResults
           songs={songs}
-          onSongClick={setCurrentSong}
+          onSongSelect={setCurrentSong}
       />
     </motion.div>
   )

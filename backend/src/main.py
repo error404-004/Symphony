@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.routes.search import router as search_router
+from src.routes import audio
 app = FastAPI(
     title="Symphony API",
     description="Backend API for Symphony Music Player",
@@ -18,7 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(search_router)
-
+app.include_router(audio.router)
 @app.get("/")
 def home():
     return {

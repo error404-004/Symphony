@@ -1,8 +1,9 @@
 import { Music } from "lucide-react";
+import usePlayer from "../hooks/usePlayer";
 
-export default function SearchResults({ songs, onSongClick }) {
+export default function SearchResults({ songs, onSongSelect }) {
   if (songs.length === 0) return null;
-
+  const { playSong } = usePlayer();
   return (
     <div className="space-y-3 mt-8">
       <h2 className="text-2xl font-bold text-white">
@@ -12,7 +13,10 @@ export default function SearchResults({ songs, onSongClick }) {
       {songs.map((song) => (
         <div
           key={song.videoId}
-          onClick={() => onSongClick(song)}
+          onClick={() => {
+              onSongSelect(song);
+              playSong(song);
+}}
           className="flex items-center gap-4 p-3 rounded-xl bg-surface-900 hover:bg-surface-800 transition cursor-pointer"
         >
           {/* Thumbnail */}
