@@ -9,6 +9,8 @@ export function PlayerProvider({ children }) {
 
     const [currentSong, setCurrentSong] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [queue, setQueue] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(-1);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     useEffect(() => {
@@ -29,7 +31,26 @@ export function PlayerProvider({ children }) {
         };
     }, [player]);
 
+    useEffect(() => {
+        function handleSongEnd() {
+            if (currentIndex < queue.length - 1) {
+                const nextSong = queue[currentIndex + 1];
+
+                setCurrentIndex(currentIndex + 1);
+
+                playSong(nextSong);
+              }
+          }
+
+          player.addEventListener("ended", handleSongEnd);
+
+          return () => {
+              player.removeEventListener("ended", handleSongEnd);
+          };
+    }, [player, currentIndex, queue]);
+
   async function playSong(song) {
+      setCurrentSong(song);
     try {
       const stream = await getAudio(song.videoId);
 
@@ -66,6 +87,10 @@ export function PlayerProvider({ children }) {
         resumeSong,
         currentTime,
         duration,
+        queue,
+        setQueue,
+        currentIndex,
+        setCurrentIndex,
       }}
     >
       {children}

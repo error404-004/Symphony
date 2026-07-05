@@ -20,9 +20,10 @@ import {
  * MusicPlayer - Fixed bottom music player bar.
  * UI only - no actual playback functionality.
  */
-export default function MusicPlayer({ currentSong }) {
+export default function MusicPlayer() {
   const {
     player,
+    currentSong,
     isPlaying,
     pauseSong,
     resumeSong,
@@ -92,10 +93,10 @@ export default function MusicPlayer({ currentSong }) {
           </motion.div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              {currentSong.title}
+              {currentSong?.title || "No song selected"}
             </p>
             <p className="text-xs text-surface-400 truncate">
-              {currentSong.artist}
+              {currentSong?.artist || currentSong?.author || "Unknown Artist"}
             </p>
           </div>
           {/* Like Button */}

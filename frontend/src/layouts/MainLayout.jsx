@@ -32,7 +32,7 @@ export default function MainLayout() {
       </div>
 
       {/* Bottom Music Player */}
-      <MusicPlayer currentSong={currentSong} />
+      <MusicPlayer/>
     </div>
   )
 }

@@ -3,20 +3,30 @@ import { usePlayer } from "../context/PlayerContext";
 
 export default function SearchResults({ songs, onSongSelect }) {
   if (songs.length === 0) return null;
-  const { playSong } = usePlayer();
+  const {
+    playSong,
+    setQueue,
+    setCurrentIndex,
+  }  = usePlayer();
   return (
     <div className="space-y-3 mt-8">
       <h2 className="text-2xl font-bold text-white">
         Search Results
       </h2>
 
-      {songs.map((song) => (
+      {songs.map((song, index) => (
         <div
           key={song.videoId}
           onClick={() => {
+              setQueue(songs);
+
+              setCurrentIndex(index);
+
               onSongSelect(song);
+
               playSong(song);
-}}
+          }}
+      
           className="flex items-center gap-4 p-3 rounded-xl bg-surface-900 hover:bg-surface-800 transition cursor-pointer"
         >
           {/* Thumbnail */}
