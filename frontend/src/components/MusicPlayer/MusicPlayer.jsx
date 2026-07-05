@@ -31,6 +31,10 @@ export default function MusicPlayer() {
     duration,
     playNext,
     playPrevious,
+    isShuffle,
+    setIsShuffle,
+    isRepeat,
+    setIsRepeat,
   } = usePlayer();
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
@@ -126,11 +130,16 @@ export default function MusicPlayer() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="hidden sm:flex text-surface-500 hover:text-surface-200 transition-colors duration-200"
+              onClick={() => setIsShuffle(!isShuffle)}
+              className={`hidden sm:flex transition-colors duration-200 ${
+                isShuffle
+                  ? "text-primary-400"
+                  : "text-surface-500 hover:text-surface-200"
+              }`}
               aria-label="Shuffle"
             >
               <Shuffle className="w-4 h-4" />
-            </motion.button>
+          </motion.button>
 
             {/* Previous */}
             <motion.button
@@ -179,7 +188,12 @@ export default function MusicPlayer() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="hidden sm:flex text-surface-500 hover:text-surface-200 transition-colors duration-200"
+              onClick={() => setIsRepeat(!isRepeat)}
+              className={`hidden sm:flex transition-colors duration-200 ${
+                isRepeat
+                  ? "text-primary-400"
+                  : "text-surface-500 hover:text-surface-200"
+              }`}
               aria-label="Repeat"
             >
               <Repeat className="w-4 h-4" />

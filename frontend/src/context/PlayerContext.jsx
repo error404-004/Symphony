@@ -11,6 +11,8 @@ export function PlayerProvider({ children }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [queue, setQueue] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(-1);
+    const [isShuffle, setIsShuffle] = useState(false);
+    const [isRepeat, setIsRepeat] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     useEffect(() => {
@@ -33,13 +35,28 @@ export function PlayerProvider({ children }) {
 
     useEffect(() => {
         function handleSongEnd() {
+            if (isRepeat) {
+                playSong(queue[currentIndex]);
+                return;
+            }
+
+            if (isShuffle) {
+                const randomIndex = Math.floor(Math.random() * queue.length);
+
+                setCurrentIndex(randomIndex);
+
+                playSong(queue[randomIndex]);
+
+                return;
+            }
+
             if (currentIndex < queue.length - 1) {
                 const nextSong = queue[currentIndex + 1];
 
                 setCurrentIndex(currentIndex + 1);
 
                 playSong(nextSong);
-              }
+            }
           }
 
           player.addEventListener("ended", handleSongEnd);
@@ -114,6 +131,10 @@ function resumeSong() {
         setCurrentIndex,
         playNext,
         playPrevious,
+        isShuffle,
+        setIsShuffle,
+        isRepeat,
+        setIsRepeat,
       }}
     >
       {children}
