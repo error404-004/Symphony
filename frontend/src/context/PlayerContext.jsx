@@ -47,33 +47,54 @@ export function PlayerProvider({ children }) {
           return () => {
               player.removeEventListener("ended", handleSongEnd);
           };
-    }, [player, currentIndex, queue]);
+    }, [player, currentIndex, queue, playSong]);
 
   async function playSong(song) {
-      setCurrentSong(song);
-    try {
-      const stream = await getAudio(song.videoId);
+  setCurrentSong(song);
 
-      player.src = stream.audio_url;
+  try {
+    const stream = await getAudio(song.videoId);
 
-      await player.play();
+    player.src = stream.audio_url;
 
-      setCurrentSong(song);
-      setIsPlaying(true);
-    } catch (err) {
-      console.error(err);
-    }
-  }
+    await player.play();
 
-  function pauseSong() {
-    player.pause();
-    setIsPlaying(false);
-  }
-
-  function resumeSong() {
-    player.play();
+    setCurrentSong(song);
     setIsPlaying(true);
+  } catch (err) {
+    console.error(err);
   }
+}
+
+function playNext() {
+  if (currentIndex < queue.length - 1) {
+    const nextSong = queue[currentIndex + 1];
+
+    setCurrentIndex(currentIndex + 1);
+
+    playSong(nextSong);
+  }
+}
+
+function playPrevious() {
+  if (currentIndex > 0) {
+    const previousSong = queue[currentIndex - 1];
+
+    setCurrentIndex(currentIndex - 1);
+
+    playSong(previousSong);
+  }
+}
+
+function pauseSong() {
+  player.pause();
+  setIsPlaying(false);
+}
+
+function resumeSong() {
+  player.play();
+  setIsPlaying(true);
+}
 
   return (
     <PlayerContext.Provider
@@ -91,6 +112,8 @@ export function PlayerProvider({ children }) {
         setQueue,
         currentIndex,
         setCurrentIndex,
+        playNext,
+        playPrevious,
       }}
     >
       {children}

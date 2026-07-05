@@ -29,6 +29,8 @@ export default function MusicPlayer() {
     resumeSong,
     currentTime,
     duration,
+    playNext,
+    playPrevious,
   } = usePlayer();
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
@@ -132,6 +134,7 @@ export default function MusicPlayer() {
 
             {/* Previous */}
             <motion.button
+              onClick={playPrevious}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               className="text-surface-300 hover:text-white transition-colors duration-200"
@@ -163,6 +166,7 @@ export default function MusicPlayer() {
 
             {/* Next */}
             <motion.button
+              onClick={playNext}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               className="text-surface-300 hover:text-white transition-colors duration-200"
