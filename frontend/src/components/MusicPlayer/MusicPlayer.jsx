@@ -65,7 +65,11 @@ export default function MusicPlayer({ currentSong }) {
           min="0"
           max="100"
           value={progress}
-          onChange={(e) => setProgress(Number(e.target.value))}
+          onChange={(e) => {
+              const newProgress = Number(e.target.value);
+
+              player.currentTime = (newProgress / 100) * duration;
+          }}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           aria-label="Song progress"
         />
