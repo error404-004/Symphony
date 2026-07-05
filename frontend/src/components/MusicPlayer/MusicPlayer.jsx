@@ -35,13 +35,19 @@ export default function MusicPlayer() {
     setIsShuffle,
     isRepeat,
     setIsRepeat,
+    favorites,
+    toggleFavorite,
   } = usePlayer();
+  const isFavorite = currentSong
+    ? favorites.some(
+        (song) => song.videoId === currentSong.videoId
+      )
+    : false;
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
   useEffect(() => {
     player.volume = volume / 100;
   }, []);
-  const [isLiked, setIsLiked] = useState(false)
   const progress =
     duration > 0 ? (currentTime / duration) * 100 : 0;
 
@@ -109,15 +115,15 @@ export default function MusicPlayer() {
           <motion.button
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={() => currentSong && toggleFavorite(currentSong)}
             className="hidden sm:flex shrink-0 ml-1"
             aria-label="Like song"
           >
             <Heart
               className={`w-4 h-4 transition-colors duration-200 ${
-                isLiked
-                  ? 'text-primary-400 fill-primary-400'
-                  : 'text-surface-500 hover:text-surface-300'
+                isFavorite
+                  ? "text-primary-400 fill-primary-400"
+                  : "text-surface-500 hover:text-surface-300"
               }`}
             />
           </motion.button>

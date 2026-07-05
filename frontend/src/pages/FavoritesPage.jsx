@@ -1,16 +1,6 @@
 import { motion } from 'framer-motion'
 import { Heart, Music2, Play, Clock, Shuffle } from 'lucide-react'
-
-const favoriteTracks = [
-  { title: 'Midnight Dreams', artist: 'The Cosmic Architects', duration: '3:45', gradient: 'from-purple-600 to-indigo-900' },
-  { title: 'Electric Sunrise', artist: 'Neon Pulse', duration: '4:12', gradient: 'from-amber-500 to-rose-700' },
-  { title: 'Stellar Voyage', artist: 'Astral Project', duration: '5:01', gradient: 'from-violet-500 to-purple-900' },
-  { title: 'Velvet Nights', artist: 'Luna Ray', duration: '3:28', gradient: 'from-rose-500 to-pink-900' },
-  { title: 'Chrome Dreams', artist: 'Digital Wave', duration: '4:33', gradient: 'from-sky-400 to-indigo-800' },
-  { title: 'Desert Wind', artist: 'Sahara Echo', duration: '3:56', gradient: 'from-orange-500 to-red-800' },
-  { title: 'Neon City', artist: 'Synthwave FM', duration: '4:08', gradient: 'from-fuchsia-500 to-purple-800' },
-  { title: 'Ocean Waves', artist: 'Calm Collective', duration: '6:22', gradient: 'from-cyan-500 to-blue-800' },
-]
+import usePlayer from "../hooks/usePlayer";
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -26,6 +16,10 @@ const itemVariants = {
  * FavoritesPage - Liked/favorite songs presented as a track list.
  */
 export default function FavoritesPage() {
+  const {
+  favorites,
+  playSong,
+  } = usePlayer();
   return (
     <motion.div
       variants={pageVariants}
@@ -54,7 +48,7 @@ export default function FavoritesPage() {
               Liked Songs
             </h1>
             <p className="text-surface-400 mt-2 text-sm">
-              {favoriteTracks.length} songs • About 35 min
+              {favorites.length} songs 
             </p>
           </div>
         </div>
@@ -91,14 +85,26 @@ export default function FavoritesPage() {
         </div>
 
         {/* Tracks */}
-        <div className="space-y-0.5">
-          {favoriteTracks.map(({ title, artist, duration, gradient }, i) => (
+        {favorites.length === 0 ? (
+          <div className="text-center py-16">
+            <Heart className="w-12 h-12 mx-auto text-surface-600 mb-4" />
+            <h2 className="text-xl font-semibold text-white">
+              No favorite songs yet
+            </h2>
+            <p className="text-surface-500 mt-2">
+              Like some songs and they'll appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-0.5">
+          {favorites.map((song, i) => (
             <motion.div
-              key={title}
+              key={song.videoId}
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
               whileHover={{ backgroundColor: 'rgba(39, 39, 42, 0.5)' }}
+              onClick={() => playSong(song)}
               className="grid grid-cols-[40px_1fr_1fr_60px] gap-4 items-center px-4 py-3 rounded-xl group cursor-pointer transition-colors"
             >
               {/* Track Number / Play */}
@@ -111,31 +117,34 @@ export default function FavoritesPage() {
 
               {/* Title & Mini Art */}
               <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0`}>
-                  <Music2 className="w-4 h-4 text-white/30" />
-                </div>
+                <img
+                  src={song.thumbnail}
+                  alt={song.title}
+                  className="w-10 h-10 rounded-lg object-cover"
+                />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-white truncate group-hover:text-primary-300 transition-colors">
-                    {title}
+                    {song.title}
                   </p>
-                  <p className="text-xs text-surface-500 truncate sm:hidden">{artist}</p>
+                  <p className="text-xs text-surface-500 truncate sm:hidden">{song.artist}</p>
                 </div>
               </div>
 
               {/* Artist */}
               <p className="text-sm text-surface-400 truncate hidden sm:block group-hover:text-surface-300 transition-colors">
-                {artist}
+                {song.artist}
               </p>
 
               {/* Duration */}
               <div className="flex items-center justify-end gap-2">
                 <Heart className="w-3.5 h-3.5 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" />
-                <span className="text-sm text-surface-500 tabular-nums">{duration}</span>
+                <span className="text-sm text-surface-500 tabular-nums"></span>
               </div>
             </motion.div>
           ))}
         </div>
-      </motion.div>
+      )}
     </motion.div>
-  )
+  </motion.div>
+  );
 }

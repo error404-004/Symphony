@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { getPlayer } from "../services/player";
 import { getAudio } from "../services/audio";
 
-const PlayerContext = createContext();
+export const PlayerContext = createContext();
 
 export function PlayerProvider({ children }) {
     const player = getPlayer();
@@ -13,6 +13,11 @@ export function PlayerProvider({ children }) {
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [isShuffle, setIsShuffle] = useState(false);
     const [isRepeat, setIsRepeat] = useState(false);
+    const [favorites, setFavorites] = useState(() => {
+      const saved = localStorage.getItem("favorites");
+
+      return saved ? JSON.parse(saved) : [];
+    });
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     useEffect(() => {
@@ -66,6 +71,13 @@ export function PlayerProvider({ children }) {
           };
     }, [player, currentIndex, queue, playSong]);
 
+    useEffect(() => {
+      localStorage.setItem(
+        "favorites",
+        JSON.stringify(favorites)
+    );
+    }, [favorites]);
+
   async function playSong(song) {
   setCurrentSong(song);
 
@@ -112,6 +124,22 @@ function resumeSong() {
   player.play();
   setIsPlaying(true);
 }
+function toggleFavorite(song) {
+  const exists = favorites.some(
+    (item) => item.videoId === song.videoId
+    
+  );
+
+  if (exists) {
+    setFavorites(
+      favorites.filter(
+        (item) => item.videoId !== song.videoId
+      )
+    );
+  } else {
+    setFavorites([...favorites, song]);
+  }
+}
 
   return (
     <PlayerContext.Provider
@@ -135,6 +163,8 @@ function resumeSong() {
         setIsShuffle,
         isRepeat,
         setIsRepeat,
+        favorites,
+        toggleFavorite,
       }}
     >
       {children}
