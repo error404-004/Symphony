@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useState } from "react";
 import { searchMusic } from "../services/api";
 import SearchResults from "../components/SearchResults";
-import { useOutletContext } from "react-router-dom"
+import usePlayer from "../hooks/usePlayer";
 import { Search as SearchIcon, TrendingUp, Mic2, Radio, Guitar, Headphones, Piano, Drum } from 'lucide-react'
 
 const genres = [
@@ -39,7 +39,7 @@ const itemVariants = {
  * SearchPage - Browse genres and trending searches.
  */
 export default function SearchPage() {
-  const { setCurrentSong } = useOutletContext()
+  const { playSong } = usePlayer();
   const [query, setQuery] = useState("")
   const [songs, setSongs] = useState([])
   const handleSearch = async () => {
@@ -134,7 +134,7 @@ export default function SearchPage() {
       </motion.section>
       <SearchResults
           songs={songs}
-          onSongSelect={setCurrentSong}
+          onSongSelect={playSong}
       />
     </motion.div>
   )
