@@ -1,286 +1,286 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { getPlayer } from "../services/player";
-import { getAudio } from "../services/audio";
+  import { createContext, useContext, useEffect, useState } from "react";
+  import { getPlayer } from "../services/player";
+  import { getAudio } from "../services/audio";
 
-export const PlayerContext = createContext();
+  export const PlayerContext = createContext();
 
-export function PlayerProvider({ children }) {
-  const player = getPlayer();
+  export function PlayerProvider({ children }) {
+    const player = getPlayer();
 
-  const [currentSong, setCurrentSong] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+    const [currentSong, setCurrentSong] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
-  const [queue, setQueue] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
+    const [queue, setQueue] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(-1);
 
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
+    const [isShuffle, setIsShuffle] = useState(false);
+    const [isRepeat, setIsRepeat] = useState(false);
 
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem("favorites");
-    return saved ? JSON.parse(saved) : [];
-  });
+    const [favorites, setFavorites] = useState(() => {
+      const saved = localStorage.getItem("favorites");
+      return saved ? JSON.parse(saved) : [];
+    });
 
-  const [playlists, setPlaylists] = useState(() => {
-    const saved = localStorage.getItem("playlists");
-    return saved ? JSON.parse(saved) : [];
-  });
+    const [playlists, setPlaylists] = useState(() => {
+      const saved = localStorage.getItem("playlists");
+      return saved ? JSON.parse(saved) : [];
+    });
 
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
 
-  // -----------------------------
-  // Audio Events
-  // -----------------------------
-  useEffect(() => {
-    function updateTime() {
-      setCurrentTime(player.currentTime);
-    }
-
-    function loadedMetadata() {
-      setDuration(player.duration || 0);
-    }
-
-    player.addEventListener("timeupdate", updateTime);
-    player.addEventListener("loadedmetadata", loadedMetadata);
-
-    return () => {
-      player.removeEventListener("timeupdate", updateTime);
-      player.removeEventListener("loadedmetadata", loadedMetadata);
-    };
-  }, [player]);
-
-  // -----------------------------
-  // Song End Logic
-  // -----------------------------
-  useEffect(() => {
-    function handleSongEnd() {
-      if (queue.length === 0) return;
-
-      if (isRepeat) {
-        playSong(queue[currentIndex]);
-        return;
+    // -----------------------------
+    // Audio Events
+    // -----------------------------
+    useEffect(() => {
+      function updateTime() {
+        setCurrentTime(player.currentTime);
       }
 
-      if (isShuffle) {
-        const randomIndex = Math.floor(Math.random() * queue.length);
-        setCurrentIndex(randomIndex);
-        playSong(queue[randomIndex]);
-        return;
+      function loadedMetadata() {
+        setDuration(player.duration || 0);
       }
 
-      if (currentIndex < queue.length - 1) {
-        const nextSong = queue[currentIndex + 1];
-        setCurrentIndex(currentIndex + 1);
-        playSong(nextSong);
+      player.addEventListener("timeupdate", updateTime);
+      player.addEventListener("loadedmetadata", loadedMetadata);
+
+      return () => {
+        player.removeEventListener("timeupdate", updateTime);
+        player.removeEventListener("loadedmetadata", loadedMetadata);
+      };
+    }, [player]);
+
+    // -----------------------------
+    // Song End Logic
+    // -----------------------------
+    useEffect(() => {
+      function handleSongEnd() {
+        if (queue.length === 0) return;
+
+        if (isRepeat) {
+          playSong(queue[currentIndex]);
+          return;
+        }
+
+        if (isShuffle) {
+          const randomIndex = Math.floor(Math.random() * queue.length);
+          setCurrentIndex(randomIndex);
+          playSong(queue[randomIndex]);
+          return;
+        }
+
+        if (currentIndex < queue.length - 1) {
+          const nextSong = queue[currentIndex + 1];
+          setCurrentIndex(currentIndex + 1);
+          playSong(nextSong);
+        }
       }
+
+      player.addEventListener("ended", handleSongEnd);
+
+      return () => {
+        player.removeEventListener("ended", handleSongEnd);
+      };
+    }, [player, currentIndex, queue, isRepeat, isShuffle]);
+
+    // -----------------------------
+    // Local Storage
+    // -----------------------------
+    useEffect(() => {
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+    }, [favorites]);
+
+    useEffect(() => {
+      localStorage.setItem("playlists", JSON.stringify(playlists));
+    }, [playlists]);
+
+
+  // Player Controls
+  // -----------------------------
+
+  async function playSong(song) {
+    if (!song) return;
+
+    console.log("Playing:", song.title);
+
+    try {
+      const stream = await getAudio(song.videoId);
+
+      console.log(stream);
+      console.log(song);
+      player.src = stream.audio_url;
+
+      await player.play();
+
+      setCurrentSong(song);
+      setIsPlaying(true);
+
+      console.log("Finished");
+    } catch (err) {
+      console.error(err);
     }
+  }
 
-    player.addEventListener("ended", handleSongEnd);
+  function pauseSong() {
+    player.pause();
+    setIsPlaying(false);
+  }
 
-    return () => {
-      player.removeEventListener("ended", handleSongEnd);
-    };
-  }, [player, currentIndex, queue, isRepeat, isShuffle]);
-
-  // -----------------------------
-  // Local Storage
-  // -----------------------------
-  useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
-
-  useEffect(() => {
-    localStorage.setItem("playlists", JSON.stringify(playlists));
-  }, [playlists]);
-
-
-// Player Controls
-// -----------------------------
-
-async function playSong(song) {
-  if (!song) return;
-
-  console.log("Playing:", song.title);
-
-  try {
-    const stream = await getAudio(song.videoId);
-
-    console.log(stream);
-
-    player.src = stream.audio_url;
-
-    await player.play();
-
-    setCurrentSong(song);
+  function resumeSong() {
+    player.play();
     setIsPlaying(true);
-
-    console.log("Finished");
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-function pauseSong() {
-  player.pause();
-  setIsPlaying(false);
-}
-
-function resumeSong() {
-  player.play();
-  setIsPlaying(true);
-}
-
-function playNext() {
-  if (queue.length === 0) return;
-
-  let nextIndex;
-
-  if (isShuffle) {
-    nextIndex = Math.floor(Math.random() * queue.length);
-  } else {
-    nextIndex =
-      currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
   }
 
-  setCurrentIndex(nextIndex);
-  playSong(queue[nextIndex]);
-}
+  function playNext() {
+    if (queue.length === 0) return;
 
-function playPrevious() {
-  if (queue.length === 0) return;
+    let nextIndex;
 
-  let prevIndex;
-
-  if (currentIndex <= 0) {
-    prevIndex = queue.length - 1;
-  } else {
-    prevIndex = currentIndex - 1;
-  }
-
-  setCurrentIndex(prevIndex);
-  playSong(queue[prevIndex]);
-}
-
-  // -----------------------------
-  // Favorites
-  // -----------------------------
-  function toggleFavorite(song) {
-    const exists = favorites.some(
-      (item) => item.videoId === song.videoId
-    );
-
-    if (exists) {
-      setFavorites(
-        favorites.filter(
-          (item) => item.videoId !== song.videoId
-        )
-      );
+    if (isShuffle) {
+      nextIndex = Math.floor(Math.random() * queue.length);
     } else {
-      setFavorites([...favorites, song]);
+      nextIndex =
+        currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
     }
+
+    setCurrentIndex(nextIndex);
+    playSong(queue[nextIndex]);
   }
 
-  // -----------------------------
-  // Playlists
-  // -----------------------------
-  function createPlaylist(name) {
-    if (!name.trim()) return;
+  function playPrevious() {
+    if (queue.length === 0) return;
 
-    const playlist = {
-      id: Date.now(),
-      name,
-      songs: [],
-    };
+    let prevIndex;
 
-    setPlaylists((prev) => [...prev, playlist]);
+    if (currentIndex <= 0) {
+      prevIndex = queue.length - 1;
+    } else {
+      prevIndex = currentIndex - 1;
+    }
+
+    setCurrentIndex(prevIndex);
+    playSong(queue[prevIndex]);
   }
-  function deletePlaylist(id) {
-    setPlaylists((prev) =>
-      prev.filter((playlist) => playlist.id !== id)
-    );
-  } 
 
-  function addSongToPlaylist(playlistId, song) {
-  setPlaylists((prev) =>
-    prev.map((playlist) => {
-      if (playlist.id !== playlistId) return playlist;
-
-      const exists = playlist.songs.some(
-        (s) => s.videoId === song.videoId
+    // -----------------------------
+    // Favorites
+    // -----------------------------
+    function toggleFavorite(song) {
+      const exists = favorites.some(
+        (item) => item.videoId === song.videoId
       );
 
-      if (exists) return playlist;
+      if (exists) {
+        setFavorites(
+          favorites.filter(
+            (item) => item.videoId !== song.videoId
+          )
+        );
+      } else {
+        setFavorites([...favorites, song]);
+      }
+    }
 
-      return {
-        ...playlist,
-        songs: [...playlist.songs, song],
+    // -----------------------------
+    // Playlists
+    // -----------------------------
+    function createPlaylist(name) {
+      if (!name.trim()) return;
+
+      const playlist = {
+        id: Date.now(),
+        name,
+        songs: [],
       };
-    })
-  );
-}
 
-  function removeSongFromPlaylist(playlistId, videoId) {
-  setPlaylists((prev) =>
-    prev.map((playlist) => {
-      if (playlist.id !== playlistId) return playlist;
+      setPlaylists((prev) => [...prev, playlist]);
+    }
+    function deletePlaylist(id) {
+      setPlaylists((prev) =>
+        prev.filter((playlist) => playlist.id !== id)
+      );
+    } 
 
-      return {
-        ...playlist,
-        songs: playlist.songs.filter(
-          (song) => song.videoId !== videoId
-        ),
-      };
-    })
-  );
-}
+    function addSongToPlaylist(playlistId, song) {
+    setPlaylists((prev) =>
+      prev.map((playlist) => {
+        if (playlist.id !== playlistId) return playlist;
 
-  return (
-    <PlayerContext.Provider
-      value={{
-        player,
+        const exists = playlist.songs.some(
+          (s) => s.videoId === song.videoId
+        );
 
-        currentSong,
-        setCurrentSong,
+        if (exists) return playlist;
 
-        isPlaying,
-        playSong,
-        pauseSong,
-        resumeSong,
+        return {
+          ...playlist,
+          songs: [...playlist.songs, song],
+        };
+      })
+    );
+  }
 
-        currentTime,
-        duration,
+    function removeSongFromPlaylist(playlistId, videoId) {
+    setPlaylists((prev) =>
+      prev.map((playlist) => {
+        if (playlist.id !== playlistId) return playlist;
 
-        queue,
-        setQueue,
+        return {
+          ...playlist,
+          songs: playlist.songs.filter(
+            (song) => song.videoId !== videoId
+          ),
+        };
+      })
+    );
+  }
 
-        currentIndex,
-        setCurrentIndex,
+    return (
+      <PlayerContext.Provider
+        value={{
+          player,
 
-        playNext,
-        playPrevious,
+          currentSong,
+          setCurrentSong,
 
-        isShuffle,
-        setIsShuffle,
+          isPlaying,
+          playSong,
+          pauseSong,
+          resumeSong,
 
-        isRepeat,
-        setIsRepeat,
+          currentTime,
+          duration,
 
-        favorites,
-        toggleFavorite,
+          queue,
+          setQueue,
 
-        playlists,
-        createPlaylist,
-        addSongToPlaylist,
-        deletePlaylist,
-        removeSongFromPlaylist,
-      }}
-    >
-      {children}
-    </PlayerContext.Provider>
-  );
-}
+          currentIndex,
+          setCurrentIndex,
 
-export function usePlayer() {
-  return useContext(PlayerContext);
-}
+          playNext,
+          playPrevious,
+
+          isShuffle,
+          setIsShuffle,
+
+          isRepeat,
+          setIsRepeat,
+
+          favorites,
+          toggleFavorite,
+
+          playlists,
+          createPlaylist,
+          addSongToPlaylist,
+          deletePlaylist,
+          removeSongFromPlaylist,
+        }}
+      >
+        {children}
+      </PlayerContext.Provider>
+    );
+  }
+
+  export function usePlayer() {
+    return useContext(PlayerContext);
+  }

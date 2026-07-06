@@ -99,9 +99,19 @@ export default function MusicPlayer() {
           {/* Album Art */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary-700 via-primary-800 to-surface-900 flex items-center justify-center shrink-0 shadow-lg shadow-primary-900/30 overflow-hidden"
+            className="w-14 h-14 rounded-lg overflow-hidden shrink-0 shadow-lg shadow-primary-900/30 bg-surface-800"
           >
-            <Music2 className="w-6 h-6 text-primary-300/60" />
+            {currentSong?.thumbnail ? (
+              <img
+                src={currentSong.thumbnail}
+                alt={currentSong.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-700 via-primary-800 to-surface-900">
+                <Music2 className="w-6 h-6 text-primary-300/60" />
+              </div>
+            )}
           </motion.div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white truncate">
