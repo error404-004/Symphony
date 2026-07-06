@@ -272,8 +272,11 @@
           playlists,
           createPlaylist,
           addSongToPlaylist,
+
           deletePlaylist,
           removeSongFromPlaylist,
+
+          playSong,
         }}
       >
         {children}

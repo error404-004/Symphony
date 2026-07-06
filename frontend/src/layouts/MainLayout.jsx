@@ -27,6 +27,7 @@ export default function MainLayout() {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto px-6 py-4 pb-28">
+            <Outlet />
         </main>
       </div>
 

@@ -37,6 +37,9 @@ export default function MusicPlayer() {
     setIsRepeat,
     favorites,
     toggleFavorite,
+    queue,
+    currentIndex,
+    playSong
   } = usePlayer();
   const isFavorite = currentSong
     ? favorites.some(
@@ -45,6 +48,8 @@ export default function MusicPlayer() {
     : false;
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(75)
+  const [showQueue, setShowQueue] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   useEffect(() => {
     player.volume = volume / 100;
   }, []);
@@ -115,10 +120,10 @@ export default function MusicPlayer() {
           </motion.div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              {currentSong?.title || "No song selected"}
+              {currentSong?.title || "Ready to Play"}
             </p>
             <p className="text-xs text-surface-400 truncate">
-              {currentSong?.artist || currentSong?.author || "Unknown Artist"}
+              {currentSong?.artist || currentSong?.author || "Search and choose a song"}
             </p>
           </div>
           {/* Like Button */}
@@ -160,9 +165,14 @@ export default function MusicPlayer() {
             {/* Previous */}
             <motion.button
               onClick={playPrevious}
+              disabled={!currentSong}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="text-surface-300 hover:text-white transition-colors duration-200"
+              className={`transition-colors duration-200 ${
+                currentSong
+                ? "text-surface-300 hover:text-white"
+                : "text-surface-600 cursor-not-allowed"
+              }`}
               aria-label="Previous track"
             >
               <SkipBack className="w-5 h-5" />
@@ -170,6 +180,7 @@ export default function MusicPlayer() {
 
             {/* Play/Pause */}
             <motion.button
+              disabled={!currentSong}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
               onClick={() => {
@@ -179,7 +190,11 @@ export default function MusicPlayer() {
                         resumeSong();
                     }
               }}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-surface-950 hover:bg-surface-100 transition-colors duration-200 shadow-lg"
+              className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 shadow-lg ${
+                currentSong
+                  ? "bg-white text-surface-950 hover:bg-surface-100"
+                  : "bg-surface-700 text-surface-500 cursor-not-allowed"
+              }`}
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? (
@@ -192,9 +207,14 @@ export default function MusicPlayer() {
             {/* Next */}
             <motion.button
               onClick={playNext}
+              disabled={!currentSong}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="text-surface-300 hover:text-white transition-colors duration-200"
+              className={`transition-colors duration-200 ${
+                currentSong
+                  ? "text-surface-300 hover:text-white"
+                  : "text-surface-600 cursor-not-allowed"
+              }`}
               aria-label="Next track"
             >
               <SkipForward className="w-5 h-5" />
@@ -230,7 +250,12 @@ export default function MusicPlayer() {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="hidden lg:flex text-surface-500 hover:text-surface-200 transition-colors duration-200"
+            onClick={() => setShowQueue(!showQueue)}
+            className={`hidden lg:flex transition-colors duration-200 ${
+              showQueue
+                ? "text-primary-400"
+                : "text-surface-500 hover:text-surface-200"
+            }`}
             aria-label="Queue"
           >
             <ListMusic className="w-4 h-4" />
@@ -284,6 +309,7 @@ export default function MusicPlayer() {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            onClick={() => setIsFullscreen(true)}
             className="hidden lg:flex text-surface-500 hover:text-surface-200 transition-colors duration-200"
             aria-label="Full screen"
           >
@@ -291,6 +317,60 @@ export default function MusicPlayer() {
           </motion.button>
         </div>
       </div>
+
+  {showQueue && (
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 50 }}
+      className="absolute bottom-28 right-6 w-80 max-h-96 overflow-y-auto rounded-xl bg-surface-900 border border-surface-700 shadow-2xl p-4"
+    >
+      <h3 className="text-lg font-semibold text-white mb-4">
+        Playing Queue
+      </h3>
+        {queue.length === 0 ? (
+      <p className="text-surface-400 text-sm">
+        Queue is empty.
+      </p>
+      ) : (
+      <div className="space-y-2">
+        {queue.map((song, index) => (
+          <button
+            key={song.videoId}
+            onClick={() => playSong(song)}
+            className={`w-full text-left p-3 rounded-lg transition ${
+              index === currentIndex
+                ? "bg-primary-600/20 border border-primary-500"
+                : "hover:bg-surface-800"
+            }`}
+          >
+            <p className="text-white font-medium truncate">
+              {song.title}
+            </p>
+
+            <p className="text-xs text-surface-400 truncate">
+              {song.artist || song.author}
+            </p>
+          </button>
+        ))}
+      </div>
+    )}
     </motion.div>
+)}
+{isFullscreen && (
+  <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+    <h1 className="text-white text-4xl font-bold">
+      Fullscreen Player
+    </h1>
+
+    <button
+      onClick={() => setIsFullscreen(false)}
+      className="absolute top-6 right-6 text-white text-xl"
+    >
+      ✕
+    </button>
+  </div>
+)}
+</motion.div>
   )
 }
