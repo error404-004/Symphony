@@ -51,8 +51,10 @@ export default function MusicPlayer() {
   const [showQueue, setShowQueue] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   useEffect(() => {
-    player.volume = volume / 100;
-  }, []);
+    if (player) {
+      player.volume = volume / 100;
+    }
+  }, [player, volume]);
   const progress =
     duration > 0 ? (currentTime / duration) * 100 : 0;
 
@@ -65,6 +67,7 @@ export default function MusicPlayer() {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
   return (
+    <>
     <motion.div
       initial={{ y: 100 }}
       animate={{ y: 0 }}
@@ -355,22 +358,80 @@ export default function MusicPlayer() {
         ))}
       </div>
     )}
-    </motion.div>
-)}
-{isFullscreen && (
-  <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
-    <h1 className="text-white text-4xl font-bold">
-      Fullscreen Player
-    </h1>
+  </motion.div>
+  )}
+</motion.div>
 
+  {isFullscreen && (
+  <div className="fixed inset-0 z-[9999] bg-gradient-to-b from-surface-900 via-surface-950 to-black">
+
+    {/* Close Button */}
     <button
       onClick={() => setIsFullscreen(false)}
-      className="absolute top-6 right-6 text-white text-xl"
+      className="absolute top-6 right-6 text-surface-300 hover:text-white text-3xl transition"
     >
       ✕
     </button>
+
+    <div className="flex flex-col items-center justify-center h-full px-8">
+
+      {/* Album Art */}
+      <img
+        src={
+          currentSong?.thumbnail ||
+          currentSong?.image ||
+          "/placeholder.png"
+        }
+        alt={currentSong?.title}
+        className="w-80 h-80 rounded-3xl shadow-2xl object-cover"
+      />
+
+      {/* Song Info */}
+      <div className="mt-10 text-center">
+
+        <h1 className="text-5xl font-bold text-white">
+          {currentSong?.title || "No song selected"}
+        </h1>
+
+        <p className="mt-3 text-2xl text-surface-300">
+          {currentSong?.artist ||
+            currentSong?.author ||
+            "Unknown Artist"}
+        </p>
+
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center gap-10 mt-14">
+
+        <button onClick={playPrevious}>
+          <SkipBack className="w-9 h-9 text-white hover:text-primary-400 transition" />
+        </button>
+
+        <button
+          onClick={() => {
+            if (isPlaying) pauseSong();
+            else resumeSong();
+          }}
+          className="w-20 h-20 rounded-full bg-white flex items-center justify-center hover:scale-105 transition"
+        >
+          {isPlaying ? (
+            <Pause className="w-10 h-10 text-black" />
+          ) : (
+            <Play className="w-10 h-10 text-black ml-1" />
+          )}
+        </button>
+
+        <button onClick={playNext}>
+          <SkipForward className="w-9 h-9 text-white hover:text-primary-400 transition" />
+        </button>
+
+      </div>
+
+    </div>
+
   </div>
-)}
-</motion.div>
+  )}
+</>
   )
 }
