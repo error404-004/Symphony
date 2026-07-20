@@ -30,15 +30,17 @@ export default function FavoritesPage() {
       {/* Hero Section */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl overflow-hidden p-8 lg:p-10"
+        className="relative rounded-3xl overflow-hidden p-8"
       >
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600/30 via-primary-800/20 to-surface-950 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-600/20 via-primary-800/10 to-[#0D0D0D] z-0" />
         <div className="absolute inset-0 gradient-glow z-0" />
+        {/* Subtle ambient glow */}
+        <div className="absolute -top-10 -left-10 w-60 h-60 bg-primary-500/10 rounded-full blur-[80px] z-0" />
 
         <div className="relative z-10 flex items-end gap-6">
           {/* Large heart icon */}
-          <div className="w-36 h-36 lg:w-44 lg:h-44 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-800 flex items-center justify-center shadow-2xl shadow-primary-600/30 shrink-0">
+          <div className="w-36 h-36 lg:w-44 lg:h-44 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-800 flex items-center justify-center shadow-2xl shadow-primary-600/30 shrink-0 ring-1 ring-white/[0.08]">
             <Heart className="w-16 h-16 lg:w-20 lg:h-20 text-white" fill="currentColor" />
           </div>
 
@@ -47,7 +49,7 @@ export default function FavoritesPage() {
             <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
               Liked Songs
             </h1>
-            <p className="text-surface-400 mt-2 text-sm">
+            <p className="text-[#B3B3B3] mt-1 text-sm">
               {favorites.length} songs 
             </p>
           </div>
@@ -59,7 +61,7 @@ export default function FavoritesPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center w-14 h-14 rounded-full gradient-primary text-white shadow-xl shadow-primary-600/30"
+          className="flex items-center justify-center w-14 h-14 rounded-full gradient-primary text-white shadow-xl shadow-primary-500/30"
           aria-label="Play all"
         >
           <Play className="w-6 h-6 ml-0.5" fill="currentColor" />
@@ -67,7 +69,7 @@ export default function FavoritesPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-surface-400 hover:text-primary-400 transition-colors"
+          className="flex items-center justify-center w-10 h-10 rounded-full text-[#B3B3B3] hover:text-primary-400 transition-colors"
           aria-label="Shuffle"
         >
           <Shuffle className="w-5 h-5" />
@@ -77,7 +79,7 @@ export default function FavoritesPage() {
       {/* Track List */}
       <motion.div variants={itemVariants}>
         {/* Table Header */}
-        <div className="grid grid-cols-[40px_1fr_1fr_60px] gap-4 px-4 py-2 text-xs uppercase tracking-wider text-surface-600 font-semibold border-b border-surface-800/50 mb-2">
+        <div className="grid grid-cols-[40px_1fr_1fr_60px] gap-4 px-4 py-2.5 text-xs uppercase tracking-wider text-[#B3B3B3]/50 font-semibold border-b border-white/[0.06] mb-2">
           <span>#</span>
           <span>Title</span>
           <span className="hidden sm:block">Artist</span>
@@ -87,11 +89,13 @@ export default function FavoritesPage() {
         {/* Tracks */}
         {favorites.length === 0 ? (
           <div className="text-center py-16">
-            <Heart className="w-12 h-12 mx-auto text-surface-600 mb-4" />
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-white/[0.04] flex items-center justify-center mb-4">
+              <Heart className="w-10 h-10 text-[#B3B3B3]/20" />
+            </div>
             <h2 className="text-xl font-semibold text-white">
               No favorite songs yet
             </h2>
-            <p className="text-surface-500 mt-2">
+            <p className="text-[#B3B3B3] mt-2 text-sm">
               Like some songs and they'll appear here.
             </p>
           </div>
@@ -103,13 +107,13 @@ export default function FavoritesPage() {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
-              whileHover={{ backgroundColor: 'rgba(39, 39, 42, 0.5)' }}
+              whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}
               onClick={() => playSong(song)}
               className="grid grid-cols-[40px_1fr_1fr_60px] gap-4 items-center px-4 py-3 rounded-xl group cursor-pointer transition-colors"
             >
               {/* Track Number / Play */}
               <div className="relative">
-                <span className="text-sm text-surface-500 font-medium group-hover:hidden">
+                <span className="text-sm text-[#B3B3B3]/50 font-medium group-hover:hidden">
                   {i + 1}
                 </span>
                 <Play className="w-4 h-4 text-white hidden group-hover:block" fill="currentColor" />
@@ -120,25 +124,25 @@ export default function FavoritesPage() {
                 <img
                   src={song.thumbnail}
                   alt={song.title}
-                  className="w-10 h-10 rounded-lg object-cover"
+                  className="w-10 h-10 rounded-lg object-cover shadow-md shadow-black/20 ring-1 ring-white/[0.06]"
                 />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-white truncate group-hover:text-primary-300 transition-colors">
                     {song.title}
                   </p>
-                  <p className="text-xs text-surface-500 truncate sm:hidden">{song.artist}</p>
+                  <p className="text-xs text-[#B3B3B3] truncate sm:hidden">{song.artist}</p>
                 </div>
               </div>
 
               {/* Artist */}
-              <p className="text-sm text-surface-400 truncate hidden sm:block group-hover:text-surface-300 transition-colors">
+              <p className="text-sm text-[#B3B3B3] truncate hidden sm:block group-hover:text-[#B3B3B3]/80 transition-colors">
                 {song.artist}
               </p>
 
               {/* Duration */}
               <div className="flex items-center justify-end gap-2">
                 <Heart className="w-3.5 h-3.5 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" />
-                <span className="text-sm text-surface-500 tabular-nums"></span>
+                <span className="text-sm text-[#B3B3B3]/50 tabular-nums"></span>
               </div>
             </motion.div>
           ))}

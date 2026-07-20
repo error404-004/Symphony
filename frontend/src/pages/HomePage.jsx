@@ -71,14 +71,16 @@ export default function HomePage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-10"
+      className="space-y-8"
     >
       {/* Hero Greeting */}
-      <motion.div variants={sectionVariants}>
-        <h1 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
+      <motion.div variants={sectionVariants} className="relative">
+        {/* Ambient glow behind hero */}
+        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-500/[0.06] rounded-full blur-[100px] pointer-events-none" />
+        <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight relative">
           {greeting}
         </h1>
-        <p className="text-surface-500 mt-1.5 text-base">
+        <p className="text-[#B3B3B3] mt-1 text-base relative">
           Here's what's been on your radar.
         </p>
       </motion.div>

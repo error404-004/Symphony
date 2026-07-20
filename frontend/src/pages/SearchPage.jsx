@@ -50,7 +50,7 @@ export default function SearchPage() {
 
         console.log(data)
 
-        setSongs(data)
+        setSongs(Array.isArray(data) ? data : data.songs || [])
 
     } catch (err) {
         console.error(err)
@@ -61,15 +61,15 @@ export default function SearchPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-10"
+      className="space-y-8"
     >
       {/* Search Header */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-6">
+        <h1 className="text-4xl font-extrabold text-white tracking-tight mb-4">
           Search
         </h1>
         <div className="relative max-w-2xl group">
-          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500 group-focus-within:text-primary-400 transition-colors" />
+          <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
           <input
               type="text"
               value={query}
@@ -80,7 +80,7 @@ export default function SearchPage() {
                   }
               }}
               placeholder="What do you want to listen to?"
-              className="w-full h-14 pl-12 pr-6 rounded-2xl bg-surface-900 border border-surface-800 text-base text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-600/50 focus:ring-2 focus:ring-primary-600/20 transition-all duration-200"
+              className="w-full h-14 pl-14 pr-6 rounded-2xl bg-white/[0.06] border border-white/[0.08] text-base text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200 shadow-lg shadow-black/10"
         />
         </div>
       </motion.div>
@@ -91,7 +91,7 @@ export default function SearchPage() {
           <TrendingUp className="w-5 h-5 text-primary-400" />
           <h2 className="text-lg font-semibold text-white">Trending Searches</h2>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {trendingSearches.map((term, i) => (
             <motion.button
               key={term}
@@ -100,7 +100,7 @@ export default function SearchPage() {
               transition={{ delay: i * 0.05 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 rounded-full bg-surface-800/60 border border-surface-700/30 text-sm text-surface-300 hover:text-white hover:bg-surface-700/60 hover:border-primary-600/30 transition-all duration-200"
+              className="px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-[#B3B3B3] hover:text-white hover:bg-white/[0.08] hover:border-primary-500/30 transition-all duration-200"
             >
               {term}
             </motion.button>
@@ -121,12 +121,14 @@ export default function SearchPage() {
               whileHover={{ scale: 1.03, y: -4 }}
               className="cursor-pointer"
             >
-              <div className={`relative h-32 rounded-2xl bg-gradient-to-br ${gradient} p-5 overflow-hidden group`}>
+              <div className={`relative h-36 rounded-2xl bg-gradient-to-br ${gradient} p-5 overflow-hidden group shadow-lg shadow-black/20`}>
                 <h3 className="text-lg font-bold text-white relative z-10">{name}</h3>
                 {/* Decorative icon */}
-                <Icon className="absolute -bottom-2 -right-2 w-20 h-20 text-white/10 rotate-[-15deg] group-hover:rotate-[-10deg] group-hover:text-white/15 transition-all duration-500" />
+                <Icon className="absolute -bottom-2 -right-2 w-20 h-20 text-white/[0.08] rotate-[-15deg] group-hover:rotate-[-10deg] group-hover:text-white/[0.12] transition-all duration-500" />
                 {/* Sheen effect */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Glass overlay on hover */}
+                <div className="absolute inset-0 bg-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </motion.div>
           ))}

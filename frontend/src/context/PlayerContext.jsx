@@ -161,7 +161,18 @@
     setCurrentIndex(prevIndex);
     playSong(queue[prevIndex]);
   }
+  function addToQueue(song) {
+    if (!song) return;
 
+    // Don't add duplicates
+    const exists = queue.some(
+      (item) => item.videoId === song.videoId
+    ) ;
+
+    if (exists) return;
+
+    setQueue((prev) => [...prev, song]);
+  }
     // -----------------------------
     // Favorites
     // -----------------------------
@@ -259,6 +270,7 @@
 
           playNext,
           playPrevious,
+          addToQueue,
 
           isShuffle,
           setIsShuffle,

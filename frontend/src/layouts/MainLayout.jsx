@@ -16,17 +16,20 @@ export default function MainLayout() {
   duration: "3:45",
 })
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-surface-950">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#0D0D0D] relative">
+      {/* Ambient gradient glow */}
+      <div className="absolute inset-0 gradient-ambient pointer-events-none z-0" />
+
       {/* Left Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Navigation */}
         <TopNav />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-6 py-4 pb-28">
+        <main className="flex-1 overflow-y-auto px-8 py-6 pb-32">
             <Outlet />
         </main>
       </div>

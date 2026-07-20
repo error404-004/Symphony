@@ -23,16 +23,16 @@ export default function WideCard({
       whileHover={{ scale: 1.02 }}
       className="group cursor-pointer"
     >
-      <div className="flex items-center gap-3 p-2 pr-4 rounded-xl bg-surface-900/50 hover:bg-surface-800/60 border border-transparent hover:border-surface-700/30 transition-all duration-300 overflow-hidden">
+      <div className="flex items-center gap-3 p-2 pr-3 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 overflow-hidden shadow-md shadow-black/10">
         {/* Mini artwork */}
-        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0 shadow-md`}>
-          <Music2 className="w-5 h-5 text-white/30" />
+        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0 shadow-lg shadow-black/20`}>
+          <Music2 className="w-5 h-5 text-white/20" />
         </div>
 
         {/* Info */}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white truncate">{title}</p>
-          <p className="text-xs text-surface-500 truncate">{subtitle}</p>
+          <p className="text-xs text-[#B3B3B3] truncate">{subtitle}</p>
         </div>
 
         {/* Play on hover */}

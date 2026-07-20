@@ -67,39 +67,39 @@ export default function SettingsPage() {
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-white tracking-tight">Settings</h1>
-        <p className="text-surface-500 mt-1 text-sm">Manage your preferences and account</p>
+        <h1 className="text-4xl font-extrabold text-white tracking-tight">Settings</h1>
+        <p className="text-[#B3B3B3] mt-1 text-sm">Manage your preferences and account</p>
       </motion.div>
 
       {/* Settings Sections */}
       {settingsSections.map(({ title, items }) => (
         <motion.section key={title} variants={itemVariants}>
-          <h2 className="text-xs uppercase tracking-widest text-surface-500 font-semibold mb-3 px-1">
+          <h2 className="text-xs uppercase tracking-widest text-[#B3B3B3]/50 font-semibold mb-3 px-1">
             {title}
           </h2>
-          <div className="glass-light rounded-2xl overflow-hidden divide-y divide-surface-700/20">
+          <div className="glass-card rounded-2xl overflow-hidden divide-y divide-white/[0.04]">
             {items.map(({ label, description, icon: Icon, badge }) => (
               <motion.button
                 key={label}
                 whileHover={{ x: 4 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="flex items-center gap-4 w-full p-4 text-left hover:bg-surface-800/30 transition-colors duration-200 group"
+                className="flex items-center gap-4 w-full p-4 text-left hover:bg-white/[0.04] transition-all duration-200 group"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-surface-800/80 text-surface-400 group-hover:text-primary-400 group-hover:bg-surface-700/60 transition-all duration-200 shrink-0">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] text-[#B3B3B3] group-hover:text-primary-400 group-hover:bg-primary-500/[0.08] transition-all duration-200 shrink-0">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-surface-200 group-hover:text-white transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                     {label}
                   </p>
-                  <p className="text-xs text-surface-500 truncate">{description}</p>
+                  <p className="text-xs text-[#B3B3B3]/70 truncate">{description}</p>
                 </div>
                 {badge && (
-                  <span className="px-2.5 py-1 rounded-lg bg-primary-600/15 text-primary-400 text-xs font-medium border border-primary-600/20">
+                  <span className="px-2.5 py-1 rounded-lg bg-primary-500/[0.1] text-primary-400 text-xs font-medium border border-primary-500/[0.15]">
                     {badge}
                   </span>
                 )}
-                <ChevronRight className="w-4 h-4 text-surface-600 group-hover:text-surface-400 transition-colors shrink-0" />
+                <ChevronRight className="w-4 h-4 text-[#B3B3B3]/30 group-hover:text-[#B3B3B3]/60 transition-colors shrink-0" />
               </motion.button>
             ))}
           </div>
@@ -108,7 +108,7 @@ export default function SettingsPage() {
 
       {/* Version Info */}
       <motion.div variants={itemVariants} className="text-center py-6">
-        <p className="text-xs text-surface-600">
+        <p className="text-xs text-[#B3B3B3]/30">
           Symphony • v1.0.0 • Made with ♥
         </p>
       </motion.div>

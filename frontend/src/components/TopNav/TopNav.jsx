@@ -24,7 +24,7 @@ export default function TopNav() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="flex items-center justify-between h-16 px-6 border-b border-surface-800/40 bg-surface-950/80 backdrop-blur-md shrink-0 z-20"
+      className="flex items-center justify-between h-16 px-8 border-b border-white/[0.06] bg-[#0D0D0D]/60 backdrop-blur-xl shrink-0 z-20"
     >
       {/* Page Title */}
       <motion.h1
@@ -40,13 +40,13 @@ export default function TopNav() {
       {/* Search Bar */}
       <div className="flex-1 max-w-md mx-4 lg:mx-8">
         <div className="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500 group-focus-within:text-primary-400 transition-colors duration-200" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
           <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search songs, artists, albums..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-surface-900 border border-surface-800 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-600/50 focus:ring-1 focus:ring-primary-600/20 transition-all duration-200"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-sm text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200"
           />
         </div>
       </div>
@@ -57,22 +57,22 @@ export default function TopNav() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex items-center justify-center w-10 h-10 rounded-xl text-surface-400 hover:text-surface-200 hover:bg-surface-800/60 transition-colors duration-200"
+          className="relative flex items-center justify-center w-10 h-10 rounded-xl text-[#B3B3B3] hover:text-white hover:bg-white/[0.06] transition-all duration-200"
           aria-label="Notifications"
         >
           <Bell className="w-5 h-5" />
           {/* Notification dot */}
-          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-500 ring-2 ring-surface-950" />
+          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-500 ring-2 ring-[#0D0D0D] shadow-sm shadow-primary-500/50" />
         </motion.button>
 
         {/* User Profile */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 h-10 px-3 rounded-xl text-surface-300 hover:text-white hover:bg-surface-800/60 transition-colors duration-200"
+          className="flex items-center gap-2 h-10 px-3 rounded-xl text-[#B3B3B3] hover:text-white hover:bg-white/[0.06] transition-all duration-200"
           aria-label="User profile"
         >
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg gradient-primary shadow-md shadow-primary-500/20">
             <User className="w-4 h-4 text-white" />
           </div>
           <span className="hidden lg:block text-sm font-medium">User</span>

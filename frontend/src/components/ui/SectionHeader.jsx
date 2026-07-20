@@ -16,11 +16,11 @@ export default function SectionHeader({
   onSeeAll,
 }) {
   return (
-    <div className="flex items-end justify-between mb-5">
+    <div className="flex items-end justify-between mb-4">
       <div>
-        <h2 className="text-xl font-bold text-white tracking-tight">{title}</h2>
+        <h2 className="text-2xl font-bold text-white tracking-tight">{title}</h2>
         {subtitle && (
-          <p className="text-sm text-surface-500 mt-0.5">{subtitle}</p>
+          <p className="text-sm text-[#B3B3B3] mt-1">{subtitle}</p>
         )}
       </div>
       {showSeeAll && (
@@ -28,7 +28,7 @@ export default function SectionHeader({
           whileHover={{ x: 4 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           onClick={onSeeAll}
-          className="flex items-center gap-1 text-sm font-medium text-surface-400 hover:text-primary-400 transition-colors duration-200"
+          className="flex items-center gap-1 text-sm font-medium text-[#B3B3B3] hover:text-primary-400 transition-colors duration-200"
         >
           See all
           <ChevronRight className="w-4 h-4" />

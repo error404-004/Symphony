@@ -41,19 +41,19 @@ export default function LibraryPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-10"
+      className="space-y-8"
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Your Library</h1>
-          <p className="text-surface-500 mt-1 text-sm">Your playlists, albums, and saved music</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Your Library</h1>
+          <p className="text-[#B3B3B3] mt-1 text-sm">Your playlists, albums, and saved music</p>
         </div>
         <motion.button
           onClick={() => setShowModal(true)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-800 border border-surface-700/40 text-sm font-medium text-surface-200 hover:bg-surface-700 hover:text-white transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-primary text-sm font-medium text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           Create Playlist
@@ -67,8 +67,8 @@ export default function LibraryPage() {
             key={tab}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
               i === 0
-                ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
-                : 'bg-surface-800/60 text-surface-400 hover:text-white hover:bg-surface-700/60 border border-surface-700/30'
+                ? 'gradient-primary text-white shadow-lg shadow-primary-500/20'
+                : 'bg-white/[0.04] text-[#B3B3B3] hover:text-white hover:bg-white/[0.08] border border-white/[0.06]'
             }`}
           >
             {tab}
@@ -84,14 +84,14 @@ export default function LibraryPage() {
   </h2>
 
   {playlists.length === 0 ? (
-    <div className="rounded-xl border border-dashed border-surface-700 p-10 text-center">
-      <Music2 className="w-12 h-12 mx-auto text-surface-600 mb-4" />
+    <div className="rounded-2xl border border-dashed border-white/[0.08] bg-white/[0.02] p-12 text-center">
+      <Music2 className="w-14 h-14 mx-auto text-[#B3B3B3]/20 mb-4" />
 
-      <h3 className="text-xl font-semibold">
+      <h3 className="text-xl font-semibold text-white">
         No playlists yet
       </h3>
 
-      <p className="text-surface-500 mt-2">
+      <p className="text-[#B3B3B3] mt-2 text-sm">
         Click "Create Playlist" to make your first playlist.
       </p>
     </div>
@@ -107,22 +107,22 @@ export default function LibraryPage() {
           whileHover={{ scale: 1.02 }}
           className="group cursor-pointer"
         >
-          <div className="flex items-center gap-4 p-3 rounded-xl bg-surface-900/50 hover:bg-surface-800/60 border border-transparent hover:border-surface-700/30 transition-all duration-300">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shrink-0 shadow-lg">
+          <div className="flex items-center gap-4 p-3.5 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 shadow-md shadow-black/10">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shrink-0 shadow-lg shadow-primary-600/20">
               <Music2 className="w-6 h-6 text-white/30" />
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-semibold text-white truncate group-hover:text-primary-300 transition-colors duration-200">
                 {playlist.name}
               </p>
 
-              <p className="text-xs text-surface-500">
+              <p className="text-xs text-[#B3B3B3]">
                 {playlist.songs.length} tracks
               </p>
             </div>
 
-            <button className="opacity-0 group-hover:opacity-100 text-surface-500 hover:text-surface-200 transition-all duration-200">
+            <button className="opacity-0 group-hover:opacity-100 text-[#B3B3B3] hover:text-white transition-all duration-200">
               <MoreHorizontal className="w-5 h-5" />
             </button>
           </div>
@@ -138,7 +138,7 @@ export default function LibraryPage() {
           <Clock className="w-5 h-5 text-primary-400" />
           Recently Added
         </h2>
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {recentAlbums.map(({ title, artist, year, gradient }, i) => (
             <motion.div
               key={title}
@@ -148,27 +148,35 @@ export default function LibraryPage() {
               whileHover={{ x: 4 }}
               className="group cursor-pointer"
             >
-              <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-800/40 transition-all duration-200">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0`}>
-                  <Music2 className="w-5 h-5 text-white/30" />
+              <div className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/[0.04] transition-all duration-200">
+                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0 shadow-md shadow-black/20`}>
+                  <Music2 className="w-5 h-5 text-white/20" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate group-hover:text-primary-300 transition-colors">{title}</p>
-                  <p className="text-xs text-surface-500 truncate">{artist}</p>
+                  <p className="text-xs text-[#B3B3B3] truncate">{artist}</p>
                 </div>
-                <span className="text-xs text-surface-600 font-medium">{year}</span>
+                <span className="text-xs text-[#B3B3B3]/50 font-medium">{year}</span>
               </div>
             </motion.div>
           ))}
         </div>
       </motion.section>
           
+      {/* Create Playlist Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-
-          <div className="bg-surface-900 rounded-2xl p-6 w-[420px]">
-
-            <h2 className="text-2xl font-bold mb-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="glass-strong rounded-2xl p-6 w-[420px] shadow-2xl shadow-black/50"
+          >
+            <h2 className="text-2xl font-bold text-white mb-6">
               Create Playlist
             </h2>
 
@@ -177,7 +185,7 @@ export default function LibraryPage() {
               placeholder="Playlist name..."
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}
-              className="w-full rounded-xl border border-surface-700 bg-surface-800 px-4 py-3 mb-6"
+              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 transition-all duration-200 mb-6"
             />
 
             <div className="flex justify-end gap-3">
@@ -187,7 +195,7 @@ export default function LibraryPage() {
                   setShowModal(false);
                   setPlaylistName("");
                 }}
-                className="px-4 py-2 rounded-lg bg-surface-700"
+                className="px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-[#B3B3B3] hover:text-white hover:bg-white/[0.1] transition-all duration-200 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -202,16 +210,16 @@ export default function LibraryPage() {
 
                     setShowModal(false);
                 }}
-                className="px-5 py-2 rounded-lg bg-primary-500"
+                className="px-5 py-2.5 rounded-xl gradient-primary text-white text-sm font-medium shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-all duration-200"
               >
                 Create
               </button>
 
             </div>
               
-          </div>
+          </motion.div>
 
-        </div>
+        </motion.div>
       )}
     </motion.div>
   )
