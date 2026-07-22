@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { searchMusic } from "../services/api";
 import SearchResults from "../components/SearchResults";
 import usePlayer from "../hooks/usePlayer";
+import { useSearchParams } from "react-router-dom";
 import { Search as SearchIcon, TrendingUp, Mic2, Radio, Guitar, Headphones, Piano, Drum } from 'lucide-react'
 
 const genres = [
@@ -40,9 +41,13 @@ const itemVariants = {
  */
 export default function SearchPage() {
   const { playSong } = usePlayer();
-  const [query, setQuery] = useState("")
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(
+    searchParams.get("q") || ""
+  );
   const [songs, setSongs] = useState([])
   const handleSearch = async () => {
+
     if (!query.trim()) return
 
     try {
@@ -56,6 +61,25 @@ export default function SearchPage() {
         console.error(err)
     }
   }
+  useEffect(() => {
+    const q = searchParams.get("q");
+
+    if (!q) return;
+
+    setQuery(q);
+
+    const fetchSongs = async () => {
+      try {
+        const data = await searchMusic(q);
+
+        setSongs(Array.isArray(data) ? data : data.songs || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchSongs();
+  }, [searchParams]);
   return (
     <motion.div
       variants={pageVariants}
@@ -69,7 +93,7 @@ export default function SearchPage() {
           Search
         </h1>
         <div className="relative max-w-2xl group">
-          <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
+          <SearchIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
           <input
               type="text"
               value={query}
@@ -79,8 +103,8 @@ export default function SearchPage() {
                       handleSearch()
                   }
               }}
-              placeholder="What do you want to listen to?"
-              className="w-full h-14 pl-14 pr-6 rounded-2xl bg-white/[0.06] border border-white/[0.08] text-base text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200 shadow-lg shadow-black/10"
+              placeholder=" What do you want to listen to?"
+              className="w-full h-14 pl-4 pr-11 rounded-2xl bg-white/[0.06] border border-white/[0.08] text-base text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200 shadow-lg shadow-black/10"
         />
         </div>
       </motion.div>

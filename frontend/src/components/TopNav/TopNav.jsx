@@ -1,7 +1,7 @@
-import { Search, Bell, User } from 'lucide-react'
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { useLocation } from 'react-router-dom'
+import { Search, Bell, User } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useLocation, useNavigate } from "react-router-dom";
 
 const pageTitles = {
   '/': 'Home',
@@ -17,6 +17,7 @@ const pageTitles = {
 export default function TopNav() {
   const location = useLocation()
   const pageTitle = pageTitles[location.pathname] || 'Symphony'
+  const navigate = useNavigate();
   const [query, setQuery] = useState("")
 
   return (
@@ -40,13 +41,18 @@ export default function TopNav() {
       {/* Search Bar */}
       <div className="flex-1 max-w-md mx-4 lg:mx-8">
         <div className="relative group">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
           <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search songs, artists, albums..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-sm text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && query.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(query)}`);
+                }
+              }}
+              placeholder=" Search songs, artists, albums..."
+              className="w-full h-10 pl-4 pr-11 rounded-xl bg-white/[0.05] border border-white/[0.08] text-sm text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200"
           />
         </div>
       </div>
