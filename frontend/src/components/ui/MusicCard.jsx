@@ -13,14 +13,18 @@ import { Play, Music2 } from 'lucide-react'
  */
 export default function MusicCard({
   title = 'Untitled',
-  subtitle = 'Unknown Artist',
+  subtitle,
+  artist,
   gradient = 'from-primary-600 to-primary-900',
   imageUrl,
+  thumbnail,
   shape = 'square',
   index = 0,
+  onClick,
 }) {
   return (
     <motion.div
+      onClick={onClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -35,9 +39,9 @@ export default function MusicCard({
               shape === 'circle' ? 'rounded-full' : 'rounded-xl'
             }`}
           >
-            {imageUrl ? (
+            {(thumbnail || imageUrl) ? (
               <img
-                src={imageUrl}
+                src={thumbnail || imageUrl}
                 alt={title}
                 className="w-full h-full object-cover"
               />
@@ -63,7 +67,7 @@ export default function MusicCard({
             {title}
           </p>
           <p className="text-xs text-[#B3B3B3] truncate mt-1">
-            {subtitle}
+            {artist || subtitle}
           </p>
         </div>
       </div>

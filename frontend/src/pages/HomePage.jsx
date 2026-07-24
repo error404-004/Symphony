@@ -3,6 +3,8 @@ import SectionHeader from '../components/ui/SectionHeader'
 import MusicCard from '../components/ui/MusicCard'
 import WideCard from '../components/ui/WideCard'
 import usePlayer from "../hooks/usePlayer";
+import { useEffect, useState } from "react";
+import { searchMusic } from "../services/api";
 
 /* ============================================
    Placeholder Data
@@ -16,13 +18,8 @@ const continueListening = [
   { title: 'Golden Hour', subtitle: 'Sunset Vibes', gradient: 'from-yellow-500 to-orange-700' },
 ]
 
-const recentlyPlayed = [
-  { title: 'Stellar Voyage', subtitle: 'Astral Project', gradient: 'from-violet-500 to-purple-900' },
-  { title: 'Velvet Nights', subtitle: 'Luna Ray', gradient: 'from-rose-500 to-pink-900' },
-  { title: 'Chrome Dreams', subtitle: 'Digital Wave', gradient: 'from-sky-400 to-indigo-800' },
-  { title: 'Desert Wind', subtitle: 'Sahara Echo', gradient: 'from-orange-500 to-red-800' },
-  { title: 'Neon City', subtitle: 'Synthwave FM', gradient: 'from-fuchsia-500 to-purple-800' },
-]
+const recentlyPlayed =
+  JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
 
 const trending = [
   { title: 'Gravity', subtitle: 'Void Theory', gradient: 'from-slate-400 to-slate-800' },
@@ -67,8 +64,24 @@ const sectionVariants = {
 export default function HomePage() {
   const greeting = getGreeting()
   const { playSong } = usePlayer();
+  const [trending, setTrending] = useState([]);
   const continueListening =
     JSON.parse(localStorage.getItem("continueListening")) || [];
+  useEffect(() => {
+    loadTrending();
+  }, []);
+
+  async function loadTrending() {
+    try {
+      const data = await searchMusic("Top 50 Global");
+
+      setTrending(
+        Array.isArray(data) ? data : data.songs || []
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <motion.div
@@ -114,7 +127,14 @@ export default function HomePage() {
         <SectionHeader title="Recently Played" />
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {recentlyPlayed.map((item, i) => (
-            <MusicCard key={item.title} {...item} index={i} />
+              <MusicCard
+                  key={`${item.videoId}-${i}`}
+                  title={item.title}
+                  artist={item.artist}
+                  thumbnail={item.thumbnail}
+                  index={i}
+                  onClick={() => playSong(item)}
+              />
           ))}
         </div>
       </motion.section>
@@ -123,8 +143,15 @@ export default function HomePage() {
       <motion.section variants={sectionVariants}>
         <SectionHeader title="Trending Now" subtitle="What everyone is listening to" />
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {trending.map((item, i) => (
-            <MusicCard key={item.title} {...item} index={i} />
+          {trending.slice(0, 5).map((item, i) => (
+            <MusicCard
+              key={item.videoId}
+              title={item.title}
+              artist={item.artist}
+              thumbnail={item.thumbnail}
+              index={i}
+              onClick={() => playSong(item)}
+            />
           ))}
         </div>
       </motion.section>

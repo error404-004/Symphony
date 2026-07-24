@@ -25,6 +25,7 @@ export default function WideCard({
       transition={{ duration: 0.4, delay: index * 0.06 }}
       whileHover={{ scale: 1.02 }}
       className="group cursor-pointer"
+      onClick={onClick}
     >
       <div className="flex items-center gap-3 p-2 pr-3 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 overflow-hidden shadow-md shadow-black/10">
         {/* Mini artwork */}

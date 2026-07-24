@@ -118,6 +118,19 @@
       const filtered = history.filter(
         (s) => s.videoId !== song.videoId
       );
+      const recentHistory =
+        JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
+
+      const uniqueRecent = recentHistory.filter(
+        (s) => s.videoId !== song.videoId
+      );
+
+      uniqueRecent.unshift(song);
+
+      localStorage.setItem(
+        "recentlyPlayed",
+        JSON.stringify(uniqueRecent.slice(0, 20))
+      );
       filtered.unshift(song);
       localStorage.setItem(
           "continueListening",
