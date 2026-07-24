@@ -114,6 +114,15 @@
 
       setCurrentSong(song);
       setIsPlaying(true);
+      const history = JSON.parse(localStorage.getItem("continueListening")) || [];
+      const filtered = history.filter(
+        (s) => s.videoId !== song.videoId
+      );
+      filtered.unshift(song);
+      localStorage.setItem(
+          "continueListening",
+          JSON.stringify(filtered.slice(0, 10))
+      );
 
       console.log("Finished");
     } catch (err) {

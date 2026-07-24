@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { searchMusic } from "../services/api";
 import SearchResults from "../components/SearchResults";
 import usePlayer from "../hooks/usePlayer";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Search as SearchIcon, TrendingUp, Mic2, Radio, Guitar, Headphones, Piano, Drum } from 'lucide-react'
 
 const genres = [
@@ -42,6 +42,7 @@ const itemVariants = {
 export default function SearchPage() {
   const { playSong } = usePlayer();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [query, setQuery] = useState(
     searchParams.get("q") || ""
   );
@@ -119,6 +120,7 @@ export default function SearchPage() {
           {trendingSearches.map((term, i) => (
             <motion.button
               key={term}
+              onClick={() => navigate(`/search?q=${encodeURIComponent(term)}`)}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.05 }}
@@ -139,6 +141,7 @@ export default function SearchPage() {
           {genres.map(({ name, gradient, icon: Icon }, i) => (
             <motion.div
               key={name}
+              onClick={() => navigate(`/search?q=${encodeURIComponent(name)}`)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}

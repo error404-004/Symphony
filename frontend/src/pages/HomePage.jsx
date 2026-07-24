@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import SectionHeader from '../components/ui/SectionHeader'
 import MusicCard from '../components/ui/MusicCard'
 import WideCard from '../components/ui/WideCard'
+import usePlayer from "../hooks/usePlayer";
 
 /* ============================================
    Placeholder Data
@@ -65,6 +66,9 @@ const sectionVariants = {
  */
 export default function HomePage() {
   const greeting = getGreeting()
+  const { playSong } = usePlayer();
+  const continueListening =
+    JSON.parse(localStorage.getItem("continueListening")) || [];
 
   return (
     <motion.div
@@ -93,7 +97,14 @@ export default function HomePage() {
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {continueListening.map((item, i) => (
-            <WideCard key={item.title} {...item} index={i} />
+            <WideCard
+              key={item.videoId || item.title}
+              title={item.title}
+              artist={item.artist}
+              thumbnail={item.thumbnail}
+              index={i}
+              onClick={() => playSong(item)}
+          />
           ))}
         </div>
       </motion.section>

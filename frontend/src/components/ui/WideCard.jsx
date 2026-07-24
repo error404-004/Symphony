@@ -11,9 +11,12 @@ import { Play, Music2 } from 'lucide-react'
  */
 export default function WideCard({
   title = 'Untitled',
-  subtitle = 'Unknown',
+  subtitle,
+  artist,
+  thumbnail,
   gradient = 'from-primary-600 to-primary-900',
   index = 0,
+  onClick,
 }) {
   return (
     <motion.div
@@ -25,18 +28,33 @@ export default function WideCard({
     >
       <div className="flex items-center gap-3 p-2 pr-3 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 overflow-hidden shadow-md shadow-black/10">
         {/* Mini artwork */}
-        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0 shadow-lg shadow-black/20`}>
-          <Music2 className="w-5 h-5 text-white/20" />
+        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-lg shadow-black/20">
+          {thumbnail ? (
+            <img
+              src={thumbnail}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}
+            >
+              <Music2 className="w-5 h-5 text-white/20" />
+            </div>
+          )}
         </div>
 
         {/* Info */}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-white truncate">{title}</p>
-          <p className="text-xs text-[#B3B3B3] truncate">{subtitle}</p>
+          <p className="text-xs text-[#B3B3B3] truncate">
+            {artist || subtitle}
+          </p>
         </div>
 
         {/* Play on hover */}
         <motion.div
+          onClick={onClick}
           initial={{ opacity: 0, scale: 0.8 }}
           className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0"
         >
