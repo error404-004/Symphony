@@ -29,8 +29,10 @@ export default function MainLayout() {
         <TopNav />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-8 py-6 pb-32">
-            <Outlet />
+        <main className="flex-1 overflow-y-auto px-8 py-6">
+          <div className="min-h-[calc(100vh-220px)] pb-40">
+              <Outlet />
+          </div>
         </main>
       </div>
 

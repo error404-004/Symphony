@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePlayer } from "../../context/PlayerContext";
 import { motion, AnimatePresence } from 'framer-motion'
+import LyricsPanel from '../Lyrics/LyricsPanel';
 import {
   Play,
   Pause,
@@ -52,6 +53,9 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(75)
   const [showQueue, setShowQueue] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [lyrics, setLyrics] = useState([]);
+  const [currentLyric, setCurrentLyric] = useState(0);
+  const [lyricsLoading, setLyricsLoading] = useState(false);
   useEffect(() => {
     if (player) {
       player.volume = volume / 100;
@@ -437,12 +441,13 @@ export default function MusicPlayer() {
 
     <div className="relative z-10 flex flex-col items-center justify-center h-full px-8">
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl" style={{ maxHeight: '45vh' }}>
       {/* Album Art */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative"
+        className="relative flex items-center justify-center"
       >
         {currentSong?.thumbnail || currentSong?.image ? (
           <img
@@ -456,6 +461,17 @@ export default function MusicPlayer() {
           </div>
         )}
       </motion.div>
+      <div className="overflow-hidden rounded-2xl">
+        <LyricsPanel
+          trackName={currentSong?.title}
+          artistName={currentSong?.artist || currentSong?.author}
+          albumName={currentSong?.album}
+          duration={duration}
+          currentTime={currentTime}
+          onSeek={(t) => (player.currentTime = t)}
+        />
+      </div>
+      </div>
 
       {/* Song Info */}
       <motion.div
