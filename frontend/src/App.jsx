@@ -6,6 +6,7 @@ import LibraryPage from './pages/LibraryPage'
 import FavoritesPage from './pages/FavoritesPage'
 import SettingsPage from './pages/SettingsPage'
 import PlaylistPage from "./pages/PlaylistPage";
+import ArtistPage from "./pages/ArtistPage";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/playlists/:id"element={<PlaylistPage />}/>
+        <Route path="/playlists/:id" element={<PlaylistPage />} />
+        <Route path="/artist/:name" element={<ArtistPage />} />
       </Route>
     </Routes>
   )

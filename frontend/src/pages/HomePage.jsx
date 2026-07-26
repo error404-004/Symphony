@@ -11,16 +11,16 @@ import { searchMusic } from "../services/api";
    ============================================ */
 const pageVariants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, staggerChildren: 0.12 } },
+  animate: { opacity: 1, transition: { duration: 0.5, staggerChildren: 0.1 } },
 }
 
 const sectionVariants = {
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
 }
 
 /**
- * HomePage - Landing page with polished desktop layout & ambient glassmorphism.
+ * HomePage - Symphony Design Language (SDL) Landing Page with exact 8px rhythm system.
  */
 export default function HomePage() {
   const greeting = getGreeting();
@@ -92,17 +92,17 @@ export default function HomePage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-12 md:space-y-16 pb-48 px-4 sm:px-6 md:px-8 lg:px-10 max-w-7xl mx-auto relative"
+      className="space-y-14 lg:space-y-16 pb-48 px-6 sm:px-8 lg:px-10 max-w-[1400px] mx-auto relative"
     >
       {/* Hero Greeting Section */}
-      <motion.div variants={sectionVariants} className="relative pt-4 sm:pt-6 pb-2">
+      <motion.div variants={sectionVariants} className="relative pt-4 sm:pt-6 pb-2 mb-12">
         {/* Subtle Purple Radial Ambient Glow */}
-        <div className="absolute -top-16 -left-16 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -left-20 w-96 h-96 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight relative drop-shadow-sm">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight relative drop-shadow-sm leading-tight">
           {greeting}
         </h1>
-        <p className="text-zinc-400 mt-2 text-base font-medium relative">
+        <p className="text-zinc-400 mt-2 text-base sm:text-lg font-medium relative tracking-normal">
           Here's what's been on your radar.
         </p>
       </motion.div>
@@ -113,7 +113,7 @@ export default function HomePage() {
           title="Continue Listening"
           subtitle="Pick up where you left off"
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 mt-5">
           {continueListening.map((item, i) => (
             <WideCard
               key={item.videoId || item.title}
@@ -130,8 +130,8 @@ export default function HomePage() {
       {/* Recently Played */}
       {recentlyPlayed.length > 0 && (
         <motion.section variants={sectionVariants}>
-          <SectionHeader title="Recently Played" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 lg:gap-6 mt-4">
+          <SectionHeader title="Recently Played" subtitle="Your recently played tracks and albums" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-5">
             {recentlyPlayed.map((item, i) => (
               <MusicCard
                 key={`${item.videoId}-${i}`}
@@ -149,8 +149,8 @@ export default function HomePage() {
       {/* Trending */}
       <motion.section variants={sectionVariants}>
         <SectionHeader title="Trending Now" subtitle="What everyone is listening to" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 lg:gap-6 mt-4">
-          {trending.slice(0, 5).map((item, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-5">
+          {trending.slice(0, 6).map((item, i) => (
             <MusicCard
               key={item.videoId}
               title={item.title}
@@ -167,8 +167,8 @@ export default function HomePage() {
       {recommended.length > 0 && (
         <motion.section variants={sectionVariants}>
           <SectionHeader title="Recommended for You" subtitle="Based on your taste" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 lg:gap-6 mt-4">
-            {recommended.slice(0, 5).map((item, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-5">
+            {recommended.slice(0, 6).map((item, i) => (
               <MusicCard
                 key={item.videoId}
                 title={item.title}
@@ -185,8 +185,8 @@ export default function HomePage() {
       {/* New Releases */}
       <motion.section variants={sectionVariants}>
         <SectionHeader title="New Releases" subtitle="Fresh tracks this week" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 lg:gap-6 mt-4">
-          {newReleases.slice(0, 5).map((item, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-5">
+          {newReleases.slice(0, 6).map((item, i) => (
             <MusicCard
               key={item.videoId}
               title={item.title}
@@ -207,7 +207,7 @@ export default function HomePage() {
  */
 function getGreeting() {
   const hour = new Date().getHours()
-  if (hour < 12) return 'Good Morning'
-  if (hour < 18) return 'Good Afternoon'
-  return 'Good Evening'
+  if (hour < 12) return 'Good Morning 👋'
+  if (hour < 18) return 'Good Afternoon 👋'
+  return 'Good Evening 👋'
 }
