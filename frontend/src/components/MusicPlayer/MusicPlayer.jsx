@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 /**
- * MusicPlayer - Authentic Spotify Desktop Bottom Playback Bar
+ * MusicPlayer - Symphony Design Language (SDL) Floating Glassmorphic Playback Bar.
  */
 export default function MusicPlayer() {
   const {
@@ -72,30 +72,36 @@ export default function MusicPlayer() {
 
   return (
     <>
-      {/* Bottom Fixed Spotify Playback Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 z-50 h-[88px] bg-black border-t border-[#121212] px-4 flex items-center justify-between select-none">
+      {/* Bottom Floating Glassmorphic Playback Bar */}
+      <footer className="fixed bottom-3 inset-x-3 md:inset-x-6 z-50 h-[88px] glass-card backdrop-blur-2xl backdrop-saturate-150 bg-surface-950/85 border border-white/10 rounded-2xl px-5 sm:px-6 flex items-center justify-between select-none shadow-2xl shadow-black/80">
+        {/* Top Specular Highlight */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-60 rounded-t-2xl pointer-events-none" />
+
         {/* Left Section: Track Info & Cover */}
-        <div className="flex items-center gap-3 w-1/4 min-w-[180px]">
-          {/* Cover Thumbnail */}
-          <div className="w-14 h-14 rounded-md overflow-hidden shrink-0 bg-[#282828] shadow">
-            {currentSong?.thumbnail ? (
-              <img
-                src={currentSong.thumbnail}
-                alt={currentSong.title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-[#282828]">
-                <Music2 className="w-6 h-6 text-[#B3B3B3]" />
-              </div>
-            )}
+        <div className="flex items-center gap-3.5 w-1/4 min-w-[190px]">
+          {/* Cover Thumbnail with Ambient Glow */}
+          <div className="relative group shrink-0">
+            <div className="absolute -inset-1 bg-purple-600/30 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <div className="w-14 h-14 rounded-xl overflow-hidden relative bg-white/5 border border-white/10 shadow-lg shadow-black/50">
+              {currentSong?.thumbnail ? (
+                <img
+                  src={currentSong.thumbnail}
+                  alt={currentSong.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                  <Music2 className="w-6 h-6 text-purple-300/40" />
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-white truncate hover:underline cursor-pointer">
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <p className="text-sm font-bold text-white truncate hover:text-purple-200 cursor-pointer tracking-tight transition-colors">
               {currentSong?.title || "No track selected"}
             </p>
-            <p className="text-xs text-[#B3B3B3] truncate hover:underline cursor-pointer">
+            <p className="text-xs text-zinc-400 truncate hover:text-zinc-200 cursor-pointer font-medium transition-colors">
               {currentSong?.artist || currentSong?.author || "Select a song to play"}
             </p>
           </div>
@@ -103,26 +109,30 @@ export default function MusicPlayer() {
           {/* Favorite Heart Toggle */}
           <button
             onClick={() => currentSong && toggleFavorite(currentSong)}
-            className="p-1 text-[#B3B3B3] hover:text-white transition-colors"
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
             title={isFavorite ? "Remove from Liked Songs" : "Save to Liked Songs"}
           >
             <Heart
-              className={`w-4 h-4 ${
-                isFavorite ? "text-[#1DB954] fill-[#1DB954]" : "hover:text-white"
+              className={`w-4.5 h-4.5 transition-colors ${
+                isFavorite
+                  ? "text-pink-500 fill-pink-500 drop-shadow-[0_0_10px_rgba(236,72,153,0.5)]"
+                  : "hover:text-white"
               }`}
             />
           </button>
         </div>
 
         {/* Center Section: Playback Controls & Timeline Progress */}
-        <div className="flex flex-col items-center gap-1.5 flex-1 max-w-[720px] px-4">
+        <div className="flex flex-col items-center gap-2 flex-1 max-w-[720px] px-4">
           {/* Controls Row */}
           <div className="flex items-center gap-5">
             {/* Shuffle */}
             <button
               onClick={() => setIsShuffle(!isShuffle)}
-              className={`transition-colors ${
-                isShuffle ? "text-[#1DB954]" : "text-[#B3B3B3] hover:text-white"
+              className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 ${
+                isShuffle
+                  ? "text-purple-300 bg-purple-500/15 border border-purple-500/30 shadow-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
               title="Enable shuffle"
             >
@@ -133,30 +143,32 @@ export default function MusicPlayer() {
             <button
               onClick={playPrevious}
               disabled={!currentSong}
-              className={`transition-colors ${
-                currentSong ? "text-[#B3B3B3] hover:text-white" : "text-[#4d4d4d] cursor-not-allowed"
+              className={`p-2 rounded-xl transition-all duration-200 ${
+                currentSong
+                  ? "text-zinc-300 hover:text-white hover:bg-white/10 hover:scale-105 active:scale-95"
+                  : "text-zinc-600 cursor-not-allowed"
               }`}
               title="Previous"
             >
-              <SkipBack className="w-5 h-5 fill-current" fill="currentColor" />
+              <SkipBack className="w-4.5 h-4.5 fill-current" fill="currentColor" />
             </button>
 
-            {/* Play/Pause Button (Circular White Button with Black Icon) */}
+            {/* Play/Pause Button */}
             <button
               disabled={!currentSong}
               onClick={() => {
                 if (isPlaying) pauseSong();
                 else resumeSong();
               }}
-              className={`w-8 h-8 rounded-full bg-white flex items-center justify-center transition-transform hover:scale-105 ${
+              className={`w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-purple-950/70 border border-white/25 transition-all duration-200 hover:scale-105 active:scale-95 ${
                 currentSong ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
               }`}
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
-                <Pause className="w-4 h-4 text-black fill-black" fill="black" />
+                <Pause className="w-4.5 h-4.5 text-white fill-white" fill="white" />
               ) : (
-                <Play className="w-4 h-4 text-black fill-black ml-0.5" fill="black" />
+                <Play className="w-4.5 h-4.5 text-white fill-white ml-0.5" fill="white" />
               )}
             </button>
 
@@ -164,19 +176,23 @@ export default function MusicPlayer() {
             <button
               onClick={playNext}
               disabled={!currentSong}
-              className={`transition-colors ${
-                currentSong ? "text-[#B3B3B3] hover:text-white" : "text-[#4d4d4d] cursor-not-allowed"
+              className={`p-2 rounded-xl transition-all duration-200 ${
+                currentSong
+                  ? "text-zinc-300 hover:text-white hover:bg-white/10 hover:scale-105 active:scale-95"
+                  : "text-zinc-600 cursor-not-allowed"
               }`}
               title="Next"
             >
-              <SkipForward className="w-5 h-5 fill-current" fill="currentColor" />
+              <SkipForward className="w-4.5 h-4.5 fill-current" fill="currentColor" />
             </button>
 
             {/* Repeat */}
             <button
               onClick={() => setIsRepeat(!isRepeat)}
-              className={`transition-colors ${
-                isRepeat ? "text-[#1DB954]" : "text-[#B3B3B3] hover:text-white"
+              className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 ${
+                isRepeat
+                  ? "text-purple-300 bg-purple-500/15 border border-purple-500/30 shadow-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
               title="Enable repeat"
             >
@@ -185,18 +201,20 @@ export default function MusicPlayer() {
           </div>
 
           {/* Timeline Row */}
-          <div className="w-full flex items-center gap-2 text-xs font-semibold text-[#B3B3B3] tabular-nums">
+          <div className="w-full flex items-center gap-2.5 text-xs font-medium text-zinc-400 tabular-nums">
             <span className="w-10 text-right">{formatTime(currentTime)}</span>
 
             {/* Interactive Progress Slider */}
             <div
               onMouseEnter={() => setIsHoveredProgress(true)}
               onMouseLeave={() => setIsHoveredProgress(false)}
-              className="relative flex-1 h-1 bg-[#4d4d4d] rounded-full cursor-pointer group flex items-center"
+              className="relative flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer group flex items-center overflow-visible"
             >
               <div
-                className={`h-full rounded-full transition-colors ${
-                  isHoveredProgress ? "bg-[#1DB954]" : "bg-white"
+                className={`h-full rounded-full transition-all duration-150 ${
+                  isHoveredProgress
+                    ? "bg-gradient-to-r from-purple-400 to-indigo-400 shadow-[0_0_12px_rgba(168,85,247,0.8)]"
+                    : "bg-gradient-to-r from-purple-500 to-indigo-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]"
                 }`}
                 style={{ width: `${progress}%` }}
               />
@@ -211,13 +229,13 @@ export default function MusicPlayer() {
                     player.currentTime = (newProgress / 100) * duration;
                   }
                 }}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 aria-label="Seek progress"
               />
               {/* Hover Thumb Handle */}
               {isHoveredProgress && (
                 <div
-                  className="absolute w-3 h-3 bg-white rounded-full shadow pointer-events-none -translate-x-1/2"
+                  className="absolute w-3.5 h-3.5 bg-white rounded-full shadow-lg shadow-purple-950/80 border border-purple-300 pointer-events-none -translate-x-1/2 transition-transform scale-110"
                   style={{ left: `${progress}%` }}
                 />
               )}
@@ -228,29 +246,31 @@ export default function MusicPlayer() {
         </div>
 
         {/* Right Section: Lyrics, Queue, Volume & Fullscreen */}
-        <div className="flex items-center justify-end gap-3 w-1/4 min-w-[180px]">
+        <div className="flex items-center justify-end gap-2.5 w-1/4 min-w-[190px]">
           {/* Fullscreen Lyrics Trigger */}
           <button
             onClick={() => setIsFullscreen(true)}
-            className="text-[#B3B3B3] hover:text-white transition-colors"
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
             title="Lyrics & Fullscreen View"
           >
-            <Mic2 className="w-4 h-4" />
+            <Mic2 className="w-4.5 h-4.5" />
           </button>
 
           {/* Queue Drawer Toggle */}
           <button
             onClick={() => setShowQueue(!showQueue)}
-            className={`transition-colors ${
-              showQueue ? "text-[#1DB954]" : "text-[#B3B3B3] hover:text-white"
+            className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 ${
+              showQueue
+                ? "text-purple-300 bg-purple-500/15 border border-purple-500/30 shadow-sm"
+                : "text-zinc-400 hover:text-white hover:bg-white/10"
             }`}
             title="Queue"
           >
-            <ListMusic className="w-4 h-4" />
+            <ListMusic className="w-4.5 h-4.5" />
           </button>
 
-          {/* Volume Control */}
-          <div className="hidden sm:flex items-center gap-2">
+          {/* Integrated Volume Control */}
+          <div className="hidden sm:flex items-center gap-2 bg-white/[0.04] p-1.5 px-3 rounded-full border border-white/10 shadow-inner">
             <button
               onClick={() => {
                 if (isMuted) {
@@ -261,9 +281,9 @@ export default function MusicPlayer() {
                   setIsMuted(true);
                 }
               }}
-              className="text-[#B3B3B3] hover:text-white transition-colors"
+              className="text-zinc-400 hover:text-white transition-colors"
             >
-              {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isMuted || volume === 0 ? <VolumeX className="w-4 h-4 text-zinc-500" /> : <Volume2 className="w-4 h-4 text-purple-300" />}
             </button>
             <input
               type="range"
@@ -276,7 +296,7 @@ export default function MusicPlayer() {
                 if (player) player.volume = newVol / 100;
                 if (newVol > 0) setIsMuted(false);
               }}
-              className="w-20 h-1 bg-[#4d4d4d] accent-[#1DB954] cursor-pointer"
+              className="w-20 h-1 bg-white/10 accent-purple-500 cursor-pointer rounded-full"
               aria-label="Volume"
             />
           </div>
@@ -284,10 +304,10 @@ export default function MusicPlayer() {
           {/* Fullscreen Expand Button */}
           <button
             onClick={() => setIsFullscreen(true)}
-            className="text-[#B3B3B3] hover:text-white transition-colors"
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
             title="Full screen"
           >
-            <Maximize2 className="w-4 h-4" />
+            <Maximize2 className="w-4.5 h-4.5" />
           </button>
         </div>
       </footer>
@@ -299,22 +319,22 @@ export default function MusicPlayer() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-4 z-50 w-80 max-h-[420px] bg-[#181818] border border-[#282828] rounded-lg shadow-2xl flex flex-col overflow-hidden"
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="fixed bottom-28 right-6 z-50 w-84 max-h-[440px] glass-card backdrop-blur-2xl bg-surface-950/90 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 flex flex-col overflow-hidden"
           >
-            <div className="flex items-center justify-between p-4 border-b border-[#282828]">
-              <h3 className="text-sm font-bold text-white">Queue</h3>
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <h3 className="text-sm font-bold text-white tracking-tight">Queue</h3>
               <button
                 onClick={() => setShowQueue(false)}
-                className="text-[#B3B3B3] hover:text-white"
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="overflow-y-auto flex-1 p-2 space-y-1">
+            <div className="overflow-y-auto flex-1 p-2 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
               {queue.length === 0 ? (
-                <div className="text-center py-8 text-[#B3B3B3] text-sm font-medium">
+                <div className="text-center py-8 text-zinc-400 text-sm font-medium">
                   Queue is empty
                 </div>
               ) : (
@@ -322,27 +342,29 @@ export default function MusicPlayer() {
                   <button
                     key={song.videoId || idx}
                     onClick={() => playSong(song)}
-                    className={`w-full flex items-center gap-3 p-2 rounded hover:bg-[#282828] text-left transition-colors ${
-                      idx === currentIndex ? "bg-[#282828]" : ""
+                    className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all duration-200 text-left ${
+                      idx === currentIndex
+                        ? "bg-purple-600/20 border border-purple-500/30 shadow-md"
+                        : "hover:bg-white/5 border border-transparent"
                     }`}
                   >
                     <span
-                      className={`w-4 text-xs text-center font-semibold ${
-                        idx === currentIndex ? "text-[#1DB954]" : "text-[#B3B3B3]"
+                      className={`w-4 text-xs text-center font-bold ${
+                        idx === currentIndex ? "text-purple-300" : "text-zinc-400"
                       }`}
                     >
                       {idx + 1}
                     </span>
-                    <img src={song.thumbnail} alt="" className="w-10 h-10 rounded object-cover" />
+                    <img src={song.thumbnail} alt="" className="w-10 h-10 rounded-lg object-cover border border-white/10" />
                     <div className="min-w-0 flex-1">
                       <p
                         className={`text-xs font-bold truncate ${
-                          idx === currentIndex ? "text-[#1DB954]" : "text-white"
+                          idx === currentIndex ? "text-purple-200" : "text-white"
                         }`}
                       >
                         {song.title}
                       </p>
-                      <p className="text-[11px] text-[#B3B3B3] truncate">{song.artist}</p>
+                      <p className="text-[11px] text-zinc-400 truncate mt-0.5">{song.artist}</p>
                     </div>
                   </button>
                 ))
@@ -359,11 +381,11 @@ export default function MusicPlayer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-[#121212] overflow-hidden flex flex-col"
+            className="fixed inset-0 z-[9999] bg-surface-950 overflow-hidden flex flex-col"
           >
-            {/* Background Blur */}
+            {/* Background Ambient Blur */}
             <div
-              className="absolute inset-0 bg-cover bg-center scale-125 blur-[100px] opacity-30 pointer-events-none"
+              className="absolute inset-0 bg-cover bg-center scale-125 blur-[120px] opacity-35 pointer-events-none"
               style={{
                 backgroundImage: `url(${currentSong?.thumbnail || "/placeholder.png"})`,
               }}
@@ -371,15 +393,17 @@ export default function MusicPlayer() {
 
             {/* Header Close */}
             <div className="relative z-10 p-6 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Music2 className="w-6 h-6 text-[#1DB954]" />
-                <span className="font-bold text-white text-lg">Symphony Canvas</span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-md shadow-purple-500/30">
+                  <Music2 className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-white text-lg tracking-tight">Symphony Canvas</span>
               </div>
               <button
                 onClick={() => setIsFullscreen(false)}
-                className="p-2 rounded-full bg-black/40 hover:bg-black/80 text-white transition-colors"
+                className="p-2.5 rounded-full glass border border-white/10 hover:border-purple-500/40 text-white hover:bg-purple-600/20 hover:scale-105 active:scale-95 transition-all duration-200"
               >
-                <Minimize2 className="w-6 h-6" />
+                <Minimize2 className="w-5 h-5" />
               </button>
             </div>
 
@@ -390,18 +414,18 @@ export default function MusicPlayer() {
                 <img
                   src={currentSong?.thumbnail}
                   alt={currentSong?.title}
-                  className="w-72 h-72 md:w-96 md:h-96 rounded-lg object-cover shadow-2xl"
+                  className="w-72 h-72 md:w-96 md:h-96 rounded-2xl object-cover shadow-2xl shadow-purple-950/60 border border-white/10"
                 />
-                <h2 className="text-2xl font-black text-white mt-6 text-center truncate max-w-md">
+                <h2 className="text-2xl font-black text-white mt-6 text-center truncate max-w-md tracking-tight">
                   {currentSong?.title}
                 </h2>
-                <p className="text-base font-semibold text-[#B3B3B3] mt-1 text-center truncate">
+                <p className="text-base font-semibold text-purple-300/80 mt-1 text-center truncate">
                   {currentSong?.artist}
                 </p>
               </div>
 
               {/* Lyrics Panel */}
-              <div className="h-[70vh] rounded-lg overflow-hidden">
+              <div className="h-[70vh] rounded-2xl overflow-hidden glass-card border border-white/10">
                 <LyricsPanel
                   trackName={currentSong?.title}
                   artistName={currentSong?.artist || currentSong?.author}

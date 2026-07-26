@@ -1,47 +1,46 @@
-/* Google Fonts - Inter (closest open substitute for Spotify's Circular) */
+/* Google Fonts - Inter with optical sizing & display swap */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
 
 /* ============================================
-   SYMPHONY - Spotify-Inspired Design System
+   SYMPHONY - Premium Glassmorphic Design System
+   Inspired by Apple Music × Arc Browser
    ============================================ */
 
 /* ============================================
    Tailwind v4 Theme Configuration
    ============================================ */
 @theme {
-  /* Spotify green accent scale */
-  --color-primary-50: #e9fbf0;
-  --color-primary-100: #c8f5da;
-  --color-primary-200: #94edb3;
-  --color-primary-300: #5fe58d;
-  --color-primary-400: #3be477;
-  --color-primary-500: #1ed760;
-  --color-primary-600: #1db954;
-  --color-primary-700: #169c46;
-  --color-primary-800: #117a37;
-  --color-primary-900: #0c5827;
-  --color-primary-950: #073818;
+  --color-primary-50: #faf5ff;
+  --color-primary-100: #f3e8ff;
+  --color-primary-200: #e9d5ff;
+  --color-primary-300: #d8b4fe;
+  --color-primary-400: #c084fc;
+  --color-primary-500: #a855f7;
+  --color-primary-600: #9333ea;
+  --color-primary-700: #7e22ce;
+  --color-primary-800: #6b21a8;
+  --color-primary-900: #581c87;
+  --color-primary-950: #2e1065;
 
-  /* Spotify neutral / surface scale */
-  --color-surface-50: #f7f7f7;
-  --color-surface-100: #e5e5e5;
-  --color-surface-200: #c2c2c2;
-  --color-surface-300: #a7a7a7;
-  --color-surface-400: #b3b3b3;
-  --color-surface-500: #7a7a7a;
-  --color-surface-600: #535353;
-  --color-surface-700: #3e3e3e;
-  --color-surface-800: #282828;
+  --color-surface-50: #fafafa;
+  --color-surface-100: #f4f4f5;
+  --color-surface-200: #e4e4e7;
+  --color-surface-300: #d4d4d8;
+  --color-surface-400: #a1a1aa;
+  --color-surface-500: #71717a;
+  --color-surface-600: #52525b;
+  --color-surface-700: #3f3f46;
+  --color-surface-800: #27272a;
   --color-surface-900: #181818;
-  --color-surface-950: #121212;
+  --color-surface-950: #0d0d0d;
 
-  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ============================================
-   Base Styles
+   Base & Reset Styles
    ============================================ */
 *, *::before, *::after {
   margin: 0;
@@ -53,112 +52,144 @@ html {
   font-family: var(--font-family-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #0d0d0d;
+  color: #f4f4f5;
   min-height: 100vh;
   overflow: hidden;
+  letter-spacing: -0.011em;
 }
 
 #root {
   min-height: 100vh;
 }
 
+/* Accessible & Sleek Focus Rings */
+*:focus-visible {
+  outline: 2px solid rgba(168, 85, 247, 0.8);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+}
+
 /* ============================================
-   Scrollbar Styling
+   Scrollbar Styling (Ultra Sleek & Modern)
    ============================================ */
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  border: 3px solid #121212;
-  background-clip: padding-box;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-  background-clip: padding-box;
+  background: rgba(168, 85, 247, 0.4);
+  border-color: rgba(168, 85, 247, 0.2);
 }
 
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 /* ============================================
-   Surface Utilities (flat, Spotify-style — no blur)
+   Glassmorphism Utility System
+   High-precision frosted acrylics & depth
    ============================================ */
 .glass {
-  background: #242424;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 .glass-light {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 .glass-strong {
-  background: #181818;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(36px) saturate(200%);
+  -webkit-backdrop-filter: blur(36px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .glass-card {
-  background: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, rgba(28, 24, 38, 0.7) 0%, rgba(18, 18, 22, 0.6) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
 }
 
-.surface-card {
-  background: #181818;
-  transition: background-color 0.2s ease;
-}
-
-.surface-card:hover {
-  background: #282828;
+.glass-card:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 14px 36px -4px rgba(139, 92, 246, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
 }
 
 /* ============================================
-   Gradient Utilities
+   Gradient & Ambient Utilities
+   Multi-stop violet/purple spectrums & light maps
    ============================================ */
 .gradient-primary {
-  background: #1db954;
+  background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #6366f1 100%);
 }
 
 .gradient-glow {
   background: radial-gradient(
     ellipse at 50% 0%,
-    rgba(29, 185, 84, 0.12) 0%,
-    transparent 60%
+    rgba(168, 85, 247, 0.22) 0%,
+    rgba(139, 92, 246, 0.08) 50%,
+    transparent 75%
   );
 }
 
 .gradient-ambient {
-  background: linear-gradient(
-    180deg,
-    rgba(29, 185, 84, 0.14) 0%,
-    rgba(18, 18, 18, 0) 32%
-  );
+  background: 
+    radial-gradient(ellipse at 25% 0%, rgba(168, 85, 247, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 60%);
 }
 
 /* ============================================
-   Text Glow Utility (subdued — Spotify doesn't glow text)
+   Text Glow Utility
    ============================================ */
 .text-shadow-glow {
-  text-shadow: none;
+  text-shadow: 
+    0 0 20px rgba(168, 85, 247, 0.45),
+    0 0 40px rgba(139, 92, 246, 0.25),
+    0 0 80px rgba(139, 92, 246, 0.12);
 }
 
 /* ============================================
-   Range / Slider Styling
+   Range / Slider Styling (Precision Audio Control)
    ============================================ */
 input[type="range"] {
   -webkit-appearance: none;
@@ -169,52 +200,77 @@ input[type="range"] {
 
 input[type="range"]::-webkit-slider-track {
   height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease;
+}
+
+input[type="range"]:hover::-webkit-slider-track {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #ffffff;
-  margin-top: -4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  transition: transform 0.15s ease;
+  background: #a855f7;
+  margin-top: -5px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-input[type="range"]:hover::-webkit-slider-thumb {
-  background: #1ed760;
-  transform: scale(1.15);
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.35);
+  background: #c084fc;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 24px rgba(192, 132, 252, 0.9);
 }
 
 input[type="range"]::-moz-range-track {
   height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
   border: none;
+  transition: background 0.2s ease;
+}
+
+input[type="range"]:hover::-moz-range-track {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #ffffff;
-  border: none;
-  transition: transform 0.15s ease;
+  background: #a855f7;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-input[type="range"]:hover::-moz-range-thumb {
-  background: #1ed760;
-  transform: scale(1.15);
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.35);
+  background: #c084fc;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 24px rgba(192, 132, 252, 0.9);
 }
 
 /* ============================================
-   Selection
+   Selection Highlight
    ============================================ */
 ::selection {
-  background-color: rgba(29, 185, 84, 0.35);
-  color: white;
+  background-color: rgba(168, 85, 247, 0.35);
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.4);
 }

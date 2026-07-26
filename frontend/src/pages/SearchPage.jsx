@@ -37,7 +37,7 @@ const itemVariants = {
 }
 
 /**
- * SearchPage - Browse genres and trending searches.
+ * SearchPage - Browse genres and trending searches with Symphony Design Language (SDL).
  */
 export default function SearchPage() {
   const { playSong } = usePlayer();
@@ -88,32 +88,32 @@ export default function SearchPage() {
       animate="animate"
       className="space-y-8"
     >
-      {/* Search Header */}
+      {/* Search Header - Symphony Design Language (SDL) */}
       <motion.div variants={itemVariants}>
         <h1 className="text-4xl font-extrabold text-white tracking-tight mb-4">
           Search
         </h1>
-        <div className="relative max-w-2xl group">
-          <SearchIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#B3B3B3] group-focus-within:text-white transition-colors duration-200" />
+        <div className="relative max-w-2xl group/search">
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within/search:text-purple-300 group-hover/search:text-white transition-colors duration-300 pointer-events-none" />
           <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                      handleSearch()
-                  }
-              }}
-              placeholder=" What do you want to listen to?"
-              className="w-full h-14 pl-4 pr-11 rounded-full bg-[#242424] border-0 text-base text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white/[0.08] transition-all duration-200"
-        />
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch()
+              }
+            }}
+            placeholder="What do you want to listen to?"
+            className="w-full h-13 pl-12 pr-5 rounded-full bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 group-hover/search:border-purple-500/30 text-base font-medium text-white placeholder:text-zinc-400/70 caret-purple-400 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30 focus:bg-surface-950/90 shadow-lg shadow-purple-950/20 focus:shadow-[0_0_28px_rgba(168,85,247,0.25)] transition-all duration-300 ease-out"
+          />
         </div>
       </motion.div>
 
       {/* Trending Searches */}
       <motion.section variants={itemVariants}>
         <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-[#1DB954]" />
+          <TrendingUp className="w-5 h-5 text-purple-400" />
           <h2 className="text-lg font-semibold text-white">Trending Searches</h2>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -126,7 +126,7 @@ export default function SearchPage() {
               transition={{ delay: i * 0.05 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-[#B3B3B3] hover:text-white hover:bg-[#282828] hover:border-[#404040] transition-all duration-200"
+              className="px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/10 text-sm text-zinc-300 hover:text-white hover:bg-purple-600/20 hover:border-purple-500/40 transition-all duration-200"
             >
               {term}
             </motion.button>
