@@ -106,8 +106,6 @@ export default function HomePage() {
     >
       {/* Hero Greeting */}
       <motion.div variants={sectionVariants} className="relative">
-        {/* Ambient glow behind hero */}
-        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-500/[0.06] rounded-full blur-[100px] pointer-events-none" />
         <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight relative">
           {greeting}
         </h1>

@@ -14,7 +14,7 @@ export default function WideCard({
   subtitle,
   artist,
   thumbnail,
-  gradient = 'from-primary-600 to-primary-900',
+  gradient = 'from-[#282828] to-[#181818]',
   index = 0,
   onClick,
 }) {
@@ -27,9 +27,9 @@ export default function WideCard({
       className="group cursor-pointer"
       onClick={onClick}
     >
-      <div className="flex items-center gap-3 p-2 pr-3 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 overflow-hidden shadow-md shadow-black/10">
+      <div className="flex items-center gap-3 p-2 pr-3 rounded-lg bg-[#181818] hover:bg-[#282828] transition-all duration-300 overflow-hidden">
         {/* Mini artwork */}
-        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-lg shadow-black/20">
+        <div className="w-12 h-12 rounded-md overflow-hidden shrink-0">
           {thumbnail ? (
             <img
               src={thumbnail}
@@ -59,8 +59,8 @@ export default function WideCard({
           initial={{ opacity: 0, scale: 0.8 }}
           className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0"
         >
-          <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-500/30">
-            <Play className="w-3.5 h-3.5 text-white ml-0.5" fill="currentColor" />
+          <div className="w-9 h-9 rounded-full bg-[#1DB954] hover:bg-[#1ED760] flex items-center justify-center shadow-lg shadow-black/50 transition-transform duration-200 hover:scale-105">
+            <Play className="w-4 h-4 text-black fill-black ml-0.5" fill="black" />
           </div>
         </motion.div>
       </div>

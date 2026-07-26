@@ -1,43 +1,33 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar/Sidebar'
-import { useState } from 'react'
 import TopNav from '../components/TopNav/TopNav'
 import MusicPlayer from '../components/MusicPlayer/MusicPlayer'
 
 /**
- * MainLayout - The application shell that wraps all pages.
- * Provides the sidebar, top navigation, main content area, and bottom music player.
+ * MainLayout - Spotify Desktop Application Shell.
+ * Provides the dual-panel sidebar, top navigation, main container, and bottom music player.
  */
 export default function MainLayout() {
-  const [currentSong, setCurrentSong] = useState({
-  title: "Midnight Dreams",
-  artist: "The Cosmic Architects",
-  thumbnail: null,
-  duration: "3:45",
-})
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0D0D0D] relative">
-      {/* Ambient gradient glow */}
-      <div className="absolute inset-0 gradient-ambient pointer-events-none z-0" />
-
+    <div className="flex h-screen w-screen overflow-hidden bg-black text-white p-2 gap-2 pb-[90px] relative select-none">
       {/* Left Sidebar */}
       <Sidebar />
 
-      {/* Main Content Area */}
-      <div className="flex flex-1 flex-col overflow-hidden relative z-10">
-        {/* Top Navigation */}
+      {/* Main Content Card Panel */}
+      <div className="flex flex-1 flex-col overflow-hidden bg-[#121212] rounded-lg relative">
+        {/* Top Navigation Bar */}
         <TopNav />
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto px-8 py-6">
-          <div className="min-h-[calc(100vh-220px)] pb-40">
-              <Outlet />
+        {/* Scrollable Page Content */}
+        <main className="flex-1 overflow-y-auto px-6 py-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#2a2a2a] [&::-webkit-scrollbar-thumb]:rounded-full">
+          <div className="pb-16">
+            <Outlet />
           </div>
         </main>
       </div>
 
-      {/* Bottom Music Player */}
-      <MusicPlayer/>
+      {/* Fixed Bottom Music Player */}
+      <MusicPlayer />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Home,
@@ -7,103 +7,145 @@ import {
   Heart,
   Settings,
   Music2,
+  Plus,
 } from 'lucide-react'
-
-const navItems = [
-  { path: '/', label: 'Home', icon: Home },
-  { path: '/search', label: 'Search', icon: Search },
-  { path: '/library', label: 'Library', icon: Library },
-  { path: '/favorites', label: 'Favorites', icon: Heart },
-  { path: '/settings', label: 'Settings', icon: Settings },
-]
+import usePlayer from '../../hooks/usePlayer'
 
 /**
- * Sidebar - Left navigation panel with logo and nav links.
+ * Sidebar - Spotify Desktop Style Left Panel with Navigation & Your Library
  */
 export default function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { playlists, favorites } = usePlayer()
+
+  const topNavItems = [
+    { path: '/', label: 'Home', icon: Home },
+    { path: '/search', label: 'Search', icon: Search },
+    { path: '/settings', label: 'Settings', icon: Settings },
+  ]
 
   return (
-    <aside className="hidden md:flex w-[280px] lg:w-[300px] flex-col m-2 mb-[104px] rounded-2xl glass-card py-6 px-3 shrink-0 relative z-10">
-      {/* Logo */}
-      <NavLink to="/" className="flex items-center gap-3 px-3 mb-8 group">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl gradient-primary shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-all duration-300">
-          <Music2 className="w-5 h-5 text-white" />
-        </div>
-        <span className="text-xl font-bold tracking-tight text-white">
-          Symphony
-        </span>
-      </NavLink>
-
-      {/* Navigation */}
-      <nav className="flex flex-col gap-1 flex-1">
-        {navItems.map(({ path, label, icon: Icon }) => {
-          const isActive = location.pathname === path
-
-          return (
-            <NavLink
-              key={path}
-              to={path}
-              className="relative"
-            >
-              <motion.div
-                className={`
-                  flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                  ${isActive
-                    ? 'text-white'
-                    : 'text-[#B3B3B3] hover:text-white hover:bg-white/[0.04]'
-                  }
-                `}
-                whileHover={{ x: isActive ? 0 : 4 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              >
-                {/* Active indicator background */}
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-xl bg-white/[0.08] border border-white/[0.08] shadow-lg shadow-primary-500/[0.05]"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  />
-                )}
-
-                {/* Active left accent bar */}
-                {isActive && (
-                  <motion.div
-                    initial={{ scaleY: 0 }}
-                    animate={{ scaleY: 1 }}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-primary-500 shadow-md shadow-primary-500/50"
-                  />
-                )}
-
-                <Icon className={`w-[18px] h-[18px] relative z-10 transition-colors duration-200 ${isActive ? 'text-primary-400' : ''}`} />
-                <span className="relative z-10">{label}</span>
-
-                {/* Active dot */}
-                {isActive && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="ml-auto w-1.5 h-1.5 rounded-full bg-primary-400 relative z-10 shadow-sm shadow-primary-400/50"
-                  />
-                )}
-              </motion.div>
-            </NavLink>
-          )
-        })}
-      </nav>
-
-      {/* Bottom section - Now Playing mini indicator */}
-      <div className="mt-auto pt-6 border-t border-white/[0.06]">
-        <div className="glass rounded-xl p-3.5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shrink-0 shadow-lg shadow-primary-600/20">
-              <Music2 className="w-4 h-4 text-white/80" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-white truncate">Now Playing</p>
-              <p className="text-[11px] text-[#B3B3B3] truncate">Nothing is playing</p>
-            </div>
+    <aside className="hidden md:flex w-[260px] lg:w-[300px] flex-col gap-2 shrink-0 h-full select-none">
+      {/* Upper Navigation Card */}
+      <div className="bg-[#121212] rounded-lg p-4 space-y-4">
+        {/* Brand Logo */}
+        <NavLink to="/" className="flex items-center gap-2.5 px-2 group">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#1DB954] text-black">
+            <Music2 className="w-4 h-4 fill-black text-black" />
           </div>
+          <span className="text-lg font-bold tracking-tight text-white">
+            Symphony
+          </span>
+        </NavLink>
+
+        {/* Primary Nav Links */}
+        <nav className="flex flex-col gap-1">
+          {topNavItems.map(({ path, label, icon: Icon }) => {
+            const isActive = location.pathname === path
+
+            return (
+              <NavLink key={path} to={path}>
+                <div
+                  className={`flex items-center gap-4 px-3 py-2.5 rounded-md text-sm font-bold transition-all duration-200 ${
+                    isActive
+                      ? 'text-white'
+                      : 'text-[#B3B3B3] hover:text-white'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-[#B3B3B3]'}`} />
+                  <span>{label}</span>
+                </div>
+              </NavLink>
+            )
+          })}
+        </nav>
+      </div>
+
+      {/* Lower Your Library Card */}
+      <div className="bg-[#121212] rounded-lg p-3 flex-1 flex flex-col overflow-hidden">
+        {/* Library Header */}
+        <div className="flex items-center justify-between px-2 py-1 mb-2">
+          <NavLink
+            to="/library"
+            className="flex items-center gap-2 text-[#B3B3B3] hover:text-white transition-colors group"
+          >
+            <Library className="w-6 h-6 text-[#B3B3B3] group-hover:text-white transition-colors" />
+            <span className="text-sm font-bold">Your Library</span>
+          </NavLink>
+
+          <button
+            onClick={() => navigate('/library')}
+            className="p-1.5 rounded-full text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-all"
+            title="Create playlist or item"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Filter Badges */}
+        <div className="flex items-center gap-2 px-1 mb-3">
+          <button
+            onClick={() => navigate('/library')}
+            className="px-3 py-1 rounded-full bg-[#242424] hover:bg-[#2a2a2a] text-xs font-semibold text-white transition-colors"
+          >
+            Playlists
+          </button>
+          <button
+            onClick={() => navigate('/favorites')}
+            className="px-3 py-1 rounded-full bg-[#242424] hover:bg-[#2a2a2a] text-xs font-semibold text-white transition-colors"
+          >
+            Favorites
+          </button>
+        </div>
+
+        {/* Scrollable Library Items List */}
+        <div className="flex-1 overflow-y-auto space-y-0.5 pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#2a2a2a] [&::-webkit-scrollbar-thumb]:rounded-full">
+          {/* Liked Songs Entry */}
+          <NavLink
+            to="/favorites"
+            className={({ isActive }) =>
+              `flex items-center gap-3 p-2 rounded-md transition-colors ${
+                isActive ? 'bg-[#282828]' : 'hover:bg-[#1a1a1a]'
+              }`
+            }
+          >
+            <div className="w-12 h-12 rounded-md bg-gradient-to-br from-[#450af5] to-[#c4efd9] flex items-center justify-center shrink-0 shadow-md">
+              <Heart className="w-5 h-5 text-white fill-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-white truncate">Liked Songs</p>
+              <p className="text-xs text-[#B3B3B3] truncate">
+                Playlist • {favorites.length} songs
+              </p>
+            </div>
+          </NavLink>
+
+          {/* Custom Playlists */}
+          {playlists.map((playlist) => {
+            const isPlaylistActive = location.pathname === `/playlists/${playlist.id}`
+            return (
+              <NavLink
+                key={playlist.id}
+                to={`/playlists/${playlist.id}`}
+                className={`flex items-center gap-3 p-2 rounded-md transition-colors ${
+                  isPlaylistActive ? 'bg-[#282828]' : 'hover:bg-[#1a1a1a]'
+                }`}
+              >
+                <div className="w-12 h-12 rounded-md bg-[#282828] flex items-center justify-center shrink-0">
+                  <Music2 className="w-5 h-5 text-[#B3B3B3]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-white truncate">
+                    {playlist.name}
+                  </p>
+                  <p className="text-xs text-[#B3B3B3] truncate">
+                    Playlist • {playlist.songs.length} tracks
+                  </p>
+                </div>
+              </NavLink>
+            )
+          })}
         </div>
       </div>
     </aside>

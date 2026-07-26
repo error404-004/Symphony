@@ -53,7 +53,7 @@ export default function LibraryPage() {
           onClick={() => setShowModal(true)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-primary text-sm font-medium text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1DB954] hover:bg-[#1ED760] text-sm font-medium text-white shadow-lg shadow-black/20 transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           Create Playlist
@@ -67,8 +67,8 @@ export default function LibraryPage() {
             key={tab}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
               i === 0
-                ? 'gradient-primary text-white shadow-lg shadow-primary-500/20'
-                : 'bg-white/[0.04] text-[#B3B3B3] hover:text-white hover:bg-white/[0.08] border border-white/[0.06]'
+                ? 'bg-white text-black shadow-lg'
+                : 'bg-white/[0.04] text-[#B3B3B3] hover:text-white hover:bg-[#282828] border border-[#727272]'
             }`}
           >
             {tab}
@@ -79,7 +79,7 @@ export default function LibraryPage() {
       {/* Playlists */}
 <motion.section variants={itemVariants}>
   <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-    <ListMusic className="w-5 h-5 text-primary-400" />
+    <ListMusic className="w-5 h-5 text-[#1DB954]" />
     Your Playlists
   </h2>
 
@@ -107,13 +107,13 @@ export default function LibraryPage() {
           whileHover={{ scale: 1.02 }}
           className="group cursor-pointer"
         >
-          <div className="flex items-center gap-4 p-3.5 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 shadow-md shadow-black/10">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shrink-0 shadow-lg shadow-primary-600/20">
+          <div className="flex items-center gap-4 p-3.5 rounded-xl bg-[#181818] hover:bg-[#282828] transition-all duration-300">
+            <div className="w-14 h-14 rounded-xl bg-[#282828] flex items-center justify-center shrink-0 shadow-lg">
               <Music2 className="w-6 h-6 text-white/30" />
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate group-hover:text-primary-300 transition-colors duration-200">
+              <p className="text-sm font-semibold text-white truncate group-hover:text-white transition-colors duration-200">
                 {playlist.name}
               </p>
 
@@ -135,7 +135,7 @@ export default function LibraryPage() {
       {/* Recently Added Albums */}
       <motion.section variants={itemVariants}>
         <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-primary-400" />
+          <Clock className="w-5 h-5 text-[#1DB954]" />
           Recently Added
         </h2>
         <div className="space-y-1.5">
@@ -153,7 +153,7 @@ export default function LibraryPage() {
                   <Music2 className="w-5 h-5 text-white/20" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate group-hover:text-primary-300 transition-colors">{title}</p>
+                  <p className="text-sm font-medium text-white truncate group-hover:text-white transition-colors">{title}</p>
                   <p className="text-xs text-[#B3B3B3] truncate">{artist}</p>
                 </div>
                 <span className="text-xs text-[#B3B3B3]/50 font-medium">{year}</span>
@@ -174,7 +174,7 @@ export default function LibraryPage() {
             initial={{ scale: 0.95, opacity: 0, y: 10 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="glass-strong rounded-2xl p-6 w-[420px] shadow-2xl shadow-black/50"
+            className="bg-[#282828] rounded-2xl p-6 w-[420px] shadow-2xl shadow-black/50"
           >
             <h2 className="text-2xl font-bold text-white mb-6">
               Create Playlist
@@ -185,7 +185,7 @@ export default function LibraryPage() {
               placeholder="Playlist name..."
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 transition-all duration-200 mb-6"
+              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/30 transition-all duration-200 mb-6"
             />
 
             <div className="flex justify-end gap-3">
@@ -210,7 +210,7 @@ export default function LibraryPage() {
 
                     setShowModal(false);
                 }}
-                className="px-5 py-2.5 rounded-xl gradient-primary text-white text-sm font-medium shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30 transition-all duration-200"
+                className="px-5 py-2.5 rounded-xl bg-[#1DB954] hover:bg-[#1ED760] text-white text-sm font-medium shadow-lg shadow-black/20 transition-all duration-200"
               >
                 Create
               </button>

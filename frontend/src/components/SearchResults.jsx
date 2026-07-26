@@ -1,73 +1,94 @@
-import { Music, Play } from "lucide-react";
+import { Play, Clock, Volume2 } from "lucide-react";
 import { usePlayer } from "../context/PlayerContext";
 import { motion } from "framer-motion";
 
-export default function SearchResults({ songs, onSongSelect }) {
-  if (!Array.isArray(songs) || songs.length === 0)
-    return null;
-  const {
-    playSong,
-    setQueue,
-    setCurrentIndex,
-  }  = usePlayer();
+export default function SearchResults({ songs }) {
+  if (!Array.isArray(songs) || songs.length === 0) return null;
+
+  const { playSong, setQueue, setCurrentIndex, currentSong, isPlaying } = usePlayer();
+
   return (
-    <div className="space-y-3 mt-8">
-      <h2 className="text-2xl font-bold text-white">
-        Search Results
-      </h2>
+    <div className="mt-8 space-y-4">
+      <h2 className="text-2xl font-bold text-white tracking-tight">Songs</h2>
 
-      {songs.map((song, index) => (
-        <motion.div
-          key={song.videoId}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: index * 0.04 }}
-          onClick={() => {
-              setQueue(songs);
+      {/* Spotify Tracklist Header */}
+      <div className="grid grid-cols-[24px_1fr_1fr_60px] gap-4 px-4 py-2 text-xs font-semibold text-[#B3B3B3] uppercase tracking-wider border-b border-[#282828] select-none">
+        <span>#</span>
+        <span>Title</span>
+        <span className="hidden sm:block">Album</span>
+        <div className="flex justify-end pr-2">
+          <Clock className="w-4 h-4" />
+        </div>
+      </div>
 
-              setCurrentIndex(index);
+      {/* Tracklist Rows */}
+      <div className="space-y-0.5">
+        {songs.map((song, index) => {
+          const isCurrent = currentSong?.videoId === song.videoId;
 
-              playSong(song);
-          }}
-      
-          className="flex items-center gap-4 p-3 rounded-xl bg-[#181818]/60 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 cursor-pointer group shadow-md shadow-black/10"
-        >
-          {/* Thumbnail */}
-          <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0 shadow-md shadow-black/20">
-            <img
-              src={song.thumbnail}
-              alt={song.title}
-              className="w-full h-full object-cover"
-            />
-            {/* Play overlay */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-              <Play className="w-5 h-5 text-white" fill="currentColor" />
-            </div>
-          </div>
+          return (
+            <motion.div
+              key={song.videoId || index}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: index * 0.03 }}
+              onClick={() => {
+                setQueue(songs);
+                setCurrentIndex(index);
+                playSong(song);
+              }}
+              className={`grid grid-cols-[24px_1fr_1fr_60px] gap-4 items-center px-4 py-2 rounded-md hover:bg-white/10 group cursor-pointer transition-colors ${
+                isCurrent ? "bg-white/10" : ""
+              }`}
+            >
+              {/* Index Column / Hover Play Icon / Playing Indicator */}
+              <div className="flex items-center justify-center w-6 text-sm font-medium text-[#B3B3B3]">
+                {isCurrent && isPlaying ? (
+                  <Volume2 className="w-4 h-4 text-[#1DB954] animate-pulse" />
+                ) : (
+                  <>
+                    <span className={`group-hover:hidden ${isCurrent ? "text-[#1DB954]" : ""}`}>
+                      {index + 1}
+                    </span>
+                    <Play className="w-4 h-4 text-white fill-white hidden group-hover:block ml-0.5" fill="white" />
+                  </>
+                )}
+              </div>
 
-          {/* Song Info */}
-          <div className="flex-1 min-w-0">
-            <h3 className="text-white font-semibold text-sm truncate group-hover:text-primary-300 transition-colors duration-200">
-              {song.title}
-            </h3>
+              {/* Title & Thumbnail Column */}
+              <div className="flex items-center gap-3 min-w-0">
+                <img
+                  src={song.thumbnail}
+                  alt={song.title}
+                  className="w-10 h-10 rounded object-cover shrink-0 shadow"
+                />
+                <div className="min-w-0">
+                  <p
+                    className={`text-sm font-semibold truncate ${
+                      isCurrent ? "text-[#1DB954]" : "text-white group-hover:underline"
+                    }`}
+                  >
+                    {song.title}
+                  </p>
+                  <p className="text-xs text-[#B3B3B3] truncate group-hover:text-white transition-colors">
+                    {song.artist}
+                  </p>
+                </div>
+              </div>
 
-            <p className="text-[#B3B3B3] text-sm truncate">
-              {song.artist}
-            </p>
+              {/* Album Column */}
+              <p className="text-sm text-[#B3B3B3] truncate hidden sm:block group-hover:text-white transition-colors">
+                {song.album || "Single"}
+              </p>
 
-            <p className="text-[#B3B3B3]/50 text-xs truncate">
-              {song.album}
-            </p>
-          </div>
-
-          {/* Duration */}
-          <div className="text-[#B3B3B3] text-sm tabular-nums font-medium">
-            {song.duration}
-          </div>
-
-          <Music className="text-primary-500/60 group-hover:text-primary-400 transition-colors duration-200 shrink-0" />
-        </motion.div>
-      ))}
+              {/* Duration Column */}
+              <div className="text-right text-sm text-[#B3B3B3] font-medium tabular-nums pr-2">
+                {song.duration || "--:--"}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }

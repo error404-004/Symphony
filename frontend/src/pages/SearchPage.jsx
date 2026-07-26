@@ -94,7 +94,7 @@ export default function SearchPage() {
           Search
         </h1>
         <div className="relative max-w-2xl group">
-          <SearchIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
+          <SearchIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#B3B3B3] group-focus-within:text-white transition-colors duration-200" />
           <input
               type="text"
               value={query}
@@ -105,7 +105,7 @@ export default function SearchPage() {
                   }
               }}
               placeholder=" What do you want to listen to?"
-              className="w-full h-14 pl-4 pr-11 rounded-2xl bg-white/[0.06] border border-white/[0.08] text-base text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200 shadow-lg shadow-black/10"
+              className="w-full h-14 pl-4 pr-11 rounded-full bg-[#242424] border-0 text-base text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white/[0.08] transition-all duration-200"
         />
         </div>
       </motion.div>
@@ -113,7 +113,7 @@ export default function SearchPage() {
       {/* Trending Searches */}
       <motion.section variants={itemVariants}>
         <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-primary-400" />
+          <TrendingUp className="w-5 h-5 text-[#1DB954]" />
           <h2 className="text-lg font-semibold text-white">Trending Searches</h2>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -126,7 +126,7 @@ export default function SearchPage() {
               transition={{ delay: i * 0.05 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-[#B3B3B3] hover:text-white hover:bg-white/[0.08] hover:border-primary-500/30 transition-all duration-200"
+              className="px-4 py-2.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-[#B3B3B3] hover:text-white hover:bg-[#282828] hover:border-[#404040] transition-all duration-200"
             >
               {term}
             </motion.button>

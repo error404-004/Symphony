@@ -1,7 +1,6 @@
-import { Search, Bell, User } from 'lucide-react';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useLocation, useNavigate } from "react-router-dom";
+import { Search, Bell, User, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const pageTitles = {
   '/': 'Home',
@@ -11,79 +10,78 @@ const pageTitles = {
   '/settings': 'Settings',
 }
 
-/**
- * TopNav - Top navigation bar with search, notifications, and user profile.
- */
 export default function TopNav() {
   const location = useLocation()
   const pageTitle = pageTitles[location.pathname] || 'Symphony'
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("")
+  const navigate = useNavigate()
+  const [query, setQuery] = useState('')
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="flex items-center justify-between h-16 px-8 border-b border-white/[0.06] bg-[#0D0D0D]/60 backdrop-blur-xl shrink-0 z-20"
-    >
-      {/* Page Title */}
-      <motion.h1
-        key={pageTitle}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="text-lg font-semibold text-white md:hidden lg:block"
-      >
-        {pageTitle}
-      </motion.h1>
+    <header className="flex items-center justify-between h-16 px-6 bg-[#121212] shrink-0 z-20 sticky top-0">
+      {/* Navigation Buttons (< >) & Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-black/70 hover:bg-black text-[#B3B3B3] hover:text-white transition-colors"
+            title="Go back"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => navigate(1)}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-black/70 hover:bg-black text-[#B3B3B3] hover:text-white transition-colors"
+            title="Go forward"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
 
-      {/* Search Bar */}
-      <div className="flex-1 max-w-md mx-4 lg:mx-8">
+        <h1 className="text-xl font-bold text-white hidden sm:block ml-2">
+          {pageTitle}
+        </h1>
+      </div>
+
+      {/* Center Search Input Bar */}
+      <div className="flex-1 max-w-md mx-4">
         <div className="relative group">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B3B3B3] group-focus-within:text-primary-400 transition-colors duration-200" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B3B3B3] group-focus-within:text-white transition-colors" />
           <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && query.trim()) {
-                  navigate(`/search?q=${encodeURIComponent(query)}`);
-                }
-              }}
-              placeholder=" Search songs, artists, albums..."
-              className="w-full h-10 pl-4 pr-11 rounded-xl bg-white/[0.05] border border-white/[0.08] text-sm text-white placeholder:text-[#B3B3B3]/50 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 focus:bg-white/[0.08] transition-all duration-200"
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && query.trim()) {
+                navigate(`/search?q=${encodeURIComponent(query)}`)
+              }
+            }}
+            placeholder="What do you want to play?"
+            className="w-full h-10 pl-10 pr-4 rounded-full bg-[#242424] hover:bg-[#2a2a2a] border-0 text-sm font-medium text-white placeholder:text-[#B3B3B3] focus:outline-none focus:ring-2 focus:ring-white transition-all"
           />
         </div>
       </div>
 
-      {/* Right Section */}
-      <div className="flex items-center gap-2">
-        {/* Notification Bell */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative flex items-center justify-center w-10 h-10 rounded-xl text-[#B3B3B3] hover:text-white hover:bg-white/[0.06] transition-all duration-200"
+      {/* Right User Control Pill Actions */}
+      <div className="flex items-center gap-3">
+        <button
+          className="relative flex items-center justify-center w-8 h-8 rounded-full bg-black/70 hover:bg-black text-[#B3B3B3] hover:text-white transition-colors"
           aria-label="Notifications"
         >
-          <Bell className="w-5 h-5" />
-          {/* Notification dot */}
-          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-500 ring-2 ring-[#0D0D0D] shadow-sm shadow-primary-500/50" />
-        </motion.button>
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#1DB954]" />
+        </button>
 
-        {/* User Profile */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 h-10 px-3 rounded-xl text-[#B3B3B3] hover:text-white hover:bg-white/[0.06] transition-all duration-200"
+        <button
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-2 h-8 pl-1 pr-3 rounded-full bg-black/70 hover:bg-black text-white transition-colors"
           aria-label="User profile"
         >
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg gradient-primary shadow-md shadow-primary-500/20">
-            <User className="w-4 h-4 text-white" />
+          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#282828] text-white">
+            <User className="w-3.5 h-3.5" />
           </div>
-          <span className="hidden lg:block text-sm font-medium">User</span>
-        </motion.button>
+          <span className="text-xs font-bold">User</span>
+        </button>
       </div>
-    </motion.header>
+    </header>
   )
 }

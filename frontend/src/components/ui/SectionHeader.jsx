@@ -28,7 +28,7 @@ export default function SectionHeader({
           whileHover={{ x: 4 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           onClick={onSeeAll}
-          className="flex items-center gap-1 text-sm font-medium text-[#B3B3B3] hover:text-primary-400 transition-colors duration-200"
+          className="flex items-center gap-1 text-sm font-medium text-[#B3B3B3] hover:text-white transition-colors duration-200"
         >
           See all
           <ChevronRight className="w-4 h-4" />

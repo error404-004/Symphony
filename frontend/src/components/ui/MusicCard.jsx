@@ -15,7 +15,7 @@ export default function MusicCard({
   title = 'Untitled',
   subtitle,
   artist,
-  gradient = 'from-primary-600 to-primary-900',
+  gradient = 'from-[#282828] to-[#181818]',
   imageUrl,
   thumbnail,
   shape = 'square',
@@ -31,12 +31,12 @@ export default function MusicCard({
       whileHover={{ y: -6 }}
       className="group cursor-pointer"
     >
-      <div className="p-3 rounded-2xl bg-[#181818]/80 hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20">
+      <div className="p-4 rounded-lg bg-[#181818] hover:bg-[#282828] transition-all duration-300">
         {/* Artwork */}
         <div className="relative mb-3">
           <div
-            className={`aspect-square w-full bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden shadow-lg shadow-black/30 ${
-              shape === 'circle' ? 'rounded-full' : 'rounded-xl'
+            className={`aspect-square w-full bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden ${
+              shape === 'circle' ? 'rounded-full' : 'rounded-md'
             }`}
           >
             {(thumbnail || imageUrl) ? (
@@ -54,16 +54,16 @@ export default function MusicCard({
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.05 }}
-            className="absolute bottom-2 right-2 w-11 h-11 rounded-full bg-primary-500 text-white flex items-center justify-center shadow-xl shadow-primary-500/40 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300"
+            className="absolute bottom-2 right-2 w-12 h-12 rounded-full bg-[#1DB954] hover:bg-[#1ED760] text-black flex items-center justify-center shadow-xl shadow-black/60 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200"
             aria-label={`Play ${title}`}
           >
-            <Play className="w-5 h-5 ml-0.5" fill="currentColor" />
+            <Play className="w-5 h-5 ml-0.5 text-black fill-black" fill="black" />
           </motion.button>
         </div>
 
         {/* Info */}
         <div className="px-0.5">
-          <p className="text-sm font-semibold text-white truncate group-hover:text-primary-300 transition-colors duration-200">
+          <p className="text-sm font-semibold text-white truncate transition-colors duration-200">
             {title}
           </p>
           <p className="text-xs text-[#B3B3B3] truncate mt-1">

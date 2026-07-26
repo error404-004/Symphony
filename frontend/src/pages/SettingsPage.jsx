@@ -32,7 +32,7 @@ const settingsSections = [
     title: 'Appearance',
     items: [
       { label: 'Theme', description: 'Dark mode is currently active', icon: Moon, badge: 'Dark' },
-      { label: 'Accent Color', description: 'Customize the primary accent color', icon: Palette, badge: 'Purple' },
+      { label: 'Accent Color', description: 'Customize the primary accent color', icon: Palette, badge: 'Green' },
     ],
   },
   {
@@ -77,7 +77,7 @@ export default function SettingsPage() {
           <h2 className="text-xs uppercase tracking-widest text-[#B3B3B3]/50 font-semibold mb-3 px-1">
             {title}
           </h2>
-          <div className="glass-card rounded-2xl overflow-hidden divide-y divide-white/[0.04]">
+          <div className="bg-[#181818] rounded-2xl overflow-hidden divide-y divide-white/[0.04]">
             {items.map(({ label, description, icon: Icon, badge }) => (
               <motion.button
                 key={label}
@@ -85,7 +85,7 @@ export default function SettingsPage() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="flex items-center gap-4 w-full p-4 text-left hover:bg-white/[0.04] transition-all duration-200 group"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] text-[#B3B3B3] group-hover:text-primary-400 group-hover:bg-primary-500/[0.08] transition-all duration-200 shrink-0">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] text-[#B3B3B3] group-hover:text-[#1DB954] group-hover:bg-[#1DB954]/[0.08] transition-all duration-200 shrink-0">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -95,7 +95,7 @@ export default function SettingsPage() {
                   <p className="text-xs text-[#B3B3B3]/70 truncate">{description}</p>
                 </div>
                 {badge && (
-                  <span className="px-2.5 py-1 rounded-lg bg-primary-500/[0.1] text-primary-400 text-xs font-medium border border-primary-500/[0.15]">
+                  <span className="px-2.5 py-1 rounded-lg bg-[#1DB954]/[0.1] text-[#1DB954] text-xs font-medium border border-[#1DB954]/[0.15]">
                     {badge}
                   </span>
                 )}
