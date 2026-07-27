@@ -89,7 +89,7 @@ export default function ArtistPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-10 pb-36 relative"
+      className="space-y-10 pb-32 sm:pb-36 relative"
     >
       {/* Background Ambient Glow */}
       <div className="absolute -top-24 -left-24 w-[480px] h-[480px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />

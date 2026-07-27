@@ -9,7 +9,7 @@ import MusicPlayer from '../components/MusicPlayer/MusicPlayer'
  */
 export default function MainLayout() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-black text-white p-2 gap-2 pb-[90px] relative select-none">
+    <div className="flex h-screen w-screen overflow-hidden bg-black text-white p-2 gap-2 relative select-none">
       {/* Left Sidebar */}
       <Sidebar />
 
@@ -20,7 +20,7 @@ export default function MainLayout() {
 
         {/* Scrollable Page Content */}
         <main className="flex-1 overflow-y-auto px-6 py-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#2a2a2a] [&::-webkit-scrollbar-thumb]:rounded-full">
-          <div className="pb-16">
+          <div className="pb-32 sm:pb-36">
             <Outlet />
           </div>
         </main>

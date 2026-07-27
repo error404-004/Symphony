@@ -86,15 +86,15 @@ export default function SearchPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-8"
+      className="space-y-8 pb-32 sm:pb-36"
     >
       {/* Search Header - Symphony Design Language (SDL) */}
       <motion.div variants={itemVariants}>
         <h1 className="text-4xl font-extrabold text-white tracking-tight mb-4">
           Search
         </h1>
-        <div className="relative max-w-2xl group/search">
-          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within/search:text-purple-300 group-hover/search:text-white transition-colors duration-300 pointer-events-none" />
+        <div className="relative max-w-2xl group">
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors duration-200 pointer-events-none z-10" />
           <input
             type="text"
             value={query}
@@ -105,7 +105,7 @@ export default function SearchPage() {
               }
             }}
             placeholder="What do you want to listen to?"
-            className="w-full h-13 pl-12 pr-5 rounded-full bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 group-hover/search:border-purple-500/30 text-base font-medium text-white placeholder:text-zinc-400/70 caret-purple-400 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30 focus:bg-surface-950/90 shadow-lg shadow-purple-950/20 focus:shadow-[0_0_28px_rgba(168,85,247,0.25)] transition-all duration-300 ease-out"
+            className="w-full h-12 pl-12 pr-5 rounded-full bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 group-hover/search:border-purple-500/30 text-base font-medium text-white placeholder:text-zinc-400/70 caret-purple-400 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30 focus:bg-surface-950/90 shadow-lg shadow-purple-950/20 focus:shadow-[0_0_28px_rgba(168,85,247,0.25)] transition-all duration-300 ease-out"
           />
         </div>
       </motion.div>

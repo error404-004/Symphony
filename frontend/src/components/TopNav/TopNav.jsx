@@ -47,8 +47,8 @@ export default function TopNav() {
 
       {/* Center Search Input Bar - Symphony Design Language (SDL) */}
       <div className="flex-1 max-w-md mx-4">
-        <div className="relative group/search flex items-center">
-          <Search className="absolute left-4.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-zinc-400 group-focus-within/search:text-purple-300 group-hover/search:text-white transition-colors duration-300 pointer-events-none" />
+        <div className="relative group flex items-center">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-colors duration-200 pointer-events-none z-10" />
           <input
             type="text"
             value={query}
@@ -59,7 +59,8 @@ export default function TopNav() {
               }
             }}
             placeholder="What do you want to play?"
-            className="w-full h-11 pl-12 sm:pl-13 pr-4 rounded-full bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 group-hover/search:border-purple-500/30 text-sm font-medium text-white placeholder:text-zinc-400/70 caret-purple-400 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30 focus:bg-surface-950/90 shadow-md shadow-purple-950/20 focus:shadow-[0_0_24px_rgba(168,85,247,0.25)] transition-all duration-300 ease-out"
+            style={{ paddingLeft: '50px' }}
+            className="w-full h-11 pl-12 pr-5 rounded-full bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 group-hover/search:border-purple-500/30 text-sm font-medium text-white placeholder:text-zinc-400/70 caret-purple-400 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/30 focus:bg-surface-950/90 shadow-md shadow-purple-950/20 focus:shadow-[0_0_24px_rgba(168,85,247,0.25)] transition-all duration-300 ease-out"
           />
         </div>
       </div>
