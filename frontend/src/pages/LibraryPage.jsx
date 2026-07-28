@@ -1,11 +1,8 @@
 import { motion } from 'framer-motion'
-import { ListMusic, Clock, Plus, Music2, MoreHorizontal, Mic2, UserCheck } from 'lucide-react'
+import { ListMusic, Clock, Music2, MoreHorizontal, Mic2, UserCheck, Plus, Sparkles } from 'lucide-react'
 import { useState } from "react";
 import usePlayer from "../hooks/usePlayer";
 import { useNavigate } from "react-router-dom";
-import CreatePlaylistModal from "../components/ui/CreatePlaylistModal";
-
-
 
 const savedArtists = [
   { name: 'The Weeknd', genre: 'R&B / Pop', gradient: 'from-purple-600 to-indigo-900' },
@@ -57,11 +54,9 @@ function getLibraryHeaderQuote() {
  * LibraryPage - User's personal music collection with Symphony Design Language (SDL).
  */
 export default function LibraryPage() {
-  const [showModal, setShowModal] = useState(false);
-  const [playlistName, setPlaylistName] = useState("");
   const [activeTab, setActiveTab] = useState("All");
 
-  const { createPlaylist, playlists } = usePlayer();
+  const { playlists, openCreatePlaylistModal } = usePlayer();
   const navigate = useNavigate();
 
   const headerQuote = getLibraryHeaderQuote();
@@ -94,16 +89,6 @@ export default function LibraryPage() {
             {headerQuote.subtitle}
           </p>
         </div>
-
-        <motion.button
-          onClick={() => setShowModal(true)}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          className="flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-sm font-semibold text-white shadow-lg shadow-purple-950/40 border border-white/20 shrink-0 transition-all duration-200 cursor-pointer"
-        >
-          <Plus className="w-4.5 h-4.5" />
-          <span>Create Playlist</span>
-        </motion.button>
       </motion.div>
 
       {/* Interactive Filter Tabs Row with Guaranteed Spacing */}
@@ -133,13 +118,20 @@ export default function LibraryPage() {
       {/* SECTION 1: Playlists */}
       {(activeTab === 'All' || activeTab === 'Playlists') && (
         <motion.section variants={itemVariants} style={{ marginBottom: '40px' }}>
-          <h2
-            className="text-xl font-bold text-white flex items-center gap-3 tracking-tight"
-            style={{ marginBottom: '20px' }}
-          >
-            <ListMusic className="w-5 h-5 text-purple-400" />
-            Your Playlists
-          </h2>
+          <div className="flex items-center justify-between" style={{ marginBottom: '20px' }}>
+            <h2 className="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+              <ListMusic className="w-5 h-5 text-purple-400" />
+              Your Playlists
+            </h2>
+
+            <button
+              onClick={openCreatePlaylistModal}
+              className="px-4 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 hover:border-purple-400/60 text-purple-300 hover:text-white font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+            >
+              <Plus className="w-4 h-4 text-purple-400" />
+              Create Playlist
+            </button>
+          </div>
 
           {playlists.length === 0 ? (
             <div className="glass-card backdrop-blur-xl border border-white/10 bg-surface-950/70 p-10 sm:p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-xl shadow-purple-950/20 relative overflow-hidden gap-3">
@@ -152,42 +144,53 @@ export default function LibraryPage() {
               </h3>
 
               <p className="text-zinc-400 text-sm max-w-md font-medium">
-                Click "+ Create Playlist" above to start your personal collection.
+                Create your first playlist and start building your personal mix.
               </p>
+
+              <button
+                onClick={openCreatePlaylistModal}
+                className="mt-3 px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-purple-600/30 hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                Create Playlist
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-              {playlists.map((playlist, i) => (
-                <motion.div
-                  key={playlist.id}
-                  onClick={() => navigate(`/playlists/${playlist.id}`)}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="group cursor-pointer select-none"
-                >
-                  <div className="flex items-center gap-4 p-4 rounded-2xl glass-card backdrop-blur-xl bg-surface-950/80 border border-white/10 hover:border-purple-500/40 shadow-xl shadow-purple-950/20 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-900/50 via-surface-800 to-surface-900 border border-white/5 flex items-center justify-center shrink-0 shadow-md">
-                      <Music2 className="w-6 h-6 text-purple-300/40 group-hover:text-purple-300/70 transition-colors" />
+              {playlists.map((playlist, i) => {
+                const gradientClass = playlist.gradient || 'from-purple-600 to-indigo-600'
+                return (
+                  <motion.div
+                    key={playlist.id}
+                    onClick={() => navigate(`/playlists/${playlist.id}`)}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="group cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-4 p-4 rounded-2xl glass-card backdrop-blur-xl bg-surface-950/80 border border-white/10 hover:border-purple-500/40 shadow-xl shadow-purple-950/20 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
+                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gradientClass} flex items-center justify-center shrink-0 shadow-md border border-white/10`}>
+                        <ListMusic className="w-6 h-6 text-white/90 group-hover:scale-110 transition-transform" />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white truncate group-hover:text-purple-200 transition-colors">
+                          {playlist.name}
+                        </p>
+
+                        <p className="text-xs text-zinc-400 font-medium mt-1">
+                          {playlist.songs ? playlist.songs.length : 0} tracks
+                        </p>
+                      </div>
+
+                      <button className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all duration-200">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
                     </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-white truncate group-hover:text-purple-200 transition-colors">
-                        {playlist.name}
-                      </p>
-
-                      <p className="text-xs text-zinc-400 font-medium mt-1">
-                        {playlist.songs.length} tracks
-                      </p>
-                    </div>
-
-                    <button className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all duration-200">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                )
+              })}
             </div>
           )}
         </motion.section>
@@ -264,12 +267,6 @@ export default function LibraryPage() {
         </motion.section>
       )}
 
-      {/* Create Playlist Modal */}
-      <CreatePlaylistModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onCreate={(name) => createPlaylist(name)}
-      />
     </motion.div>
   )
 }

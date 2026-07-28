@@ -17,7 +17,9 @@ import {
   Minimize2,
   Music2,
   X,
-  Mic2
+  Mic2,
+  Plus,
+  Check,
 } from 'lucide-react';
 
 /**
@@ -42,7 +44,10 @@ export default function MusicPlayer() {
     toggleFavorite,
     queue,
     currentIndex,
-    playSong
+    playSong,
+    playlists,
+    addSongToPlaylist,
+    openCreatePlaylistModal,
   } = usePlayer();
 
   const isFavorite = currentSong
@@ -52,6 +57,8 @@ export default function MusicPlayer() {
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(75);
   const [showQueue, setShowQueue] = useState(false);
+  const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
+  const [addedPlaylistId, setAddedPlaylistId] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHoveredProgress, setIsHoveredProgress] = useState(false);
 
@@ -120,6 +127,89 @@ export default function MusicPlayer() {
               }`}
             />
           </button>
+
+          {/* Add to Playlist Button & Dropdown */}
+          <div className="relative">
+            <button
+              disabled={!currentSong}
+              onClick={() => setShowPlaylistMenu(!showPlaylistMenu)}
+              className={`p-2 rounded-xl transition-all duration-200 ${
+                currentSong
+                  ? showPlaylistMenu
+                    ? "text-purple-300 bg-purple-500/20 border border-purple-500/40"
+                    : "text-zinc-400 hover:text-purple-300 hover:bg-white/10 hover:scale-105 active:scale-95"
+                  : "text-zinc-600 cursor-not-allowed"
+              }`}
+              title="Add to Playlist"
+            >
+              <Plus className="w-4.5 h-4.5" />
+            </button>
+
+            {/* Playlist Selection Popup Menu */}
+            <AnimatePresence>
+              {showPlaylistMenu && currentSong && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute bottom-12 left-0 z-50 w-60 bg-[#0d0a18]/95 backdrop-blur-2xl border border-white/15 rounded-2xl p-2.5 shadow-2xl shadow-purple-950/80"
+                >
+                  <div className="px-3 py-2 border-b border-white/10 flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider">Add to Playlist</span>
+                    <button
+                      onClick={() => setShowPlaylistMenu(false)}
+                      className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="max-h-48 overflow-y-auto py-1 space-y-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-white/10">
+                    {playlists.length === 0 ? (
+                      <p className="text-xs text-zinc-400 p-3 text-center">No playlists created yet</p>
+                    ) : (
+                      playlists.map((pl) => {
+                        const isSongInPlaylist = pl.songs?.some((s) => s.videoId === currentSong.videoId);
+                        const isJustAdded = addedPlaylistId === pl.id;
+
+                        return (
+                          <button
+                            key={pl.id}
+                            onClick={() => {
+                              if (!isSongInPlaylist) {
+                                addSongToPlaylist(pl.id, currentSong);
+                                setAddedPlaylistId(pl.id);
+                                setTimeout(() => setAddedPlaylistId(null), 1500);
+                              }
+                            }}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-purple-600/20 text-xs font-semibold text-white transition-all text-left group"
+                          >
+                            <span className="truncate pr-2">{pl.name}</span>
+                            {isSongInPlaylist || isJustAdded ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            ) : (
+                              <Plus className="w-3.5 h-3.5 text-zinc-500 group-hover:text-purple-300 shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setShowPlaylistMenu(false);
+                      openCreatePlaylistModal();
+                    }}
+                    className="w-full mt-2 px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-purple-300" />
+                    Create New Playlist
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Center Section: Playback Controls & Timeline Progress */}

@@ -98,7 +98,7 @@ export default function PlaylistPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-10 pb-32 sm:pb-36 relative"
+      className="space-y-8 sm:space-y-10 pb-40 sm:pb-48 relative"
     >
       {/* Background Ambient Lighting */}
       <div className="absolute -top-24 -left-24 w-[480px] h-[480px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
@@ -167,7 +167,7 @@ export default function PlaylistPage() {
       </motion.div>
 
       {/* Primary Actions Bar */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between py-1 flex-wrap gap-4">
+      <motion.div variants={itemVariants} className="flex items-center justify-between py-3 my-2 flex-wrap gap-4 border-b border-white/[0.06] pb-5">
         <div className="flex items-center gap-4 flex-wrap">
           {/* ▶ Play Button */}
           <motion.button
@@ -234,9 +234,9 @@ export default function PlaylistPage() {
       </motion.div>
 
       {/* Track List Section */}
-      <motion.section variants={itemVariants} className="space-y-3">
+      <motion.section variants={itemVariants} className="space-y-4 my-6">
         {/* Track Table Header */}
-        <div className="grid grid-cols-[32px_1fr_1fr_70px] gap-4 px-4 py-2.5 text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-white/10 select-none">
+        <div className="grid grid-cols-[32px_1fr_1fr_70px] gap-4 px-4 py-3 text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-white/10 select-none mb-4">
           <span className="text-center">#</span>
           <span>Title</span>
           <span className="hidden sm:block">Artist</span>
@@ -247,7 +247,7 @@ export default function PlaylistPage() {
 
         {/* Track Rows */}
         {playlist.songs.length === 0 ? (
-          <div className="glass-card backdrop-blur-xl border border-white/10 bg-surface-950/70 p-12 text-center rounded-2xl mt-4 shadow-xl">
+          <div className="glass-card backdrop-blur-xl border border-white/10 bg-surface-950/70 p-12 sm:p-14 text-center rounded-2xl my-6 shadow-xl">
             <Music2 className="w-12 h-12 mx-auto text-purple-300/30 mb-3" />
             <h3 className="text-lg font-bold text-white">This playlist is empty</h3>
             <p className="text-zinc-400 text-sm mt-1 font-medium">
@@ -255,7 +255,7 @@ export default function PlaylistPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-2 mt-3">
+          <div className="space-y-2.5 my-4">
             {playlist.songs.map((song, i) => {
               const isCurrent = currentSong?.videoId === song.videoId;
 
@@ -336,29 +336,29 @@ export default function PlaylistPage() {
       </motion.section>
 
       {/* Playlist Information Glass Card */}
-      <motion.section variants={itemVariants} className="pt-2">
-        <div className="glass-card backdrop-blur-xl bg-surface-950/80 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl shadow-purple-950/20">
+      <motion.section variants={itemVariants} className="my-8 pt-4">
+        <div className="glass-card backdrop-blur-xl bg-surface-950/80 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-5 shadow-xl shadow-purple-950/20">
           <div className="flex items-center gap-2 text-purple-300 font-bold text-sm">
             <Info className="w-4.5 h-4.5" />
             <span>Playlist Information & Metadata</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-white/5 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-3 border-t border-white/5 text-xs">
             <div>
               <span className="text-zinc-500 font-medium block">Owner / Creator</span>
-              <span className="text-white font-bold">User</span>
+              <span className="text-white font-bold text-sm mt-0.5 block">User</span>
             </div>
             <div>
               <span className="text-zinc-500 font-medium block">Song Count</span>
-              <span className="text-white font-bold">{playlist.songs.length} Tracks</span>
+              <span className="text-white font-bold text-sm mt-0.5 block">{playlist.songs.length} Tracks</span>
             </div>
             <div>
               <span className="text-zinc-500 font-medium block">Audio Fidelity</span>
-              <span className="text-white font-bold">Ultra Lossless</span>
+              <span className="text-white font-bold text-sm mt-0.5 block">Ultra Lossless</span>
             </div>
             <div>
               <span className="text-zinc-500 font-medium block">Status</span>
-              <span className="text-white font-bold">Synchronized</span>
+              <span className="text-white font-bold text-sm mt-0.5 block">Synchronized</span>
             </div>
           </div>
         </div>
@@ -366,7 +366,7 @@ export default function PlaylistPage() {
 
       {/* Recommended Songs Section */}
       {recommendedSongs.length > 0 && (
-        <motion.section variants={itemVariants} className="space-y-4 pt-2">
+        <motion.section variants={itemVariants} className="space-y-5 my-8 pt-4">
           <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-purple-400" />
             Recommended Additions

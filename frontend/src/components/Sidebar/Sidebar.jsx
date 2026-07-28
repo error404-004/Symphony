@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -7,15 +6,14 @@ import {
   Settings,
   Heart,
   Clock,
-  Plus,
   Music2,
   Library as LibraryIcon,
   Play,
   Pause,
   ListMusic,
+  Plus,
 } from 'lucide-react'
 import usePlayer from '../../hooks/usePlayer'
-import CreatePlaylistModal from '../ui/CreatePlaylistModal'
 
 /**
  * Sidebar - Symphony Premium Obsidian Glass Sidepanel
@@ -39,7 +37,7 @@ export default function Sidebar() {
     isPlaying,
     resumeSong,
     pauseSong,
-    createPlaylist,
+    openCreatePlaylistModal,
   } = usePlayer()
 
   const topNavItems = [
@@ -60,12 +58,6 @@ export default function Sidebar() {
           { id: 'night', name: 'Night Grooves', count: 18 },
           { id: 'lofi', name: 'Lo-Fi Chill', count: 30 },
         ]
-
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const handleCreatePlaylistPrompt = () => {
-    setIsModalOpen(true)
-  }
 
   // Gradient combinations for playlist mini-art covers
   const playlistGradients = [
@@ -215,11 +207,11 @@ export default function Sidebar() {
                 Playlists
               </h3>
               <button
-                onClick={handleCreatePlaylistPrompt}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
-                title="Create new playlist"
+                onClick={openCreatePlaylistModal}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer group flex items-center gap-1 text-xs"
+                title="Create New Playlist"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 text-purple-400 group-hover:scale-110 transition-transform" />
               </button>
             </div>
 
@@ -227,12 +219,12 @@ export default function Sidebar() {
               {displayPlaylists.map((pl, idx) => {
                 const playlistIdStr = String(pl.id)
                 const isActive = location.pathname === `/playlists/${playlistIdStr}`
-                const gradientClass = playlistGradients[idx % playlistGradients.length]
+                const gradientClass = pl.gradient || playlistGradients[idx % playlistGradients.length]
 
                 return (
                   <NavLink
                     key={pl.id}
-                    to={playlistIdStr.length > 10 ? `/playlists/${pl.id}` : '/library'}
+                    to={playlistIdStr.length > 5 ? `/playlists/${pl.id}` : '/library'}
                     className="block"
                   >
                     <motion.div
@@ -316,12 +308,6 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* Create Playlist Modal */}
-      <CreatePlaylistModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onCreate={(name) => createPlaylist && createPlaylist(name)}
-      />
     </aside>
   )
 }

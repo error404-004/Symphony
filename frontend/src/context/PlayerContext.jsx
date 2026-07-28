@@ -26,6 +26,11 @@
       return saved ? JSON.parse(saved) : [];
     });
 
+    const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
+
+    const openCreatePlaylistModal = () => setIsCreatePlaylistOpen(true);
+    const closeCreatePlaylistModal = () => setIsCreatePlaylistOpen(false);
+
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
@@ -217,16 +222,32 @@
     // -----------------------------
     // Playlists
     // -----------------------------
-    function createPlaylist(name) {
-      if (!name.trim()) return;
+    function createPlaylist(playlistData) {
+      let name = "";
+      let description = "";
+      let gradient = "from-purple-600 to-indigo-600";
+
+      if (typeof playlistData === "object" && playlistData !== null) {
+        name = playlistData.name || "";
+        description = playlistData.description || "";
+        gradient = playlistData.gradient || gradient;
+      } else if (typeof playlistData === "string") {
+        name = playlistData;
+      }
+
+      if (!name.trim()) return null;
 
       const playlist = {
-        id: Date.now(),
-        name,
+        id: `pl-${Date.now()}`,
+        name: name.trim(),
+        description: description.trim(),
+        gradient: gradient,
         songs: [],
+        createdAt: new Date().toISOString(),
       };
 
       setPlaylists((prev) => [...prev, playlist]);
+      return playlist;
     }
     function deletePlaylist(id) {
       setPlaylists((prev) =>
@@ -310,7 +331,9 @@
           deletePlaylist,
           removeSongFromPlaylist,
 
-          playSong,
+          isCreatePlaylistOpen,
+          openCreatePlaylistModal,
+          closeCreatePlaylistModal,
         }}
       >
         {children}

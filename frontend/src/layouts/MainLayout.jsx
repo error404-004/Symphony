@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar/Sidebar'
 import TopNav from '../components/TopNav/TopNav'
 import MusicPlayer from '../components/MusicPlayer/MusicPlayer'
+import CreatePlaylistModal from '../components/ui/CreatePlaylistModal'
 import { Music2 } from 'lucide-react'
 
 /**
@@ -11,6 +12,9 @@ import { Music2 } from 'lucide-react'
 export default function MainLayout() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-2.5 gap-3 relative select-none">
+      {/* Global Create Playlist Modal */}
+      <CreatePlaylistModal />
+
       {/* Left Sidebar */}
       <Sidebar />
 
