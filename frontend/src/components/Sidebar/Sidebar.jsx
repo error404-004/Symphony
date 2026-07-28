@@ -2,7 +2,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Home,
-  Search,
+  Compass,
   Library,
   Heart,
   Settings,
@@ -21,7 +21,7 @@ export default function Sidebar() {
 
   const topNavItems = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/search', label: 'Search', icon: Search },
+    { path: '/search', label: 'Explorer', icon: Compass },
     { path: '/settings', label: 'Settings', icon: Settings },
   ]
 

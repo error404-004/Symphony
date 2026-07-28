@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 const pageTitles = {
   '/': 'Home',
-  '/search': 'Search',
+  '/search': 'Explorer',
   '/library': 'Your Library',
   '/favorites': 'Favorites',
   '/settings': 'Settings',
