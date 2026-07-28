@@ -10,12 +10,12 @@ import { Music2 } from 'lucide-react'
  */
 export default function MainLayout() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-2 gap-2 relative select-none">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-2.5 gap-3 relative select-none">
       {/* Left Sidebar */}
       <Sidebar />
 
       {/* Main Content Card Panel with Ambient Glow & Watermark */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18]/90 backdrop-blur-3xl rounded-xl border border-white/[0.08] relative shadow-2xl shadow-black">
+      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18]/90 backdrop-blur-3xl rounded-2xl border border-white/[0.08] relative shadow-2xl shadow-black">
         
         {/* Ambient Purple Radial Glow Orbs */}
         <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-purple-600/18 rounded-full blur-[150px] pointer-events-none z-0" />
