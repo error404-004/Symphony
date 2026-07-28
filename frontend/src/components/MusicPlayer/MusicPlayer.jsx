@@ -73,16 +73,16 @@ export default function MusicPlayer() {
   return (
     <>
       {/* Bottom Floating Glassmorphic Playback Bar */}
-      <footer className="fixed bottom-3 inset-x-3 md:inset-x-6 z-50 h-[88px] glass-card backdrop-blur-2xl backdrop-saturate-150 bg-surface-950/85 border border-white/10 rounded-2xl px-5 sm:px-6 flex items-center justify-between select-none shadow-2xl shadow-black/80">
-        {/* Top Specular Highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-60 rounded-t-2xl pointer-events-none" />
+      <footer className="fixed bottom-3 inset-x-3 md:inset-x-6 z-50 h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/90 border border-purple-500/25 rounded-2xl px-5 sm:px-7 flex items-center justify-between select-none shadow-2xl shadow-purple-950/50">
+        {/* Top Specular Purple Highlight */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent opacity-80 rounded-t-2xl pointer-events-none" />
 
         {/* Left Section: Track Info & Cover */}
-        <div className="flex items-center gap-3.5 w-1/4 min-w-[190px]">
+        <div className="flex items-center gap-3.5 w-1/4 min-w-[200px]">
           {/* Cover Thumbnail with Ambient Glow */}
           <div className="relative group shrink-0">
-            <div className="absolute -inset-1 bg-purple-600/30 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            <div className="w-14 h-14 rounded-xl overflow-hidden relative bg-white/5 border border-white/10 shadow-lg shadow-black/50">
+            <div className="absolute -inset-1 bg-purple-600/40 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <div className="w-14 h-14 rounded-xl overflow-hidden relative bg-white/5 border border-white/15 shadow-lg shadow-black/60">
               {currentSong?.thumbnail ? (
                 <img
                   src={currentSong.thumbnail}
@@ -98,7 +98,7 @@ export default function MusicPlayer() {
           </div>
 
           <div className="min-w-0 flex-1 space-y-0.5">
-            <p className="text-sm font-bold text-white truncate hover:text-purple-200 cursor-pointer tracking-tight transition-colors">
+            <p className="text-sm font-bold text-white truncate hover:text-purple-300 cursor-pointer tracking-tight transition-colors">
               {currentSong?.title || "No track selected"}
             </p>
             <p className="text-xs text-zinc-400 truncate hover:text-zinc-200 cursor-pointer font-medium transition-colors">
@@ -109,7 +109,7 @@ export default function MusicPlayer() {
           {/* Favorite Heart Toggle */}
           <button
             onClick={() => currentSong && toggleFavorite(currentSong)}
-            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
+            className="p-2 rounded-xl text-zinc-400 hover:text-pink-400 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200"
             title={isFavorite ? "Remove from Liked Songs" : "Save to Liked Songs"}
           >
             <Heart
@@ -123,15 +123,15 @@ export default function MusicPlayer() {
         </div>
 
         {/* Center Section: Playback Controls & Timeline Progress */}
-        <div className="flex flex-col items-center gap-2 flex-1 max-w-[720px] px-4">
+        <div className="flex flex-col items-center gap-2 flex-1 max-w-[720px] px-6">
           {/* Controls Row */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             {/* Shuffle */}
             <button
               onClick={() => setIsShuffle(!isShuffle)}
               className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 ${
                 isShuffle
-                  ? "text-purple-300 bg-purple-500/15 border border-purple-500/30 shadow-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                  ? "text-purple-300 bg-purple-500/20 border border-purple-500/40 shadow-sm drop-shadow-[0_0_10px_rgba(168,85,247,0.6)]"
                   : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
               title="Enable shuffle"
@@ -160,15 +160,15 @@ export default function MusicPlayer() {
                 if (isPlaying) pauseSong();
                 else resumeSong();
               }}
-              className={`w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-purple-950/70 border border-white/25 transition-all duration-200 hover:scale-105 active:scale-95 ${
+              className={`w-[42px] h-[42px] rounded-2xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-purple-600/40 border border-white/30 transition-all duration-200 hover:scale-105 active:scale-95 ${
                 currentSong ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
               }`}
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
-                <Pause className="w-4.5 h-4.5 text-white fill-white" fill="white" />
+                <Pause className="w-5 h-5 text-white fill-white" fill="white" />
               ) : (
-                <Play className="w-4.5 h-4.5 text-white fill-white ml-0.5" fill="white" />
+                <Play className="w-5 h-5 text-white fill-white ml-0.5" fill="white" />
               )}
             </button>
 
@@ -191,7 +191,7 @@ export default function MusicPlayer() {
               onClick={() => setIsRepeat(!isRepeat)}
               className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 ${
                 isRepeat
-                  ? "text-purple-300 bg-purple-500/15 border border-purple-500/30 shadow-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                  ? "text-purple-300 bg-purple-500/20 border border-purple-500/40 shadow-sm drop-shadow-[0_0_10px_rgba(168,85,247,0.6)]"
                   : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
               title="Enable repeat"

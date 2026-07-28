@@ -2,17 +2,7 @@ import { motion } from 'framer-motion'
 import { Play, Music2 } from 'lucide-react'
 
 /**
- * MusicCard - Symphony Design Language (SDL) Premium Album Card.
- *
- * @param {string} title - Song/Album/Playlist name
- * @param {string} subtitle - Artist name or description
- * @param {string} artist - Artist name alternative
- * @param {string} [gradient] - Tailwind gradient classes for the placeholder art
- * @param {string} [imageUrl] - Optional image URL
- * @param {string} [thumbnail] - Optional thumbnail URL
- * @param {'square'|'circle'} [shape='square'] - Card art shape
- * @param {number} index - For staggered animation
- * @param {function} onClick - Click handler callback
+ * MusicCard - Symphony Design Language (SDL) Ultra-Premium Music/Album Card.
  */
 export default function MusicCard({
   title = 'Untitled',
@@ -25,30 +15,39 @@ export default function MusicCard({
   index = 0,
   onClick,
 }) {
+  const displayArtist = artist || subtitle || 'Artist';
+
   return (
     <motion.div
       onClick={onClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      whileHover={{ y: -6, scale: 1.025, rotate: 0.5 }}
-      className="group/card cursor-pointer select-none h-full"
+      transition={{ duration: 0.4, delay: index * 0.04 }}
+      whileHover={{ y: -6, scale: 1.025 }}
+      whileTap={{ scale: 0.97 }}
+      className="group/card cursor-pointer select-none h-full relative"
     >
-      <div className="p-3.5 sm:p-4 rounded-[22px] bg-white/[0.03] backdrop-blur-xl backdrop-saturate-150 border border-white/10 hover:border-purple-500/40 shadow-xl shadow-purple-950/20 hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 ease-out relative overflow-hidden flex flex-col justify-between h-full">
-        {/* Top Specular Glass Reflection Highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-60 group-hover/card:opacity-100 transition-opacity duration-300" />
+      {/* Outer Ambient Neon Aura */}
+      <div className="absolute -inset-0.5 rounded-[22px] bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 opacity-0 group-hover/card:opacity-40 blur-xl transition-all duration-500 pointer-events-none" />
 
-        {/* Ambient Purple Glow Gradient Background Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-purple-500/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[22px]" />
+      {/* Glassmorphic Main Card Box */}
+      <div
+        style={{ padding: '16px' }}
+        className="relative rounded-[20px] bg-white/[0.04] backdrop-blur-2xl border border-white/12 hover:border-purple-500/50 shadow-xl shadow-black/40 group-hover/card:shadow-purple-950/40 transition-all duration-300 flex flex-col justify-between h-full overflow-hidden"
+      >
+        {/* Specular Highlight Bar */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-60 group-hover/card:opacity-100 transition-opacity duration-300" />
+
+        {/* Ambient Overlay Glow */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/15 via-purple-500/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {/* Artwork Container */}
-        <div className="relative mb-3.5 sm:mb-4">
-          {/* Subtle Ambient Glow Behind Artwork */}
-          <div className="absolute -inset-1 bg-gradient-to-br from-purple-600/30 to-indigo-600/20 rounded-2xl blur-md opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="relative mb-3">
+          <div className="absolute -inset-1 bg-purple-600/25 rounded-2xl blur-md opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
           <div
-            className={`relative aspect-square w-full bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden shadow-md shadow-black/50 border border-white/10 transition-transform duration-500 ease-out ${
-              shape === 'circle' ? 'rounded-full' : 'rounded-2xl'
+            className={`relative aspect-square w-full bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden shadow-lg shadow-black/60 border border-white/10 transition-transform duration-500 ease-out ${
+              shape === 'circle' ? 'rounded-full' : 'rounded-xl sm:rounded-2xl'
             }`}
           >
             {thumbnail || imageUrl ? (
@@ -62,25 +61,25 @@ export default function MusicCard({
             )}
           </div>
 
-          {/* Integrated Glass Play Badge Overlay */}
+          {/* Integrated Floating Play Button */}
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.08 }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="absolute bottom-2.5 right-2.5 w-11 h-11 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-purple-500/90 to-indigo-600/90 border border-white/30 text-white flex items-center justify-center shadow-lg shadow-purple-950/80 opacity-0 group-hover/card:opacity-100 translate-y-2 group-hover/card:translate-y-0 transition-all duration-300 ease-out"
+            className="absolute bottom-2.5 right-2.5 w-10 h-10 rounded-xl backdrop-blur-xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/30 text-white flex items-center justify-center shadow-xl shadow-purple-950/80 opacity-0 group-hover/card:opacity-100 translate-y-2 group-hover/card:translate-y-0 transition-all duration-300 ease-out"
             aria-label={`Play ${title}`}
           >
-            <Play className="w-5 h-5 ml-0.5 text-white fill-white" fill="white" />
+            <Play className="w-4 h-4 ml-0.5 text-white fill-white" fill="white" />
           </motion.button>
         </div>
 
-        {/* Card Info Header */}
-        <div className="px-0.5 pt-0.5 flex flex-col justify-start flex-1">
-          <p className="text-sm font-bold text-white leading-snug line-clamp-2 tracking-tight group-hover/card:text-purple-200 transition-colors duration-300">
+        {/* Card Info Header - Explicit Padding & Line Height */}
+        <div className="flex flex-col justify-between flex-1 min-w-0 px-0.5 pb-0.5">
+          <h4 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-1 tracking-tight group-hover/card:text-purple-300 transition-colors duration-200">
             {title}
-          </p>
-          <p className="text-xs text-zinc-400/80 line-clamp-1 font-medium group-hover/card:text-zinc-300 transition-colors duration-300 mt-1 sm:mt-1.5">
-            {artist || subtitle}
+          </h4>
+          <p className="text-xs font-medium text-zinc-400 truncate group-hover/card:text-zinc-200 transition-colors duration-200 mt-1">
+            {displayArtist}
           </p>
         </div>
       </div>

@@ -41,7 +41,6 @@ export default function HomePage() {
     JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
 
   const [trending, setTrending] = useState([]);
-  const [newReleases, setNewReleases] = useState([]);
   const [recommended, setRecommended] = useState([]);
 
   async function loadSection(query, setter) {
@@ -84,10 +83,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function loadHomeSections() {
-      await Promise.all([
-        loadSection("Top 50 Global", setTrending),
-        loadSection("New Releases", setNewReleases),
-      ]);
+      await loadSection("Top 50 Global", setTrending);
       await loadRecommendations();
     }
 
@@ -99,7 +95,7 @@ export default function HomePage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-16 sm:space-y-20 lg:space-y-24 pb-32 sm:pb-36 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative"
+      className="space-y-16 sm:space-y-20 lg:space-y-24 pb-6 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative"
     >
       {/* Hero Greeting Section */}
       <motion.div variants={sectionVariants} className="relative pt-6 sm:pt-8 lg:pt-10 pb-2 sm:pb-4 flex flex-col items-center justify-center text-center">
@@ -188,23 +184,6 @@ export default function HomePage() {
           </div>
         </motion.section>
       )}
-
-      {/* New Releases */}
-      <motion.section variants={sectionVariants}>
-        <SectionHeader title="New Releases" subtitle="Fresh tracks this week" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
-          {newReleases.slice(0, 6).map((item, i) => (
-            <MusicCard
-              key={item.videoId}
-              title={item.title}
-              artist={item.artist}
-              thumbnail={item.thumbnail}
-              index={i}
-              onClick={() => playSong(item)}
-            />
-          ))}
-        </div>
-      </motion.section>
     </motion.div>
   )
 }
