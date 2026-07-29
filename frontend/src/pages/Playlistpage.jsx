@@ -159,7 +159,7 @@ export default function PlaylistPage() {
       {/* Playlist Hero Showcase Header */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-[32px] overflow-hidden px-12 pt-7 pb-9 glass-card backdrop-blur-3xl bg-surface-950/85 border border-white/12 flex flex-col md:flex-row items-start md:items-start gap-6 sm:gap-8 select-none shadow-2xl shadow-purple-950/40 group/hero z-10"
+        className="relative rounded-[32px] overflow-hidden px-12 pt-7 pb-12 glass-card backdrop-blur-3xl bg-surface-950/85 border border-white/12 flex flex-col md:flex-row items-start md:items-start gap-6 sm:gap-8 select-none shadow-2xl shadow-purple-950/40 group/hero z-10"
       >
         {/* Specular Highlight Hairline */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-purple-300/50 to-transparent opacity-80 pointer-events-none" />
@@ -295,16 +295,16 @@ export default function PlaylistPage() {
       {/* Primary Actions Bar */}
       <motion.div
         variants={itemVariants}
-        className="mt-8 flex items-center justify-between py-4 mb-4 flex-wrap gap-4 border-b border-white/[0.08] pb-6"
+        className="mt-14 flex items-center justify-between py-4 mb-4 flex-wrap gap-4 border-b border-white/[0.08] pb-6"
       >
-        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+        <div className="flex items-center gap-6 lg:gap-8 flex-wrap">
           {/* ▶ PLAY ALL Button */}
           <motion.button
             onClick={handlePlayAll}
             disabled={playlist.songs.length === 0}
             whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(168, 85, 247, 0.55)" }}
             whileTap={{ scale: 0.96 }}
-            className="flex items-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm tracking-wider shadow-xl shadow-purple-950/80 border border-white/20 disabled:opacity-40 transition-all duration-300 cursor-pointer"
+            className="flex items-center gap-3 px-9 py-3.5 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm tracking-wider shadow-xl shadow-purple-950/80 border border-white/20 disabled:opacity-40 transition-all duration-300 cursor-pointer"
           >
             <Play className="w-5 h-5 fill-white text-white ml-0.5" fill="white" />
             <span>PLAY ALL</span>
@@ -316,7 +316,7 @@ export default function PlaylistPage() {
             disabled={playlist.songs.length === 0}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-5 py-3.5 rounded-full glass-card border border-white/15 text-zinc-200 hover:text-white hover:bg-purple-600/25 disabled:opacity-40 transition-all duration-200 text-xs font-bold shadow-md cursor-pointer"
+            className="flex items-center gap-2.5 px-6 py-3.5 rounded-full glass-card border border-white/15 text-zinc-200 hover:text-white hover:bg-purple-600/25 disabled:opacity-40 transition-all duration-200 text-xs font-bold shadow-md cursor-pointer"
           >
             <Shuffle className="w-4 h-4 text-purple-300" />
             <span>Shuffle</span>
@@ -327,7 +327,7 @@ export default function PlaylistPage() {
             onClick={() => setIsLiked(!isLiked)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`flex items-center gap-2 px-5 py-3.5 rounded-full border transition-all duration-200 text-xs font-bold shadow-md cursor-pointer ${
+            className={`flex items-center gap-2.5 px-6 py-3.5 rounded-full border transition-all duration-200 text-xs font-bold shadow-md cursor-pointer ${
               isLiked
                 ? "bg-rose-500/20 border-rose-500/40 text-rose-300 shadow-rose-950/40"
                 : "glass-card border-white/15 text-zinc-300 hover:text-white hover:bg-white/10"
@@ -345,7 +345,7 @@ export default function PlaylistPage() {
             onClick={() => setIsEditing(!isEditing)}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
-            className="flex items-center gap-2 px-4 py-3.5 rounded-full glass-card border border-white/15 text-zinc-200 hover:text-white text-xs font-bold shadow-md hover:bg-purple-600/20 transition-all duration-200 cursor-pointer"
+            className="flex items-center gap-2.5 px-6 py-3.5 rounded-full glass-card border border-white/15 text-zinc-200 hover:text-white text-xs font-bold shadow-md hover:bg-purple-600/20 transition-all duration-200 cursor-pointer"
           >
             <Edit3 className="w-4 h-4 text-purple-300" />
             <span>Edit Title</span>
@@ -357,7 +357,7 @@ export default function PlaylistPage() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => addSongToPlaylist(playlist.id, currentSong)}
-              className="flex items-center gap-2 px-5 py-3.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-200 hover:text-white hover:bg-purple-600/30 text-xs font-bold shadow-md transition-all duration-200 cursor-pointer"
+              className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-200 hover:text-white hover:bg-purple-600/30 text-xs font-bold shadow-md transition-all duration-200 cursor-pointer"
             >
               <Plus className="w-4 h-4 text-purple-400" />
               <span>Add Active Song</span>
@@ -369,7 +369,7 @@ export default function PlaylistPage() {
             onClick={handleShare}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="py-4 px-5 rounded-full glass-card border border-white/15 text-zinc-300 hover:text-white hover:bg-purple-600/20 transition-all duration-200 shadow-md cursor-pointer relative"
+            className="py-3.5 px-6 rounded-full glass-card border border-white/15 text-zinc-300 hover:text-white hover:bg-purple-600/20 transition-all duration-200 shadow-md cursor-pointer relative"
             title="Share Playlist Link"
           >
             <Share2 className="w-4.5 h-4.5" />
@@ -389,7 +389,7 @@ export default function PlaylistPage() {
               navigate("/library");
             }
           }}
-          className="flex items-center gap-2 px-4 py-3.5 rounded-xl hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold border border-red-500/20 transition-all duration-200 cursor-pointer"
+          className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold border border-red-500/20 transition-all duration-200 cursor-pointer"
         >
           <Trash2 className="w-4 h-4" />
           <span>Delete Playlist</span>
