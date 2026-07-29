@@ -152,21 +152,40 @@ export default function MusicPlayer() {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute bottom-12 left-0 z-50 w-60 bg-[#0d0a18]/95 backdrop-blur-2xl border border-white/15 rounded-2xl p-2.5 shadow-2xl shadow-purple-950/80"
+                  className="absolute bottom-full mb-4 left-0 z-[100] w-72 sm:w-80 bg-[#0e0a1f]/95 backdrop-blur-3xl border border-purple-500/30 rounded-3xl p-4 shadow-2xl shadow-purple-950/90"
                 >
-                  <div className="px-3 py-2 border-b border-white/10 flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider">Add to Playlist</span>
+                  {/* Top Specular Hairline */}
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent opacity-80 rounded-t-3xl pointer-events-none" />
+
+                  {/* Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                      <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
+                        <ListMusic className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider">Add to Playlist</h4>
+                        <p className="text-[11px] text-purple-300/80 font-medium truncate max-w-[190px]">
+                          {currentSong.title}
+                        </p>
+                      </div>
+                    </div>
                     <button
                       onClick={() => setShowPlaylistMenu(false)}
-                      className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                      className="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer shrink-0"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="max-h-48 overflow-y-auto py-1 space-y-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-white/10">
+                  {/* Scrollable Playlist Items */}
+                  <div className="max-h-60 sm:max-h-64 overflow-y-auto space-y-1.5 pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
                     {playlists.length === 0 ? (
-                      <p className="text-xs text-zinc-400 p-3 text-center">No playlists created yet</p>
+                      <div className="text-center py-6 px-3 bg-white/[0.02] rounded-2xl border border-white/5">
+                        <Music2 className="w-8 h-8 text-purple-400/40 mx-auto mb-2" />
+                        <p className="text-xs font-bold text-white">No playlists yet</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">Create your first playlist below</p>
+                      </div>
                     ) : (
                       playlists.map((pl) => {
                         const isSongInPlaylist = pl.songs?.some((s) => s.videoId === currentSong.videoId);
@@ -182,13 +201,35 @@ export default function MusicPlayer() {
                                 setTimeout(() => setAddedPlaylistId(null), 1500);
                               }
                             }}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-purple-600/20 text-xs font-semibold text-white transition-all text-left group"
+                            className={`w-full flex items-center justify-between p-3 rounded-2xl border text-xs font-bold transition-all duration-200 text-left group cursor-pointer ${
+                              isSongInPlaylist || isJustAdded
+                                ? "bg-purple-900/40 border-purple-500/40 text-purple-200"
+                                : "bg-white/[0.03] hover:bg-purple-600/20 border-white/5 hover:border-purple-500/30 text-white"
+                            }`}
                           >
-                            <span className="truncate pr-2">{pl.name}</span>
+                            <div className="flex items-center gap-3 min-w-0 pr-2">
+                              <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-300">
+                                <Music2 className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="truncate font-bold text-white group-hover:text-purple-200 block text-xs">
+                                  {pl.name}
+                                </span>
+                                <span className="text-[10px] text-zinc-400 font-medium block">
+                                  {pl.songs?.length || 0} {pl.songs?.length === 1 ? "track" : "tracks"}
+                                </span>
+                              </div>
+                            </div>
+
                             {isSongInPlaylist || isJustAdded ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span className="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-extrabold flex items-center gap-1 shrink-0">
+                                <Check className="w-3 h-3 text-emerald-400" />
+                                Added
+                              </span>
                             ) : (
-                              <Plus className="w-3.5 h-3.5 text-zinc-500 group-hover:text-purple-300 shrink-0" />
+                              <div className="w-7 h-7 rounded-xl bg-white/5 group-hover:bg-purple-500/30 flex items-center justify-center text-zinc-400 group-hover:text-white transition-all shrink-0">
+                                <Plus className="w-3.5 h-3.5" />
+                              </div>
                             )}
                           </button>
                         );
@@ -196,15 +237,16 @@ export default function MusicPlayer() {
                     )}
                   </div>
 
+                  {/* Create New Playlist Action Button */}
                   <button
                     onClick={() => {
                       setShowPlaylistMenu(false);
                       openCreatePlaylistModal();
                     }}
-                    className="w-full mt-2 px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full mt-3 py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600/30 to-indigo-600/30 hover:from-purple-600/50 hover:to-indigo-600/50 border border-purple-500/40 text-purple-100 text-xs font-extrabold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-purple-950/40 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <Plus className="w-3.5 h-3.5 text-purple-300" />
-                    Create New Playlist
+                    <Plus className="w-4 h-4 text-purple-300" />
+                    <span>Create New Playlist</span>
                   </button>
                 </motion.div>
               )}

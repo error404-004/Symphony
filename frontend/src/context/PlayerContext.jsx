@@ -289,6 +289,19 @@
     );
   }
 
+    function updatePlaylistName(playlistId, newName) {
+      if (!newName || !newName.trim()) return;
+      setPlaylists((prev) =>
+        prev.map((playlist) => {
+          if (String(playlist.id) !== String(playlistId)) return playlist;
+          return {
+            ...playlist,
+            name: newName.trim(),
+          };
+        })
+      );
+    }
+
     return (
       <PlayerContext.Provider
         value={{
@@ -330,6 +343,7 @@
 
           deletePlaylist,
           removeSongFromPlaylist,
+          updatePlaylistName,
 
           isCreatePlaylistOpen,
           openCreatePlaylistModal,
