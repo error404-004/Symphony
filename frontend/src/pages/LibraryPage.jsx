@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ListMusic, Clock, Music2, MoreHorizontal, Mic2, UserCheck, Plus, Sparkles } from 'lucide-react'
+import { ListMusic, Clock, Music2, MoreHorizontal, Mic2, UserCheck, Plus, Sparkles, Sun, Coffee, Sunset, Moon } from 'lucide-react'
 import { useState } from "react";
 import usePlayer from "../hooks/usePlayer";
 import { useNavigate } from "react-router-dom";
@@ -28,24 +28,32 @@ function getLibraryHeaderQuote() {
   const hour = new Date().getHours()
   if (hour >= 5 && hour < 12) {
     return {
-      title: 'Morning Harmonies ☀️',
+      title: 'Morning Harmonies',
+      icon: Sun,
+      iconColor: 'text-amber-400',
       subtitle: 'Start your day with your curated soundscape.',
     }
   }
   if (hour >= 12 && hour < 17) {
     return {
-      title: 'Midday Focus ☕',
+      title: 'Midday Focus',
+      icon: Coffee,
+      iconColor: 'text-amber-500',
       subtitle: 'Fuel your day with your saved collections.',
     }
   }
   if (hour >= 17 && hour < 22) {
     return {
-      title: 'Sunset Sessions 🌆',
+      title: 'Sunset Sessions',
+      icon: Sunset,
+      iconColor: 'text-rose-400',
       subtitle: 'Unwind with your personal music vault.',
     }
   }
   return {
-    title: 'Midnight Resonance 🌙',
+    title: 'Midnight Resonance',
+    icon: Moon,
+    iconColor: 'text-indigo-400',
     subtitle: 'Quiet melodies for late night hours.',
   }
 }
@@ -60,6 +68,7 @@ export default function LibraryPage() {
   const navigate = useNavigate();
 
   const headerQuote = getLibraryHeaderQuote();
+  const HeaderIcon = headerQuote.icon;
   const tabs = ['All', 'Playlists', 'Albums', 'Artists', 'Podcasts'];
 
   return (
@@ -72,20 +81,20 @@ export default function LibraryPage() {
       {/* Background Ambient Glow */}
       <div className="absolute -top-20 -left-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Header Row with Guaranteed Spacing */}
+      {/* Header Row Centered */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between gap-6 relative border-b border-white/10"
+        className="flex flex-col items-center justify-center text-center relative border-b border-white/10"
         style={{ marginBottom: '28px', paddingBottom: '20px' }}
       >
-        <div className="min-w-0 flex-1">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight truncate">
-            {headerQuote.title}
+        <div className="max-w-2xl mx-auto space-y-2">
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight flex items-center justify-center gap-3">
+            <span className="text-gradient-purple">{headerQuote.title}</span>
+            {HeaderIcon && (
+              <HeaderIcon className={`w-8 h-8 sm:w-10 sm:h-10 ${headerQuote.iconColor} shrink-0 drop-shadow-md`} />
+            )}
           </h1>
-          <p
-            className="text-zinc-400 text-sm font-medium truncate"
-            style={{ marginTop: '8px' }}
-          >
+          <p className="text-zinc-400 text-sm sm:text-base font-medium">
             {headerQuote.subtitle}
           </p>
         </div>

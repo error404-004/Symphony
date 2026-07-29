@@ -274,3 +274,83 @@ input[type="range"]::-moz-range-thumb:active {
   color: #ffffff;
   text-shadow: 0 0 8px rgba(192, 132, 252, 0.4);
 }
+
+/* ============================================
+   Symphony Custom Animations & Utility Classes
+   ============================================ */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wavePulse {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: 16px;
+  }
+}
+
+@keyframes shimmerSlide {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
+@keyframes ambientPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 18s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmerSlide 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-ambient-pulse {
+  animation: ambientPulse 8s ease-in-out infinite;
+}
+
+.vinyl-grooves {
+  background: 
+    radial-gradient(circle at center, #111116 0%, #111116 18%, #1f1b29 19%, #121017 21%, #1f1b29 23%, #121017 25%, #2a2438 27%, #121017 30%, #221d2e 33%, #121017 37%, #2a2438 42%, #121017 46%, #221d2e 50%, #121017 55%, #2a2438 60%, #121017 65%, #1d1827 72%, #0d0c12 85%, #000000 100%),
+    conic-gradient(from 0deg at 50% 50%, rgba(255, 255, 255, 0.15) 0deg, transparent 60deg, rgba(255, 255, 255, 0.15) 180deg, transparent 240deg, rgba(255, 255, 255, 0.15) 360deg);
+  background-blend-mode: screen;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 40%, #c084fc 80%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #fef08a 0%, #fde047 50%, #eab308 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
