@@ -159,7 +159,7 @@ export default function PlaylistPage() {
       {/* Playlist Hero Showcase Header */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-[32px] overflow-hidden px-12 pt-7 pb-12 glass-card backdrop-blur-3xl bg-surface-950/85 border border-white/12 flex flex-col md:flex-row items-start md:items-start gap-6 sm:gap-8 select-none shadow-2xl shadow-purple-950/40 group/hero z-10"
+        className="relative rounded-[32px] overflow-hidden px-12 pt-7 pb-20 glass-card backdrop-blur-3xl bg-surface-950/85 border border-white/12 flex flex-col md:flex-row items-start md:items-start gap-6 sm:gap-8 select-none shadow-2xl shadow-purple-950/40 group/hero z-10"
       >
         {/* Specular Highlight Hairline */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-purple-300/50 to-transparent opacity-80 pointer-events-none" />
@@ -546,7 +546,7 @@ export default function PlaylistPage() {
 
       {/* Recommended Additions Section */}
       {recommendedSongs.length > 0 && (
-        <motion.section variants={itemVariants} className="space-y-6 mt-12 pt-6">
+        <motion.section variants={itemVariants} className="space-y-6 mt-20 pt-6">
           <div className="flex items-end justify-between mb-3">
             <h2 className="text-xl font-black leading-none text-white tracking-tight flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-400" />
