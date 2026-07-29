@@ -134,12 +134,12 @@
 
       localStorage.setItem(
         "recentlyPlayed",
-        JSON.stringify(uniqueRecent.slice(0, 20))
+        JSON.stringify(uniqueRecent.slice(0, 6))
       );
       filtered.unshift(song);
       localStorage.setItem(
           "continueListening",
-          JSON.stringify(filtered.slice(0, 10))
+          JSON.stringify(filtered.slice(0, 6))
       );
 
       console.log("Finished");
@@ -302,6 +302,19 @@
       );
     }
 
+    function updatePlaylistDetails(playlistId, { name, description }) {
+      setPlaylists((prev) =>
+        prev.map((playlist) => {
+          if (String(playlist.id) !== String(playlistId)) return playlist;
+          return {
+            ...playlist,
+            name: name !== undefined && name.trim() ? name.trim() : playlist.name,
+            description: description !== undefined ? description.trim() : (playlist.description || ""),
+          };
+        })
+      );
+    }
+
     return (
       <PlayerContext.Provider
         value={{
@@ -344,6 +357,7 @@
           deletePlaylist,
           removeSongFromPlaylist,
           updatePlaylistName,
+          updatePlaylistDetails,
 
           isCreatePlaylistOpen,
           openCreatePlaylistModal,

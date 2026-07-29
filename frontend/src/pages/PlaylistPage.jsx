@@ -71,6 +71,7 @@ export default function PlaylistPage() {
     deletePlaylist,
     removeSongFromPlaylist,
     updatePlaylistName,
+    updatePlaylistDetails,
   } = usePlayer();
 
   const playlist = playlists.find((p) => String(p.id) === id);
@@ -78,20 +79,31 @@ export default function PlaylistPage() {
   const [recommendedSongs, setRecommendedSongs] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [customTitle, setCustomTitle] = useState(playlist?.name || "");
+  const [customDescription, setCustomDescription] = useState(playlist?.description || "");
   const [isLiked, setIsLiked] = useState(false);
   const [copiedNotification, setCopiedNotification] = useState(false);
 
   useEffect(() => {
     if (playlist) {
       setCustomTitle(playlist.name);
+      setCustomDescription(playlist.description || "");
     }
   }, [playlist]);
 
-  const handleSaveTitle = (val) => {
-    const trimmed = (val || "").trim();
-    if (trimmed && playlist) {
-      updatePlaylistName(playlist.id, trimmed);
-      setCustomTitle(trimmed);
+  const handleSaveDetails = (titleVal, descVal) => {
+    const titleTrimmed = (titleVal || "").trim();
+    const descTrimmed = (descVal || "").trim();
+    if (playlist) {
+      if (updatePlaylistDetails) {
+        updatePlaylistDetails(playlist.id, {
+          name: titleTrimmed || playlist.name,
+          description: descTrimmed,
+        });
+      } else {
+        updatePlaylistName(playlist.id, titleTrimmed || playlist.name);
+      }
+      setCustomTitle(titleTrimmed || playlist.name);
+      setCustomDescription(descTrimmed);
     }
     setIsEditing(false);
   };
@@ -246,45 +258,98 @@ export default function PlaylistPage() {
             </span>
           </div>
 
-          {/* Playlist Title */}
+          {/* Playlist Title & Description Section */}
           {isEditing ? (
-            <div className="flex items-center gap-2 max-w-xl mb-4 sm:mb-5">
-              <input
-                type="text"
-                value={customTitle}
-                onChange={(e) => setCustomTitle(e.target.value)}
-                onBlur={() => handleSaveTitle(customTitle)}
-                onKeyDown={(e) => e.key === "Enter" && handleSaveTitle(customTitle)}
-                className="text-3xl sm:text-5xl font-black text-white bg-purple-950/70 rounded-2xl px-4 py-2 border-2 border-purple-500/60 outline-none w-full shadow-2xl shadow-purple-500/20 focus:ring-4 focus:ring-purple-500/30"
-                autoFocus
-              />
-              <button
-                onClick={() => handleSaveTitle(customTitle)}
-                className="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shrink-0 cursor-pointer"
-              >
-                Save
-              </button>
+            <div className="space-y-3.5 max-w-xl mb-5 text-left bg-purple-950/40 p-4 sm:p-5 rounded-3xl border border-purple-500/30 backdrop-blur-xl">
+              <div>
+                <label className="text-[11px] font-extrabold text-purple-300/80 uppercase tracking-wider block mb-1">
+                  Playlist Title
+                </label>
+                <input
+                  type="text"
+                  value={customTitle}
+                  onChange={(e) => setCustomTitle(e.target.value)}
+                  className="text-xl sm:text-2xl font-black text-white bg-black/40 rounded-xl px-3.5 py-2 border border-purple-500/50 outline-none w-full shadow-inner focus:border-purple-400"
+                  placeholder="Playlist Title"
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-extrabold text-purple-300/80 uppercase tracking-wider block mb-1">
+                  Description <span className="text-zinc-400 font-normal lowercase">(optional)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={customDescription}
+                  onChange={(e) => setCustomDescription(e.target.value)}
+                  placeholder="Add an optional description..."
+                  className="text-xs sm:text-sm font-medium text-white bg-black/40 rounded-xl p-3 border border-purple-500/50 outline-none w-full shadow-inner focus:border-purple-400 resize-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-2.5 pt-1">
+                <button
+                  onClick={() => handleSaveDetails(customTitle, customDescription)}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                >
+                  Save Details
+                </button>
+                <button
+                  onClick={() => {
+                    setCustomTitle(playlist.name);
+                    setCustomDescription(playlist.description || "");
+                    setIsEditing(false);
+                  }}
+                  className="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="group/title flex items-center justify-center md:justify-start gap-3 mb-4 sm:mb-5">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gradient-purple drop-shadow-md truncate leading-tight">
-                {customTitle}
-              </h1>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="opacity-0 group-hover/title:opacity-100 p-2 rounded-xl bg-white/10 hover:bg-purple-600/40 text-purple-300 transition-all duration-200 cursor-pointer shrink-0"
-                title="Edit Playlist Title"
-              >
-                <Edit3 className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+            <>
+              {/* Title Header */}
+              <div className="group/title flex items-center justify-center md:justify-start gap-3 mb-2">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gradient-purple drop-shadow-md truncate leading-tight">
+                  {customTitle}
+                </h1>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="opacity-0 group-hover/title:opacity-100 p-2 rounded-xl bg-white/10 hover:bg-purple-600/40 text-purple-300 transition-all duration-200 cursor-pointer shrink-0"
+                  title="Edit Playlist Details"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+              </div>
 
-          {/* Description */}
-          <p className="mb-5 sm:mb-6 text-sm sm:text-base text-zinc-300/90 font-medium max-w-[620px] leading-relaxed">
-            Curated personal playlist collection in{" "}
-            <span className="text-purple-300 font-bold">Symphony</span>. Featuring ultra-high fidelity audio streaming, acoustic clarity, and synchronized lyrics.
-          </p>
+              {/* Description Display / Edit */}
+              <div className="group/desc relative max-w-[640px] mb-5 sm:mb-6">
+                {customDescription && customDescription.trim() ? (
+                  <div className="flex items-start justify-center md:justify-start gap-2">
+                    <p className="text-sm sm:text-base text-zinc-300/90 font-medium leading-relaxed break-words">
+                      {customDescription}
+                    </p>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="opacity-0 group-hover/desc:opacity-100 p-1.5 rounded-lg bg-white/10 hover:bg-purple-600/40 text-purple-300 transition-all cursor-pointer shrink-0 mt-0.5"
+                      title="Edit Description"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="text-xs sm:text-sm font-medium text-purple-300/60 hover:text-purple-200 transition-colors flex items-center justify-center md:justify-start gap-2 cursor-pointer py-1 group-hover/desc:text-purple-300 mx-auto md:mx-0"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Add an optional description...</span>
+                  </button>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Concise Metadata Row */}
           <div className="flex items-center justify-center md:justify-start gap-3.5 sm:gap-4.5 text-xs sm:text-sm font-semibold flex-wrap text-zinc-300 pt-1">
@@ -357,7 +422,7 @@ export default function PlaylistPage() {
               <span>{isLiked ? "Favorited" : "Favorite"}</span>
             </motion.button>
 
-            {/* ✏ EDIT TITLE */}
+            {/* ✏ EDIT DETAILS */}
             <motion.button
               onClick={() => setIsEditing(!isEditing)}
               whileHover={{ scale: 1.04 }}
@@ -365,7 +430,7 @@ export default function PlaylistPage() {
               className="flex items-center gap-2.5 px-6 py-3.5 rounded-full glass-card border border-white/15 text-zinc-200 hover:text-white text-xs font-bold shadow-md hover:bg-purple-600/20 transition-all duration-200 cursor-pointer"
             >
               <Edit3 className="w-4 h-4 text-purple-300" />
-              <span>Edit Title</span>
+              <span>Edit Details</span>
             </motion.button>
 
             {/* ➕ ADD ACTIVE SONG */}

@@ -35,10 +35,10 @@ export default function HomePage() {
   const { playSong } = usePlayer();
 
   const continueListening =
-    JSON.parse(localStorage.getItem("continueListening")) || [];
+    (JSON.parse(localStorage.getItem("continueListening")) || []).slice(0, 6);
 
   const recentlyPlayed =
-    JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
+    (JSON.parse(localStorage.getItem("recentlyPlayed")) || []).slice(0, 6);
 
   const [trending, setTrending] = useState([]);
   const [recommended, setRecommended] = useState([]);

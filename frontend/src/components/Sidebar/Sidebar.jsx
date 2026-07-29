@@ -49,15 +49,7 @@ export default function Sidebar() {
   const isLibraryActive = location.pathname === '/library'
   const isFavoritesActive = location.pathname === '/favorites'
 
-  const displayPlaylists =
-    playlists && playlists.length > 0
-      ? playlists
-      : [
-          { id: 'mixtape', name: 'Mix Tape', count: 12 },
-          { id: 'indie', name: 'Indie Vibes', count: 24 },
-          { id: 'night', name: 'Night Grooves', count: 18 },
-          { id: 'lofi', name: 'Lo-Fi Chill', count: 30 },
-        ]
+  const displayPlaylists = playlists || []
 
   // Gradient combinations for playlist mini-art covers
   const playlistGradients = [
@@ -224,7 +216,7 @@ export default function Sidebar() {
                 return (
                   <NavLink
                     key={pl.id}
-                    to={playlistIdStr.length > 5 ? `/playlists/${pl.id}` : '/library'}
+                    to={`/playlists/${pl.id}`}
                     className="block"
                   >
                     <motion.div
