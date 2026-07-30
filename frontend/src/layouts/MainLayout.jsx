@@ -44,10 +44,10 @@ export default function MainLayout() {
             <div className="h-32 sm:h-36 pointer-events-none" />
           </div>
         </main>
-      </div>
 
-      {/* Fixed Bottom Music Player */}
-      <MusicPlayer />
+        {/* Floating Music Player fitted cleanly into Home/Main content alignment */}
+        <MusicPlayer />
+      </div>
     </div>
   )
 }

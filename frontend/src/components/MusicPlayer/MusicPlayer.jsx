@@ -82,8 +82,8 @@ export default function MusicPlayer() {
 
   return (
     <>
-      {/* Bottom Floating Glassmorphic Playback Bar */}
-      <footer className="fixed bottom-3 inset-x-3 md:inset-x-6 z-50 h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/90 border border-purple-500/25 rounded-2xl px-5 sm:px-7 flex items-center justify-between select-none shadow-2xl shadow-purple-950/50">
+      {/* Bottom Floating Glassmorphic Playback Bar - Fitted into Home Main Content Alignment */}
+      <footer className="absolute bottom-3 left-3 right-3 z-30 h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-5 sm:px-7 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
         {/* Top Specular Purple Highlight */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent opacity-80 rounded-t-2xl pointer-events-none" />
 
@@ -533,7 +533,7 @@ export default function MusicPlayer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed bottom-28 right-6 z-50 w-84 max-h-[440px] glass-card backdrop-blur-2xl bg-surface-950/90 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 flex flex-col overflow-hidden"
+            className="absolute bottom-28 right-4 z-50 w-84 max-h-[440px] glass-card backdrop-blur-2xl bg-surface-950/90 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               <h3 className="text-sm font-bold text-white tracking-tight">Queue</h3>

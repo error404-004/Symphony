@@ -354,3 +354,23 @@ input[type="range"]::-moz-range-thumb:active {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+@keyframes waveformBarPulse {
+  0% {
+    transform: scaleY(0.25);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.35);
+    opacity: 0.6;
+  }
+}
+
+.animate-waveform {
+  animation: waveformBarPulse 0.8s ease-in-out infinite alternate;
+}
+
+
