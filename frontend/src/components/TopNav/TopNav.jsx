@@ -1,5 +1,5 @@
 import { Search, Bell, User, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const pageTitles = {
@@ -18,6 +18,19 @@ export default function TopNav() {
   const pageTitle = pageTitles[location.pathname] || 'Symphony'
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
+  const [userProfile, setUserProfile] = useState(() => {
+    const saved = localStorage.getItem('symphony_user_profile')
+    return saved ? JSON.parse(saved) : { name: 'User', avatarColor: 'from-purple-500 to-indigo-600' }
+  })
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const saved = localStorage.getItem('symphony_user_profile')
+      if (saved) setUserProfile(JSON.parse(saved))
+    }
+    window.addEventListener('symphony-profile-updated', handleProfileUpdate)
+    return () => window.removeEventListener('symphony-profile-updated', handleProfileUpdate)
+  }, [])
 
   return (
     <header className="flex items-center justify-between h-16 px-6 glass-card backdrop-blur-2xl backdrop-saturate-150 bg-surface-950/80 border-b border-white/10 shadow-lg shadow-black/40 shrink-0 z-20 sticky top-0">
@@ -26,14 +39,14 @@ export default function TopNav() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25 cursor-pointer"
             title="Go back"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => navigate(1)}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25 cursor-pointer"
             title="Go forward"
           >
             <ChevronRight className="w-5 h-5" />
@@ -68,7 +81,8 @@ export default function TopNav() {
       {/* Right User Control Pill Actions */}
       <div className="flex items-center gap-3">
         <button
-          className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25"
+          onClick={() => navigate('/settings')}
+          className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-zinc-300 hover:text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25 cursor-pointer"
           aria-label="Notifications"
         >
           <Bell className="w-4.5 h-4.5" />
@@ -77,13 +91,13 @@ export default function TopNav() {
 
         <button
           onClick={() => navigate('/settings')}
-          className="flex items-center gap-2.5 h-9 pl-1.5 pr-3.5 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25"
+          className="flex items-center gap-2.5 h-9 pl-1.5 pr-3.5 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25 cursor-pointer"
           aria-label="User profile"
         >
-          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-sm shadow-purple-500/40">
-            <User className="w-3.5 h-3.5" />
+          <div className={`flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br ${userProfile.avatarColor || 'from-purple-500 to-indigo-600'} text-white shadow-sm shadow-purple-500/40 text-xs font-black uppercase`}>
+            {userProfile.name ? userProfile.name.charAt(0) : <User className="w-3.5 h-3.5" />}
           </div>
-          <span className="text-xs font-bold tracking-tight">User</span>
+          <span className="text-xs font-bold tracking-tight max-w-[90px] truncate">{userProfile.name || 'User'}</span>
         </button>
       </div>
     </header>
