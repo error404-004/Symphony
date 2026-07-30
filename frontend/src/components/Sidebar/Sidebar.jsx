@@ -83,7 +83,7 @@ export default function Sidebar() {
   const albumName = currentSong?.album || currentSong?.title || 'Symphony Singles'
   const releaseYear = currentSong?.year || '2024'
   const genreName = currentSong?.genre || 'Ambient / Pop'
-  const coverArt = currentSong?.cover || currentSong?.coverUrl || logoImg
+  const coverArt = currentSong?.thumbnail || currentSong?.cover || currentSong?.coverUrl || currentSong?.imageUrl || logoImg
   const timeFormatted = duration > 0 ? `(${formatTime(currentTime)} / ${formatTime(duration)})` : '(0:45 / 3:12)'
   const aboutText = currentSong?.about || currentSong?.description || `${songTitle} is a signature release by ${authorName}, featuring spatial soundscapes, deep atmospheric basslines, and polished vocal textures.`
 
