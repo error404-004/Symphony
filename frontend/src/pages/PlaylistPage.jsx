@@ -19,6 +19,7 @@ import usePlayer from "../hooks/usePlayer";
 import { searchMusic } from "../services/api";
 import { motion } from "framer-motion";
 import MusicCard from "../components/ui/MusicCard";
+import SongContextMenu from "../components/ui/SongContextMenu";
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -492,7 +493,7 @@ export default function PlaylistPage() {
         </div>
 
         {/* Track Table Header */}
-        <div className="grid grid-cols-[44px_1fr_1fr_100px] gap-4 px-6 py-4 text-xs font-extrabold text-zinc-400 uppercase tracking-widest border-b border-white/10 select-none mb-4">
+        <div className="grid grid-cols-[44px_1fr_1fr_130px] gap-4 px-6 py-4 text-xs font-extrabold text-zinc-400 uppercase tracking-widest border-b border-white/10 select-none mb-4">
           <span className="text-center">#</span>
           <span>TITLE</span>
           <span className="hidden md:block">ALBUM</span>
@@ -529,7 +530,7 @@ export default function PlaylistPage() {
                     setCurrentIndex(i);
                     playSong(song);
                   }}
-                  className={`grid grid-cols-[44px_1fr_1fr_100px] gap-4 items-center px-6 py-4 rounded-2xl glass-card backdrop-blur-2xl bg-white/[0.03] hover:bg-purple-600/20 border border-white/10 hover:border-purple-400/40 group cursor-pointer transition-all duration-300 shadow-md hover:shadow-2xl hover:shadow-purple-950/50 ${
+                  className={`grid grid-cols-[44px_1fr_1fr_130px] gap-4 items-center px-6 py-4 rounded-2xl glass-card backdrop-blur-2xl bg-white/[0.03] hover:bg-purple-600/20 border border-white/10 hover:border-purple-400/40 group cursor-pointer transition-all duration-300 shadow-md hover:shadow-2xl hover:shadow-purple-950/50 ${
                     isCurrent ? "border-purple-500/60 bg-purple-900/30 shadow-purple-950/60" : ""
                   }`}
                 >
@@ -581,14 +582,14 @@ export default function PlaylistPage() {
                     </p>
                   </div>
 
-                  {/* Remove Button & Duration Column */}
-                  <div className="flex items-center justify-end gap-3 pr-2">
+                  {/* Remove Button, Duration & Context Menu Column */}
+                  <div className="flex items-center justify-end gap-2 pr-1">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         removeSongFromPlaylist(playlist.id, song.videoId);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/20 transition-all duration-200 cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/20 transition-all duration-200 cursor-pointer"
                       title="Remove track"
                     >
                       <X className="w-4 h-4" />
@@ -596,6 +597,7 @@ export default function PlaylistPage() {
                     <span className="text-xs text-zinc-400 font-bold tabular-nums group-hover:text-white transition-colors">
                       {song.duration || "--:--"}
                     </span>
+                    <SongContextMenu song={song} />
                   </div>
                 </motion.div>
               );

@@ -1,26 +1,24 @@
 import { motion } from 'framer-motion'
 import { Play, Music2 } from 'lucide-react'
+import SongContextMenu from './SongContextMenu'
 
 /**
  * WideCard - Premium horizontal/wide card for "Continue Listening" or featured sections in Symphony.
- *
- * @param {string} title - Track/Playlist name
- * @param {string} subtitle - Artist or description
- * @param {string} artist - Artist name alternative
- * @param {string} thumbnail - Track image thumbnail
- * @param {string} [gradient] - Gradient classes for placeholder art
- * @param {number} index - For staggered animation
- * @param {function} onClick - Click handler callback
  */
 export default function WideCard({
+  song,
   title = 'Untitled',
   subtitle,
   artist,
   thumbnail,
+  videoId,
   gradient = 'from-purple-900/40 via-surface-800 to-surface-900',
   index = 0,
   onClick,
 }) {
+  const displayArtist = artist || subtitle;
+  const songData = song || { title, artist: displayArtist, thumbnail, videoId };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -30,7 +28,7 @@ export default function WideCard({
       className="group cursor-pointer select-none"
       onClick={onClick}
     >
-      <div className="flex items-center gap-3.5 p-2.5 pr-4 rounded-xl glass-card backdrop-blur-xl border border-white/10 hover:border-purple-500/40 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden relative">
+      <div className="flex items-center gap-3.5 p-2.5 pr-3 rounded-xl glass-card backdrop-blur-xl border border-white/10 hover:border-purple-500/40 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 overflow-hidden relative">
         {/* Mini artwork */}
         <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 shadow-md border border-white/5">
           {thumbnail ? (
@@ -52,20 +50,29 @@ export default function WideCard({
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-white truncate group-hover:text-purple-200 transition-colors">{title}</p>
           <p className="text-xs text-zinc-400 truncate font-medium mt-0.5">
-            {artist || subtitle}
+            {displayArtist}
           </p>
         </div>
 
-        {/* Play on hover */}
-        <motion.div
-          onClick={onClick}
-          initial={{ opacity: 0, scale: 0.8 }}
-          className="opacity-0 group-hover:opacity-100 transition-all duration-200 shrink-0"
-        >
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-950/60 border border-purple-300/30 transition-transform duration-200 hover:scale-105">
-            <Play className="w-4.5 h-4.5 text-white fill-white ml-0.5" fill="white" />
-          </div>
-        </motion.div>
+        {/* Action icons on hover */}
+        <div className="flex items-center gap-1 shrink-0">
+          {songData && (
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <SongContextMenu song={songData} />
+            </div>
+          )}
+
+          {/* Play on hover */}
+          <motion.div
+            onClick={onClick}
+            initial={{ opacity: 0, scale: 0.8 }}
+            className="opacity-0 group-hover:opacity-100 transition-all duration-200"
+          >
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-950/60 border border-purple-300/30 transition-transform duration-200 hover:scale-105">
+              <Play className="w-4 h-4 text-white fill-white ml-0.5" fill="white" />
+            </div>
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   )

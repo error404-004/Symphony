@@ -1,6 +1,7 @@
-  import { createContext, useContext, useEffect, useState } from "react";
-  import { getPlayer } from "../services/player";
-  import { getAudio } from "../services/audio";
+import { createContext, useContext, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { getPlayer } from "../services/player";
+import { getAudio } from "../services/audio";
 
   export const PlayerContext = createContext();
 
@@ -30,6 +31,20 @@
 
     const openCreatePlaylistModal = () => setIsCreatePlaylistOpen(true);
     const closeCreatePlaylistModal = () => setIsCreatePlaylistOpen(false);
+
+    const [toast, setToast] = useState(null);
+
+    const showToast = (message, song = null) => {
+      setToast({ message, song, id: Date.now() });
+    };
+
+    useEffect(() => {
+      if (!toast) return;
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }, [toast]);
 
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -191,14 +206,48 @@
   function addToQueue(song) {
     if (!song) return;
 
-    // Don't add duplicates
-    const exists = queue.some(
-      (item) => item.videoId === song.videoId
-    ) ;
+    const exists = queue.some((item) => item.videoId === song.videoId);
 
-    if (exists) return;
+    if (exists) {
+      showToast(`Already in queue`, song);
+      return;
+    }
 
-    setQueue((prev) => [...prev, song]);
+    setQueue((prev) => {
+      if (currentIndex >= 0 && currentIndex < prev.length) {
+        const updated = [...prev];
+        updated.splice(currentIndex + 1, 0, song);
+        return updated;
+      }
+      return [...prev, song];
+    });
+
+    showToast(`Added to queue`, song);
+  }
+
+  function removeFromQueue(songOrId) {
+    if (!songOrId) return;
+    const targetId = typeof songOrId === "object" ? songOrId.videoId : songOrId;
+    const removedSong = typeof songOrId === "object" ? songOrId : queue.find((s) => s.videoId === targetId);
+
+    setQueue((prev) => {
+      const idx = prev.findIndex((item) => item.videoId === targetId);
+      if (idx === -1) return prev;
+
+      if (idx < currentIndex) {
+        setCurrentIndex((c) => Math.max(0, c - 1));
+      } else if (idx === currentIndex) {
+        if (prev.length <= 1) {
+          setCurrentIndex(-1);
+        } else if (currentIndex >= prev.length - 1) {
+          setCurrentIndex(prev.length - 2);
+        }
+      }
+
+      return prev.filter((item) => item.videoId !== targetId);
+    });
+
+    showToast(`Removed from queue`, removedSong);
   }
     // -----------------------------
     // Favorites
@@ -333,6 +382,8 @@
 
           queue,
           setQueue,
+          customQueue: queue,
+          setCustomQueue: setQueue,
 
           currentIndex,
           setCurrentIndex,
@@ -340,6 +391,10 @@
           playNext,
           playPrevious,
           addToQueue,
+          removeFromQueue,
+
+          toast,
+          showToast,
 
           isShuffle,
           setIsShuffle,
@@ -365,6 +420,37 @@
         }}
       >
         {children}
+
+        {/* Global Symphony Toast Banner */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[10000] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-[#18181b]/95 border border-purple-500/40 text-white shadow-[0_15px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl pointer-events-none select-none max-w-xs sm:max-w-sm"
+            >
+              {toast.song?.thumbnail && (
+                <img
+                  src={toast.song.thumbnail}
+                  alt=""
+                  className="w-9 h-9 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
+                />
+              )}
+              <div className="flex flex-col text-left min-w-0">
+                <span className="text-xs font-bold text-purple-300 tracking-tight">
+                  {toast.message}
+                </span>
+                {toast.song?.title && (
+                  <span className="text-[11px] text-zinc-300 font-medium truncate mt-0.5">
+                    {toast.song.title}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </PlayerContext.Provider>
     );
   }

@@ -62,6 +62,7 @@ export default function SearchPage() {
   const [songs, setSongs] = useState([])
   const [newReleases, setNewReleases] = useState([])
   const [isSpinning, setIsSpinning] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [currentTrending, setCurrentTrending] = useState(allTrendingPool.slice(0, 6))
 
   const refreshTrending = () => {
@@ -78,17 +79,22 @@ export default function SearchPage() {
     if (!q) {
       setQuery("");
       setSongs([]);
+      setIsLoading(false);
       return;
     }
 
     setQuery(q);
 
     const fetchSongs = async () => {
+      setIsLoading(true);
       try {
         const data = await searchMusic(q);
         setSongs(Array.isArray(data) ? data : data.songs || []);
       } catch (err) {
         console.error(err);
+        setSongs([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -242,6 +248,8 @@ export default function SearchPage() {
       {/* Search Results (Shown when search is triggered via top navbar) */}
       <SearchResults
         songs={songs}
+        query={query}
+        isLoading={isLoading}
         onSongSelect={playSong}
       />
     </motion.div>

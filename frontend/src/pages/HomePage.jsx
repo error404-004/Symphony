@@ -120,6 +120,7 @@ export default function HomePage() {
           {continueListening.map((item, i) => (
             <WideCard
               key={item.videoId || item.title}
+              song={item}
               title={item.title}
               artist={item.artist}
               thumbnail={item.thumbnail}
@@ -138,6 +139,7 @@ export default function HomePage() {
             {recentlyPlayed.map((item, i) => (
               <MusicCard
                 key={`${item.videoId}-${i}`}
+                song={item}
                 title={item.title}
                 artist={item.artist}
                 thumbnail={item.thumbnail}
@@ -156,6 +158,7 @@ export default function HomePage() {
           {trending.slice(0, 6).map((item, i) => (
             <MusicCard
               key={item.videoId}
+              song={item}
               title={item.title}
               artist={item.artist}
               thumbnail={item.thumbnail}
@@ -174,6 +177,7 @@ export default function HomePage() {
             {recommended.slice(0, 6).map((item, i) => (
               <MusicCard
                 key={item.videoId}
+                song={item}
                 title={item.title}
                 artist={item.artist}
                 thumbnail={item.thumbnail}

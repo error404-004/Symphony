@@ -1,8 +1,32 @@
-import { Play, Clock, Volume2, ListMusic } from "lucide-react";
+import { Play, Clock, Volume2, ListMusic, Loader2, Music2 } from "lucide-react";
 import { usePlayer } from "../context/PlayerContext";
 import { motion } from "framer-motion";
+import SongContextMenu from "./ui/SongContextMenu";
 
-export default function SearchResults({ songs }) {
+export default function SearchResults({ songs, query, isLoading }) {
+  if (isLoading) {
+    return (
+      <div className="mt-8 flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        <p className="text-sm font-medium text-zinc-300">Searching songs for "{query}"...</p>
+      </div>
+    );
+  }
+
+  if (query && (!Array.isArray(songs) || songs.length === 0)) {
+    return (
+      <div className="mt-8 flex flex-col items-center justify-center py-16 text-center rounded-2xl bg-white/[0.02] border border-white/10 gap-3">
+        <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+          <Music2 className="w-6 h-6" />
+        </div>
+        <h3 className="text-lg font-bold text-white tracking-tight">No songs found</h3>
+        <p className="text-sm text-zinc-400 max-w-sm">
+          We couldn't find any songs matching "{query}". Try checking your spelling or searching for a different track.
+        </p>
+      </div>
+    );
+  }
+
   if (!Array.isArray(songs) || songs.length === 0) return null;
 
   const { playSong, setQueue, setCurrentIndex, currentSong, isPlaying } = usePlayer();
@@ -22,7 +46,7 @@ export default function SearchResults({ songs }) {
       </div>
 
       {/* Spotify Tracklist Header */}
-      <div className="grid grid-cols-[32px_1fr_1fr_60px] gap-4 px-4 py-2.5 text-xs font-semibold text-zinc-400 uppercase tracking-wider border-b border-white/10 select-none">
+      <div className="grid grid-cols-[32px_1fr_1fr_110px] gap-4 px-4 py-2.5 text-xs font-semibold text-zinc-400 uppercase tracking-wider border-b border-white/10 select-none">
         <span className="text-center">#</span>
         <span>Title</span>
         <span className="hidden sm:block">Album</span>
@@ -49,7 +73,7 @@ export default function SearchResults({ songs }) {
                 setCurrentIndex(index);
                 playSong(song);
               }}
-              className={`grid grid-cols-[32px_1fr_1fr_60px] gap-4 items-center px-4 py-3 rounded-xl border group cursor-pointer transition-all duration-300 ${
+              className={`grid grid-cols-[32px_1fr_1fr_110px] gap-4 items-center px-4 py-3 rounded-xl border group cursor-pointer transition-all duration-300 ${
                 isCurrent
                   ? "bg-purple-600/20 border-purple-500/40 shadow-lg shadow-purple-950/20"
                   : "bg-white/[0.03] hover:bg-white/[0.08] border-white/5 hover:border-purple-500/30 shadow-sm"
@@ -95,9 +119,10 @@ export default function SearchResults({ songs }) {
                 {song.album || "Single"}
               </p>
 
-              {/* Duration Column */}
-              <div className="text-right text-sm text-zinc-400 font-medium tabular-nums pr-2 group-hover:text-white transition-colors">
-                {song.duration || "--:--"}
+              {/* Duration & Context Menu Column */}
+              <div className="flex items-center justify-end gap-2 text-sm text-zinc-400 font-medium tabular-nums pr-1 group-hover:text-white transition-colors">
+                <span>{song.duration || "--:--"}</span>
+                <SongContextMenu song={song} />
               </div>
             </motion.div>
           );

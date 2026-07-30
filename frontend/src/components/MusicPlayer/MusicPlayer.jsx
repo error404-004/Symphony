@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { usePlayer } from "../../context/PlayerContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import LyricsPanel from '../Lyrics/LyricsPanel';
+import SongContextMenu from "../ui/SongContextMenu";
 import {
   Play,
   Pause,
@@ -83,12 +84,12 @@ export default function MusicPlayer() {
   return (
     <>
       {/* Bottom Floating Glassmorphic Playback Bar - Fitted into Home Main Content Alignment */}
-      <footer className="absolute bottom-3 left-3 right-3 z-30 h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-5 sm:px-7 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
+      <footer className="fixed md:absolute bottom-[66px] md:bottom-3 left-2 right-2 md:left-3 md:right-3 z-30 h-[80px] sm:h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-3 sm:px-7 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
         {/* Top Specular Purple Highlight */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent opacity-80 rounded-t-2xl pointer-events-none" />
 
         {/* Left Section: Track Info & Cover */}
-        <div className="flex items-center gap-3.5 w-1/4 min-w-[200px]">
+        <div className="flex items-center gap-2 sm:gap-3.5 max-w-[42%] sm:w-1/4 sm:min-w-[200px]">
           {/* Cover Thumbnail with Ambient Glow */}
           <div className="relative group shrink-0">
             <div className="absolute -inset-1 bg-purple-600/40 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -130,6 +131,9 @@ export default function MusicPlayer() {
               }`}
             />
           </button>
+
+          {/* Spotify Triple Dot Context Menu */}
+          {currentSong && <SongContextMenu song={currentSong} />}
 
           {/* Add to Playlist Button & Dropdown */}
           <div className="relative">
@@ -552,10 +556,10 @@ export default function MusicPlayer() {
                 </div>
               ) : (
                 queue.map((song, idx) => (
-                  <button
+                  <div
                     key={song.videoId || idx}
                     onClick={() => playSong(song)}
-                    className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all duration-200 text-left ${
+                    className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all duration-200 text-left cursor-pointer group/qitem ${
                       idx === currentIndex
                         ? "bg-purple-600/20 border border-purple-500/30 shadow-md"
                         : "hover:bg-white/5 border border-transparent"
@@ -579,7 +583,8 @@ export default function MusicPlayer() {
                       </p>
                       <p className="text-[11px] text-zinc-400 truncate mt-0.5">{song.artist}</p>
                     </div>
-                  </button>
+                    <SongContextMenu song={song} isInQueue={true} />
+                  </div>
                 ))
               )}
             </div>

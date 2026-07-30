@@ -17,6 +17,7 @@ import {
 import usePlayer from "../hooks/usePlayer";
 import { searchMusic } from "../services/api";
 import MusicCard from "../components/ui/MusicCard";
+import SongContextMenu from "../components/ui/SongContextMenu";
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -229,7 +230,7 @@ export default function ArtistPage() {
                     setCurrentIndex(i);
                     playSong(song);
                   }}
-                  className={`grid grid-cols-[32px_1fr_1fr_70px] gap-4 items-center p-3 rounded-2xl glass-card backdrop-blur-xl bg-surface-950/60 border border-white/5 hover:border-purple-500/40 group cursor-pointer transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-purple-500/15 ${
+                  className={`grid grid-cols-[32px_1fr_1fr_110px] gap-4 items-center p-3 rounded-2xl glass-card backdrop-blur-xl bg-surface-950/60 border border-white/5 hover:border-purple-500/40 group cursor-pointer transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-purple-500/15 ${
                     isCurrent ? "border-purple-500/50 bg-purple-600/20 shadow-purple-950/40" : ""
                   }`}
                 >
@@ -271,11 +272,12 @@ export default function ArtistPage() {
                     {song.album || `${artistName} Collection`}
                   </p>
 
-                  {/* Duration Column */}
-                  <div className="flex items-center justify-end pr-2">
+                  {/* Duration & Context Menu Column */}
+                  <div className="flex items-center justify-end gap-2 pr-1">
                     <span className="text-xs text-zinc-400 font-bold tabular-nums">
                       {song.duration || "--:--"}
                     </span>
+                    <SongContextMenu song={song} />
                   </div>
                 </motion.div>
               );

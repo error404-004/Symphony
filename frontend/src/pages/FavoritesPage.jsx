@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Heart, Play, Clock, Shuffle, Volume2, Sparkles, Music2 } from 'lucide-react';
 import usePlayer from "../hooks/usePlayer";
+import SongContextMenu from "../components/ui/SongContextMenu";
 
 const pageVariants = {
   initial: { opacity: 0, y: 15 },
@@ -151,7 +152,7 @@ export default function FavoritesPage() {
                     setCurrentIndex(i);
                     playSong(song);
                   }}
-                  className={`grid grid-cols-[36px_1fr_1fr_90px] gap-4 items-center px-6 py-4 sm:py-4.5 rounded-2xl border transition-all duration-200 group cursor-pointer ${
+                  className={`grid grid-cols-[36px_1fr_1fr_120px] gap-4 items-center px-6 py-4 sm:py-4.5 rounded-2xl border transition-all duration-200 group cursor-pointer ${
                     isCurrent
                       ? "bg-purple-900/40 border-purple-500/40 text-purple-200 shadow-lg shadow-purple-950/40"
                       : "border-transparent hover:bg-purple-900/20 hover:border-purple-500/25 text-white"
@@ -195,8 +196,8 @@ export default function FavoritesPage() {
                     {song.artist}
                   </p>
 
-                  {/* Heart & Duration */}
-                  <div className="flex items-center justify-end gap-4 pr-2">
+                  {/* Heart, Duration & Context Menu */}
+                  <div className="flex items-center justify-end gap-2 pr-1">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -210,6 +211,7 @@ export default function FavoritesPage() {
                     <span className="text-sm text-zinc-400 font-semibold tabular-nums">
                       {song.duration || "--:--"}
                     </span>
+                    <SongContextMenu song={song} />
                   </div>
                 </motion.div>
               );

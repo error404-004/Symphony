@@ -1,21 +1,30 @@
 import { motion } from 'framer-motion'
 import { Play, Music2 } from 'lucide-react'
+import SongContextMenu from './SongContextMenu'
 
 /**
  * MusicCard - Symphony Design Language (SDL) Ultra-Premium Music/Album Card.
  */
 export default function MusicCard({
+  song,
   title = 'Untitled',
   subtitle,
   artist,
   gradient = 'from-purple-900/50 via-surface-800 to-surface-950',
   imageUrl,
   thumbnail,
+  videoId,
   shape = 'square',
   index = 0,
   onClick,
 }) {
   const displayArtist = artist || subtitle || 'Artist';
+  const songData = song || {
+    title,
+    artist: displayArtist,
+    thumbnail: thumbnail || imageUrl,
+    videoId,
+  };
 
   return (
     <motion.div
@@ -35,6 +44,17 @@ export default function MusicCard({
         style={{ padding: '16px' }}
         className="relative rounded-[20px] bg-white/[0.04] backdrop-blur-2xl border border-white/12 hover:border-purple-500/50 shadow-xl shadow-black/40 group-hover/card:shadow-purple-950/40 transition-all duration-300 flex flex-col justify-between h-full overflow-hidden"
       >
+        {/* Top Right Song Context Menu (...) on Hover */}
+        {songData && (
+          <div className="absolute top-2.5 right-2.5 z-20 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
+            <SongContextMenu
+              song={songData}
+              buttonClassName="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg cursor-pointer"
+              iconClassName="w-4 h-4"
+            />
+          </div>
+        )}
+
         {/* Specular Highlight Bar */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-60 group-hover/card:opacity-100 transition-opacity duration-300" />
 

@@ -3,23 +3,23 @@ import Sidebar from '../components/Sidebar/Sidebar'
 import TopNav from '../components/TopNav/TopNav'
 import MusicPlayer from '../components/MusicPlayer/MusicPlayer'
 import CreatePlaylistModal from '../components/ui/CreatePlaylistModal'
+import MobileNav from '../components/ui/MobileNav'
 import { Music2 } from 'lucide-react'
 
 /**
- * MainLayout - Symphony Desktop Application Shell.
- * Provides the dual-panel sidebar, top navigation, main container with ambient purple glow & watermark, and bottom music player.
+ * MainLayout - Symphony Desktop & Mobile Application Shell.
  */
 export default function MainLayout() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-2.5 gap-3 relative select-none">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-1 sm:p-2.5 gap-2 sm:gap-3 relative select-none">
       {/* Global Create Playlist Modal */}
       <CreatePlaylistModal />
 
-      {/* Left Sidebar */}
+      {/* Left Sidebar (Desktop View) */}
       <Sidebar />
 
       {/* Main Content Card Panel with Ambient Glow & Watermark */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18]/90 backdrop-blur-3xl rounded-2xl border border-white/[0.08] relative shadow-2xl shadow-black">
+      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18]/90 backdrop-blur-3xl rounded-xl sm:rounded-2xl border border-white/[0.08] relative shadow-2xl shadow-black">
         
         {/* Ambient Purple Radial Glow Orbs */}
         <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-purple-600/18 rounded-full blur-[150px] pointer-events-none z-0" />
@@ -37,16 +37,19 @@ export default function MainLayout() {
         </div>
 
         {/* Scrollable Page Content */}
-        <main className="flex-1 overflow-y-auto px-6 py-4 relative z-10 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 relative z-10 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
           <div>
             <Outlet />
-            {/* Master Spacer ensuring content ends cleanly above MusicPlayer */}
-            <div className="h-32 sm:h-36 pointer-events-none" />
+            {/* Master Spacer ensuring content ends cleanly above MusicPlayer & MobileNav */}
+            <div className="h-44 sm:h-36 pointer-events-none" />
           </div>
         </main>
 
         {/* Floating Music Player fitted cleanly into Home/Main content alignment */}
         <MusicPlayer />
+
+        {/* Mobile Bottom Navigation Bar (Visible on mobile < md) */}
+        <MobileNav />
       </div>
     </div>
   )
