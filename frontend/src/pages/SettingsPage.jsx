@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import usePlayer from '../hooks/usePlayer'
 import {
   User,
@@ -79,6 +80,7 @@ const getSavedVolumeNorm = () => {
  * SettingsPage - Symphony Design Language (SDL) Interactive Control Center.
  */
 export default function SettingsPage() {
+  const navigate = useNavigate()
   const { showToast } = usePlayer()
 
   /* Interactive States */
@@ -180,10 +182,10 @@ export default function SettingsPage() {
         {
           id: 'profile',
           label: 'Profile',
-          description: `Manage avatar, display name (${profile.name}), and email`,
+          description: `View & edit profile, avatar, email (${profile.name})`,
           icon: User,
           badge: profile.name,
-          onClick: () => setActiveModal('profile'),
+          onClick: () => navigate('/profile'),
         },
         {
           id: 'notifications',
@@ -403,102 +405,7 @@ export default function SettingsPage() {
                 <X className="w-5 h-5" />
               </button>
 
-              {/* --- 1. PROFILE MODAL --- */}
-              {activeModal === 'profile' && (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300">
-                      <User className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-black text-white">Edit Profile</h3>
-                      <p className="text-xs text-zinc-400">Update your personal account details</p>
-                    </div>
-                  </div>
 
-                  {/* Form Fields */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-xs font-bold text-purple-300 uppercase tracking-wider block mb-1.5">
-                        Display Name
-                      </label>
-                      <input
-                        type="text"
-                        value={profile.name}
-                        onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                        className="w-full h-11 px-4 rounded-xl bg-black/40 border border-purple-500/30 text-sm font-semibold text-white focus:outline-none focus:border-purple-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold text-purple-300 uppercase tracking-wider block mb-1.5">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        value={profile.email}
-                        onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                        className="w-full h-11 px-4 rounded-xl bg-black/40 border border-purple-500/30 text-sm font-semibold text-white focus:outline-none focus:border-purple-400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold text-purple-300 uppercase tracking-wider block mb-1.5">
-                        Bio / Status
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={profile.bio}
-                        onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                        className="w-full p-3 rounded-xl bg-black/40 border border-purple-500/30 text-sm font-semibold text-white focus:outline-none focus:border-purple-400 resize-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-bold text-purple-300 uppercase tracking-wider block mb-2">
-                        Avatar Gradient Theme
-                      </label>
-                      <div className="flex gap-3">
-                        {[
-                          { id: 'purple', class: 'from-purple-500 to-indigo-600' },
-                          { id: 'emerald', class: 'from-emerald-500 to-teal-700' },
-                          { id: 'rose', class: 'from-pink-500 to-rose-700' },
-                          { id: 'cyan', class: 'from-cyan-500 to-blue-700' },
-                          { id: 'amber', class: 'from-amber-500 to-orange-700' },
-                        ].map((item) => (
-                          <button
-                            key={item.id}
-                            onClick={() => setProfile({ ...profile, avatarColor: item.class })}
-                            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.class} border-2 transition-transform cursor-pointer flex items-center justify-center ${
-                              profile.avatarColor === item.class ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-70 hover:opacity-100'
-                            }`}
-                          >
-                            {profile.avatarColor === item.class && <Check className="w-4 h-4 text-white" />}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-3 pt-2">
-                    <button
-                      onClick={closeModal}
-                      className="px-5 py-2.5 rounded-xl border border-white/10 text-xs font-bold text-zinc-400 hover:text-white transition-all cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        updateProfile(profile)
-                        closeModal()
-                      }}
-                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-xs font-extrabold text-white shadow-lg shadow-purple-950/60 hover:scale-105 transition-all cursor-pointer"
-                    >
-                      Save Profile
-                    </button>
-                  </div>
-                </div>
-              )}
 
               {/* --- 2. NOTIFICATIONS MODAL --- */}
               {activeModal === 'notifications' && (

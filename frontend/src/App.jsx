@@ -5,6 +5,7 @@ import SearchPage from './pages/SearchPage'
 import LibraryPage from './pages/LibraryPage'
 import FavoritesPage from './pages/FavoritesPage'
 import SettingsPage from './pages/SettingsPage'
+import ProfilePage from './pages/ProfilePage'
 import PlaylistPage from "./pages/PlaylistPage";
 import ArtistPage from "./pages/ArtistPage";
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/playlists/:id" element={<PlaylistPage />} />
         <Route path="/artist/:name" element={<ArtistPage />} />
       </Route>

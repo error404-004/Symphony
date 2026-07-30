@@ -8,6 +8,7 @@ const pageTitles = {
   '/library': 'Your Library',
   '/favorites': 'Favorites',
   '/settings': 'Settings',
+  '/profile': 'Profile',
 }
 
 /**
@@ -90,7 +91,7 @@ export default function TopNav() {
         </button>
 
         <button
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate('/profile')}
           className="flex items-center gap-2.5 h-9 pl-1.5 pr-3.5 rounded-full bg-white/[0.05] hover:bg-purple-600/20 border border-white/10 hover:border-purple-500/40 text-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md hover:shadow-purple-500/25 cursor-pointer"
           aria-label="User profile"
         >
