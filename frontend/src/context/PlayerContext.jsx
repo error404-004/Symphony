@@ -75,9 +75,12 @@ import { getAudio } from "../services/audio";
     // -----------------------------
     useEffect(() => {
       function handleSongEnd() {
-        if (queue.length === 0) return;
+        if (queue.length === 0) {
+          setIsPlaying(false);
+          return;
+        }
 
-        if (isRepeat) {
+        if (isRepeat && queue[currentIndex]) {
           playSong(queue[currentIndex]);
           return;
         }
@@ -89,10 +92,14 @@ import { getAudio } from "../services/audio";
           return;
         }
 
-        if (currentIndex < queue.length - 1) {
-          const nextSong = queue[currentIndex + 1];
-          setCurrentIndex(currentIndex + 1);
+        if (currentIndex >= 0 && currentIndex < queue.length - 1) {
+          const nextIndex = currentIndex + 1;
+          const nextSong = queue[nextIndex];
+          setCurrentIndex(nextIndex);
           playSong(nextSong);
+        } else {
+          // Reached end of queue: pause playback & set isPlaying to false
+          setIsPlaying(false);
         }
       }
 
@@ -121,19 +128,19 @@ import { getAudio } from "../services/audio";
   async function playSong(song) {
     if (!song) return;
 
-    console.log("Playing:", song.title);
+    setCurrentSong(song);
 
     try {
       const stream = await getAudio(song.videoId);
 
-      console.log(stream);
-      console.log(song);
-      player.src = stream.audio_url;
+      if (stream && stream.audio_url) {
+        player.src = stream.audio_url;
+        await player.play();
+        setIsPlaying(true);
+      } else {
+        setIsPlaying(false);
+      }
 
-      await player.play();
-
-      setCurrentSong(song);
-      setIsPlaying(true);
       const history = JSON.parse(localStorage.getItem("continueListening")) || [];
       const filtered = history.filter(
         (s) => s.videoId !== song.videoId
@@ -153,13 +160,12 @@ import { getAudio } from "../services/audio";
       );
       filtered.unshift(song);
       localStorage.setItem(
-          "continueListening",
-          JSON.stringify(filtered.slice(0, 6))
+        "continueListening",
+        JSON.stringify(filtered.slice(0, 6))
       );
-
-      console.log("Finished");
     } catch (err) {
-      console.error(err);
+      console.error("Error playing song:", err);
+      setIsPlaying(false);
     }
   }
 
