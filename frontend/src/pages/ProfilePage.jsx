@@ -19,9 +19,10 @@ import {
   Radio,
   ShieldCheck,
   Disc,
-  Plus,
-  Shuffle,
+  ArrowRight,
   Search,
+  Shuffle,
+  Plus,
 } from 'lucide-react'
 import SongContextMenu from '../components/ui/SongContextMenu'
 
@@ -52,7 +53,7 @@ const getSavedProfile = () => {
 }
 
 /**
- * ProfilePage - Dedicated User Profile & Account Center with Full Glass Panels.
+ * ProfilePage - Explorer-style Glass Cards Layout for Symphony.
  */
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -111,7 +112,7 @@ export default function ProfilePage() {
     { id: 'amber', class: 'from-amber-400 via-orange-600 to-red-800', label: 'Solar Amber' },
   ]
 
-  const recentlyPlayed = (JSON.parse(localStorage.getItem('recentlyPlayed')) || [])
+  const recentlyPlayed = JSON.parse(localStorage.getItem('recentlyPlayed')) || []
 
   return (
     <motion.div
@@ -120,14 +121,14 @@ export default function ProfilePage() {
       animate="animate"
       className="space-y-8 sm:space-y-10 pb-36 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 relative"
     >
-      {/* Ambient Background Radial Glows */}
+      {/* Background Ambient Radial Glows */}
       <div className="absolute top-12 left-1/4 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-indigo-600/12 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* Hero Profile Header Panel (Full Glass Panel) */}
+      {/* Hero Profile Header Panel (Explorer-style Glass Banner) */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl overflow-hidden p-8 sm:p-10 lg:p-12 backdrop-blur-3xl bg-gradient-to-br from-purple-950/75 via-[#0d091e]/85 to-[#070410]/95 border-2 border-purple-500/30 flex flex-col md:flex-row items-center md:items-end gap-8 md:gap-10 select-none shadow-[0_25px_85px_rgba(0,0,0,0.7)]"
+        className="relative rounded-3xl overflow-hidden p-8 sm:p-10 lg:p-12 backdrop-blur-3xl bg-gradient-to-br from-purple-950/80 via-[#0d091e]/90 to-[#070410]/95 border-2 border-purple-500/30 flex flex-col md:flex-row items-center md:items-end gap-8 md:gap-10 select-none shadow-[0_25px_85px_rgba(0,0,0,0.7)]"
       >
         {/* Top Specular Purple Hairline */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent opacity-90 rounded-t-3xl pointer-events-none" />
@@ -151,7 +152,7 @@ export default function ProfilePage() {
         {/* Profile Info Column */}
         <div className="space-y-3.5 text-center md:text-left flex-1 min-w-0 pb-1">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
-            <span className="px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-extrabold uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
+            <span className="px-3.5 py-1.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-extrabold uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-purple-400" />
               Symphony Member
             </span>
@@ -220,7 +221,7 @@ export default function ProfilePage() {
       </motion.div>
 
       {/* Interactive Glass Navigation Tabs Bar */}
-      <motion.div variants={itemVariants} className="flex items-center gap-2 p-1.5 rounded-2xl glass-card backdrop-blur-2xl bg-black/40 border border-purple-500/25 overflow-x-auto [&::-webkit-scrollbar]:none select-none">
+      <motion.div variants={itemVariants} className="flex items-center gap-2 p-2 rounded-2xl glass-card backdrop-blur-2xl bg-black/40 border border-purple-500/25 overflow-x-auto [&::-webkit-scrollbar]:none select-none">
         {[
           { id: 'overview', label: 'Overview', icon: Sparkles },
           { id: 'playlists', label: `Playlists (${playlists.length})`, icon: ListMusic },
@@ -243,10 +244,10 @@ export default function ProfilePage() {
         ))}
       </motion.div>
 
-      {/* Tab Panels */}
+      {/* Tab Content Panels */}
       <AnimatePresence mode="wait">
         {/* =========================================================
-            TAB 1: OVERVIEW (Full Glass Panel Modules)
+            TAB 1: OVERVIEW (Explorer-style Glass Cards)
            ========================================================= */}
         {activeTab === 'overview' && (
           <motion.div
@@ -255,64 +256,106 @@ export default function ProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
-            className="space-y-8"
+            className="space-y-10"
           >
-            {/* Top Stats Overview Panel */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
-              <div
+            {/* Explorer-style Stats Glass Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 lg:gap-6">
+              {/* Liked Songs Glass Card */}
+              <motion.div
+                whileHover={{ scale: 1.03, y: -4 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setActiveTab('favorites')}
-                className="glass-card backdrop-blur-3xl bg-gradient-to-br from-purple-950/60 via-[#0e0722]/80 to-[#070312]/90 border-2 border-purple-500/30 hover:border-purple-400/50 rounded-3xl p-6 flex items-center justify-between transition-all duration-300 group cursor-pointer shadow-2xl relative overflow-hidden"
+                className="relative group cursor-pointer select-none"
               >
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent opacity-80" />
-                <div className="space-y-1">
-                  <span className="text-xs font-black uppercase tracking-widest text-purple-300">Liked Songs</span>
-                  <p className="text-4xl font-black text-white group-hover:text-purple-200 transition-colors">
-                    {favorites.length}
-                  </p>
-                  <p className="text-xs text-zinc-400 font-medium">Curated tracks in library</p>
-                </div>
-                <div className="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform shadow-lg">
-                  <Heart className="w-7 h-7 fill-purple-400/40" />
-                </div>
-              </div>
+                <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800 opacity-0 group-hover:opacity-60 blur-xl transition-all duration-500 pointer-events-none" />
+                <div className="relative h-44 sm:h-48 rounded-3xl bg-gradient-to-br from-purple-950/70 via-[#0e0722]/85 to-[#070312]/95 backdrop-blur-2xl border border-purple-500/30 group-hover:border-purple-400/60 p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-2xl shadow-purple-950/40 transition-all duration-300">
+                  <div className="relative z-10 space-y-1">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest bg-purple-500/20 border border-purple-400/30 text-purple-300 backdrop-blur-md shadow-sm">
+                      Liked Songs
+                    </span>
+                    <h3 className="text-4xl sm:text-5xl font-black text-white tracking-tight drop-shadow-md pt-1">
+                      {favorites.length}
+                    </h3>
+                  </div>
 
-              <div
+                  <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-purple-300/80 group-hover:text-purple-200 transition-colors">
+                    <span>Curated tracks in library</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+
+                  <div className="absolute -bottom-2 -right-2 p-4 rounded-3xl bg-purple-500/10 border border-purple-400/20 backdrop-blur-md group-hover:scale-110 group-hover:rotate-[-6deg] group-hover:bg-purple-500/20 transition-all duration-500 pointer-events-none">
+                    <Heart className="w-16 h-16 sm:w-20 sm:h-20 text-purple-300 opacity-40 group-hover:opacity-80 transition-opacity duration-300 fill-purple-400/30" />
+                  </div>
+
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+                </div>
+              </motion.div>
+
+              {/* Playlists Glass Card */}
+              <motion.div
+                whileHover={{ scale: 1.03, y: -4 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setActiveTab('playlists')}
-                className="glass-card backdrop-blur-3xl bg-gradient-to-br from-purple-950/60 via-[#0e0722]/80 to-[#070312]/90 border-2 border-purple-500/30 hover:border-purple-400/50 rounded-3xl p-6 flex items-center justify-between transition-all duration-300 group cursor-pointer shadow-2xl relative overflow-hidden"
+                className="relative group cursor-pointer select-none"
               >
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent opacity-80" />
-                <div className="space-y-1">
-                  <span className="text-xs font-black uppercase tracking-widest text-purple-300">Playlists</span>
-                  <p className="text-4xl font-black text-white group-hover:text-purple-200 transition-colors">
-                    {playlists.length}
-                  </p>
-                  <p className="text-xs text-zinc-400 font-medium">Custom created collections</p>
-                </div>
-                <div className="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform shadow-lg">
-                  <ListMusic className="w-7 h-7" />
-                </div>
-              </div>
+                <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-purple-600 via-indigo-600 to-fuchsia-600 opacity-0 group-hover:opacity-60 blur-xl transition-all duration-500 pointer-events-none" />
+                <div className="relative h-44 sm:h-48 rounded-3xl bg-gradient-to-br from-purple-950/70 via-[#0e0722]/85 to-[#070312]/95 backdrop-blur-2xl border border-purple-500/30 group-hover:border-purple-400/60 p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-2xl shadow-purple-950/40 transition-all duration-300">
+                  <div className="relative z-10 space-y-1">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest bg-purple-500/20 border border-purple-400/30 text-purple-300 backdrop-blur-md shadow-sm">
+                      Playlists
+                    </span>
+                    <h3 className="text-4xl sm:text-5xl font-black text-white tracking-tight drop-shadow-md pt-1">
+                      {playlists.length}
+                    </h3>
+                  </div>
 
-              <div
+                  <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-purple-300/80 group-hover:text-purple-200 transition-colors">
+                    <span>Custom created collections</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+
+                  <div className="absolute -bottom-2 -right-2 p-4 rounded-3xl bg-purple-500/10 border border-purple-400/20 backdrop-blur-md group-hover:scale-110 group-hover:rotate-[-6deg] group-hover:bg-purple-500/20 transition-all duration-500 pointer-events-none">
+                    <ListMusic className="w-16 h-16 sm:w-20 sm:h-20 text-purple-300 opacity-40 group-hover:opacity-80 transition-opacity duration-300" />
+                  </div>
+
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
+                </div>
+              </motion.div>
+
+              {/* Recently Played Glass Card */}
+              <motion.div
+                whileHover={{ scale: 1.03, y: -4 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setActiveTab('history')}
-                className="glass-card backdrop-blur-3xl bg-gradient-to-br from-purple-950/60 via-[#0e0722]/80 to-[#070312]/90 border-2 border-purple-500/30 hover:border-purple-400/50 rounded-3xl p-6 flex items-center justify-between transition-all duration-300 group cursor-pointer shadow-2xl relative overflow-hidden"
+                className="relative group cursor-pointer select-none"
               >
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent opacity-80" />
-                <div className="space-y-1">
-                  <span className="text-xs font-black uppercase tracking-widest text-purple-300">Recently Played</span>
-                  <p className="text-4xl font-black text-white group-hover:text-purple-200 transition-colors">
-                    {recentlyPlayed.length}
-                  </p>
-                  <p className="text-xs text-zinc-400 font-medium">Tracks in active history</p>
+                <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 opacity-0 group-hover:opacity-60 blur-xl transition-all duration-500 pointer-events-none" />
+                <div className="relative h-44 sm:h-48 rounded-3xl bg-gradient-to-br from-purple-950/70 via-[#0e0722]/85 to-[#070312]/95 backdrop-blur-2xl border border-purple-500/30 group-hover:border-purple-400/60 p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-2xl shadow-purple-950/40 transition-all duration-300">
+                  <div className="relative z-10 space-y-1">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest bg-purple-500/20 border border-purple-400/30 text-purple-300 backdrop-blur-md shadow-sm">
+                      Recently Played
+                    </span>
+                    <h3 className="text-4xl sm:text-5xl font-black text-white tracking-tight drop-shadow-md pt-1">
+                      {recentlyPlayed.length}
+                    </h3>
+                  </div>
+
+                  <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-purple-300/80 group-hover:text-purple-200 transition-colors">
+                    <span>Tracks in active history</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+
+                  <div className="absolute -bottom-2 -right-2 p-4 rounded-3xl bg-purple-500/10 border border-purple-400/20 backdrop-blur-md group-hover:scale-110 group-hover:rotate-[-6deg] group-hover:bg-purple-500/20 transition-all duration-500 pointer-events-none">
+                    <Disc className="w-16 h-16 sm:w-20 sm:h-20 text-purple-300 opacity-40 group-hover:opacity-80 transition-opacity duration-300" />
+                  </div>
+
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
                 </div>
-                <div className="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform shadow-lg">
-                  <Disc className="w-7 h-7" />
-                </div>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Public Playlists Full Glass Panel Container */}
-            <div className="glass-card backdrop-blur-3xl bg-gradient-to-br from-[#140b2e]/90 via-[#0c061c]/90 to-[#06030f]/95 border-2 border-purple-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_25px_85px_rgba(0,0,0,0.6)] relative overflow-hidden space-y-6">
+            {/* Public Playlists Full Glass Container */}
+            <div className="glass-card backdrop-blur-3xl bg-gradient-to-br from-[#140b2e]/90 via-[#0c061c]/90 to-[#06030f]/95 border-2 border-purple-500/30 rounded-3xl p-6 sm:p-8 sm:p-10 shadow-[0_25px_85px_rgba(0,0,0,0.6)] relative overflow-hidden space-y-6">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent opacity-90" />
 
               <div className="flex items-center justify-between">
@@ -327,7 +370,7 @@ export default function ProfilePage() {
                 </div>
                 <button
                   onClick={openCreatePlaylistModal}
-                  className="px-4 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-600/30 border border-purple-500/30 text-purple-200 text-xs font-extrabold transition-all cursor-pointer shadow-sm"
+                  className="px-4 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-200 text-xs font-extrabold transition-all cursor-pointer shadow-sm"
                 >
                   + Create Playlist
                 </button>
@@ -342,36 +385,52 @@ export default function ProfilePage() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {playlists.map((pl) => (
-                    <div
+                    <motion.div
                       key={pl.id}
+                      whileHover={{ scale: 1.03, y: -4 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => navigate(`/playlists/${pl.id}`)}
-                      className="glass-card backdrop-blur-xl bg-black/30 hover:bg-purple-900/30 border border-purple-500/20 hover:border-purple-400/40 rounded-2xl p-4 flex items-center gap-4 transition-all duration-200 group cursor-pointer shadow-md"
+                      className="relative group cursor-pointer select-none"
                     >
-                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${pl.gradient || 'from-purple-600 to-indigo-800'} border border-white/20 flex items-center justify-center shrink-0 shadow-md text-white`}>
-                        <Music2 className="w-8 h-8 text-purple-100" />
+                      <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-50 blur-xl transition-all duration-500 pointer-events-none" />
+
+                      <div className="relative h-44 sm:h-48 rounded-3xl bg-gradient-to-br from-purple-950/70 via-[#0e0722]/85 to-[#070312]/95 backdrop-blur-2xl border border-purple-500/25 group-hover:border-purple-400/50 p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-2xl transition-all duration-300">
+                        <div className="relative z-10 flex items-start justify-between">
+                          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pl.gradient || 'from-purple-600 to-indigo-800'} border border-white/20 flex items-center justify-center text-white shadow-lg`}>
+                            <Music2 className="w-6 h-6 text-purple-100" />
+                          </div>
+                          <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-black/40 border border-white/10 text-purple-300 backdrop-blur-md">
+                            {pl.songs?.length || 0} {pl.songs?.length === 1 ? 'track' : 'tracks'}
+                          </span>
+                        </div>
+
+                        <div className="relative z-10 space-y-1">
+                          <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight truncate group-hover:text-purple-200 transition-colors">
+                            {pl.name}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-purple-300/80 group-hover:text-white transition-colors">
+                            <span>Open Playlist</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+
+                        <div className="absolute -bottom-2 -right-2 p-4 rounded-3xl bg-purple-500/10 border border-purple-400/20 backdrop-blur-md group-hover:scale-110 group-hover:bg-purple-600 group-hover:border-purple-400 transition-all duration-500 pointer-events-none">
+                          <Play className="w-12 h-12 text-white fill-white opacity-40 group-hover:opacity-100 transition-opacity duration-300 ml-0.5" fill="white" />
+                        </div>
+
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
                       </div>
-                      <div className="min-w-0 flex-1 space-y-1">
-                        <p className="text-sm font-bold text-white group-hover:text-purple-200 truncate tracking-tight">
-                          {pl.name}
-                        </p>
-                        <p className="text-xs text-zinc-400 truncate">
-                          {pl.songs?.length || 0} {pl.songs?.length === 1 ? 'track' : 'tracks'}
-                        </p>
-                      </div>
-                      <div className="w-10 h-10 rounded-full bg-purple-500/20 group-hover:bg-purple-600 border border-purple-400/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-200 shrink-0">
-                        <Play className="w-4 h-4 fill-white ml-0.5" fill="white" />
-                      </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Favorite Tracks Full Glass Panel Container */}
+            {/* Favorite Tracks Full Glass Container */}
             {favorites.length > 0 && (
-              <div className="glass-card backdrop-blur-3xl bg-gradient-to-br from-[#140b2e]/90 via-[#0c061c]/90 to-[#06030f]/95 border-2 border-purple-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_25px_85px_rgba(0,0,0,0.6)] relative overflow-hidden space-y-6">
+              <div className="glass-card backdrop-blur-3xl bg-gradient-to-br from-[#140b2e]/90 via-[#0c061c]/90 to-[#06030f]/95 border-2 border-purple-500/30 rounded-3xl p-6 sm:p-8 sm:p-10 shadow-[0_25px_85px_rgba(0,0,0,0.6)] relative overflow-hidden space-y-6">
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent opacity-90" />
 
                 <div className="flex items-center justify-between">
@@ -404,10 +463,10 @@ export default function ProfilePage() {
                           setCurrentIndex(i)
                           playSong(song)
                         }}
-                        className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl border transition-all duration-200 group cursor-pointer ${
+                        className={`flex items-center gap-4.5 px-5 py-4 rounded-2xl border transition-all duration-200 group cursor-pointer ${
                           isCurrent
                             ? 'bg-purple-900/40 border-purple-500/50 text-purple-200 shadow-lg'
-                            : 'bg-black/20 border-white/5 hover:bg-purple-900/20 hover:border-purple-500/25 text-white'
+                            : 'bg-black/30 border-white/10 hover:bg-purple-900/20 hover:border-purple-400/30 text-white'
                         }`}
                       >
                         <div className="flex items-center justify-center w-6 text-xs font-bold text-zinc-400">
@@ -422,7 +481,7 @@ export default function ProfilePage() {
                         <img
                           src={song.thumbnail}
                           alt={song.title}
-                          className="w-11 h-11 rounded-xl object-cover shrink-0 shadow-md border border-white/10"
+                          className="w-12 h-12 rounded-xl object-cover shrink-0 shadow-md border border-white/10"
                         />
 
                         <div className="min-w-0 flex-1 space-y-0.5">
@@ -448,7 +507,7 @@ export default function ProfilePage() {
         )}
 
         {/* =========================================================
-            TAB 2: PLAYLISTS (Full Glass Panel Module)
+            TAB 2: PLAYLISTS (Explorer-style Glass Cards)
            ========================================================= */}
         {activeTab === 'playlists' && (
           <motion.div
@@ -501,30 +560,46 @@ export default function ProfilePage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
                 {playlists
                   .filter((p) => p.name.toLowerCase().includes(playlistSearch.toLowerCase()))
                   .map((pl) => (
-                    <div
+                    <motion.div
                       key={pl.id}
+                      whileHover={{ scale: 1.03, y: -4 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => navigate(`/playlists/${pl.id}`)}
-                      className="glass-card backdrop-blur-xl bg-black/30 hover:bg-purple-900/30 border border-purple-500/20 hover:border-purple-400/50 rounded-2xl p-5 flex items-center gap-4 transition-all duration-200 group cursor-pointer shadow-xl relative overflow-hidden"
+                      className="relative group cursor-pointer select-none"
                     >
-                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${pl.gradient || 'from-purple-600 to-indigo-800'} border border-white/20 flex items-center justify-center shrink-0 shadow-lg text-white group-hover:scale-105 transition-transform`}>
-                        <Music2 className="w-10 h-10 text-purple-100" />
+                      <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-50 blur-xl transition-all duration-500 pointer-events-none" />
+
+                      <div className="relative h-44 sm:h-48 rounded-3xl bg-gradient-to-br from-purple-950/70 via-[#0e0722]/85 to-[#070312]/95 backdrop-blur-2xl border border-purple-500/25 group-hover:border-purple-400/50 p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-2xl transition-all duration-300">
+                        <div className="relative z-10 flex items-start justify-between">
+                          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pl.gradient || 'from-purple-600 to-indigo-800'} border border-white/20 flex items-center justify-center text-white shadow-lg`}>
+                            <Music2 className="w-6 h-6 text-purple-100" />
+                          </div>
+                          <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-black/40 border border-white/10 text-purple-300 backdrop-blur-md">
+                            {pl.songs?.length || 0} {pl.songs?.length === 1 ? 'track' : 'tracks'}
+                          </span>
+                        </div>
+
+                        <div className="relative z-10 space-y-1">
+                          <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight truncate group-hover:text-purple-200 transition-colors">
+                            {pl.name}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-purple-300/80 group-hover:text-white transition-colors">
+                            <span>Open Playlist</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+
+                        <div className="absolute -bottom-2 -right-2 p-4 rounded-3xl bg-purple-500/10 border border-purple-400/20 backdrop-blur-md group-hover:scale-110 group-hover:bg-purple-600 group-hover:border-purple-400 transition-all duration-500 pointer-events-none">
+                          <Play className="w-12 h-12 text-white fill-white opacity-40 group-hover:opacity-100 transition-opacity duration-300 ml-0.5" fill="white" />
+                        </div>
+
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
                       </div>
-                      <div className="min-w-0 flex-1 space-y-1">
-                        <p className="text-base font-black text-white group-hover:text-purple-200 truncate tracking-tight">
-                          {pl.name}
-                        </p>
-                        <p className="text-xs text-zinc-400 truncate font-semibold">
-                          {pl.songs?.length || 0} {pl.songs?.length === 1 ? 'track' : 'tracks'}
-                        </p>
-                      </div>
-                      <div className="w-11 h-11 rounded-full bg-purple-500/20 group-hover:bg-purple-600 border border-purple-400/40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-200 shrink-0 shadow-lg">
-                        <Play className="w-5 h-5 fill-white ml-0.5" fill="white" />
-                      </div>
-                    </div>
+                    </motion.div>
                   ))}
               </div>
             )}
@@ -532,7 +607,7 @@ export default function ProfilePage() {
         )}
 
         {/* =========================================================
-            TAB 3: LIKED SONGS (Full Glass Panel Module)
+            TAB 3: LIKED SONGS (Full Glass Container Table)
            ========================================================= */}
         {activeTab === 'favorites' && (
           <motion.div
@@ -597,10 +672,10 @@ export default function ProfilePage() {
                         setCurrentIndex(i)
                         playSong(song)
                       }}
-                      className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl border transition-all duration-200 group cursor-pointer ${
+                      className={`flex items-center gap-4.5 px-5 py-4 rounded-2xl border transition-all duration-200 group cursor-pointer ${
                         isCurrent
                           ? 'bg-purple-900/40 border-purple-500/50 text-purple-200 shadow-lg'
-                          : 'bg-black/20 border-white/5 hover:bg-purple-900/20 hover:border-purple-500/25 text-white'
+                          : 'bg-black/30 border-white/10 hover:bg-purple-900/20 hover:border-purple-400/30 text-white'
                       }`}
                     >
                       <div className="flex items-center justify-center w-6 text-xs font-bold text-zinc-400">
@@ -615,7 +690,7 @@ export default function ProfilePage() {
                       <img
                         src={song.thumbnail}
                         alt={song.title}
-                        className="w-11 h-11 rounded-xl object-cover shrink-0 shadow-md border border-white/10"
+                        className="w-12 h-12 rounded-xl object-cover shrink-0 shadow-md border border-white/10"
                       />
 
                       <div className="min-w-0 flex-1 space-y-0.5">
@@ -640,7 +715,7 @@ export default function ProfilePage() {
         )}
 
         {/* =========================================================
-            TAB 4: RECENTLY PLAYED (Full Glass Panel Module)
+            TAB 4: RECENTLY PLAYED (Full Glass Container Table)
            ========================================================= */}
         {activeTab === 'history' && (
           <motion.div
@@ -686,10 +761,10 @@ export default function ProfilePage() {
                         setCurrentIndex(i)
                         playSong(song)
                       }}
-                      className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl border transition-all duration-200 group cursor-pointer ${
+                      className={`flex items-center gap-4.5 px-5 py-4 rounded-2xl border transition-all duration-200 group cursor-pointer ${
                         isCurrent
                           ? 'bg-purple-900/40 border-purple-500/50 text-purple-200 shadow-lg'
-                          : 'bg-black/20 border-white/5 hover:bg-purple-900/20 hover:border-purple-500/25 text-white'
+                          : 'bg-black/30 border-white/10 hover:bg-purple-900/20 hover:border-purple-400/30 text-white'
                       }`}
                     >
                       <div className="flex items-center justify-center w-6 text-xs font-bold text-zinc-400">
@@ -704,7 +779,7 @@ export default function ProfilePage() {
                       <img
                         src={song.thumbnail}
                         alt={song.title}
-                        className="w-11 h-11 rounded-xl object-cover shrink-0 shadow-md border border-white/10"
+                        className="w-12 h-12 rounded-xl object-cover shrink-0 shadow-md border border-white/10"
                       />
 
                       <div className="min-w-0 flex-1 space-y-0.5">
@@ -729,7 +804,7 @@ export default function ProfilePage() {
         )}
 
         {/* =========================================================
-            TAB 5: ACCOUNT DETAILS (Full Glass Panel Module)
+            TAB 5: ACCOUNT DETAILS (Full Glass Container Form)
            ========================================================= */}
         {activeTab === 'settings' && (
           <motion.div
