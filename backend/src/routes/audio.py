@@ -1,9 +1,11 @@
+import subprocess
 import urllib.parse
+import traceback
 import requests
 from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import StreamingResponse
 from yt_dlp import YoutubeDL
-from src.services.audio_service import get_audio_url
+from pytubefix import YouTube
 
 router = APIRouter()
 
@@ -15,36 +17,28 @@ def debug_audio(video_id: str):
     url = f"https://www.youtube.com/watch?v={video_id}"
     logs = []
     
-    test_configs = [
-        {"name": "android_only", "args": {"youtube": {"player_client": ["android"]}}},
-        {"name": "tv_only", "args": {"youtube": {"player_client": ["tv"]}}},
-        {"name": "mweb_only", "args": {"youtube": {"player_client": ["mweb"]}}},
-        {"name": "ios_only", "args": {"youtube": {"player_client": ["ios"]}}},
-        {"name": "android_creator", "args": {"youtube": {"player_client": ["android_creator"]}}},
-        {"name": "web_creator", "args": {"youtube": {"player_client": ["web_creator"]}}},
-    ]
-    
-    for item in test_configs:
-        opts = {
-            "format": "bestaudio/best",
-            "quiet": True,
-            "noplaylist": True,
-            "nocheckcertificate": True,
-            "geo_bypass": True,
-            "extractor_args": item["args"]
-        }
+    # Check node availability
+    try:
+        node_ver = subprocess.check_output(["node", "-v"], stderr=subprocess.STDOUT).decode().strip()
+        logs.append(f"Node.js version: {node_ver}")
+    except Exception as e:
+        logs.append(f"Node.js check failed: {e}")
+
+    # Test pytubefix with clients
+    for client in ["WEB", "MWEB", "TV", "ANDROID"]:
         try:
-            with YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-                if info and info.get("url"):
-                    return {
-                        "status": "success",
-                        "config_name": item["name"],
-                        "title": info.get("title"),
-                        "audio_url": info.get("url")[:100] + "..."
-                    }
+            yt = YouTube(url, client=client)
+            stream = yt.streams.filter(only_audio=True).order_by("abr").desc().first()
+            if stream and stream.url:
+                return {
+                    "status": "success",
+                    "engine": "pytubefix",
+                    "client": client,
+                    "title": getattr(yt, "title", "Track"),
+                    "audio_url": stream.url[:120] + "..."
+                }
         except Exception as e:
-            logs.append(f"Config '{item['name']}' failed: {type(e).__name__}: {str(e)}")
+            logs.append(f"pytubefix '{client}' error: {type(e).__name__}: {str(e)}")
 
     return {"status": "failed", "logs": logs}
 
@@ -53,6 +47,7 @@ def debug_audio(video_id: str):
 def get_audio(video_id: str, request: Request, quality: str = "high"):
     clean_quality = urllib.parse.unquote(quality or "high").strip()
     try:
+        from src.services.audio_service import get_audio_url
         data = get_audio_url(video_id, quality=clean_quality)
         if data and data.get("audio_url"):
             cache_key = f"{video_id}_{clean_quality.lower()}"
@@ -63,6 +58,7 @@ def get_audio(video_id: str, request: Request, quality: str = "high"):
             return data
     except Exception as e:
         print(f"Error fetching audio metadata for {video_id}:", e)
+        traceback.print_exc()
 
     raise HTTPException(status_code=404, detail="Audio stream not found for track")
 
@@ -74,6 +70,7 @@ def stream_audio(video_id: str, request: Request, quality: str = "high"):
     direct_url = url_cache.get(cache_key)
 
     if not direct_url:
+        from src.services.audio_service import get_audio_url
         data = get_audio_url(video_id, quality=clean_quality)
         direct_url = data.get("audio_url") if data else None
         if direct_url:
@@ -96,6 +93,7 @@ def stream_audio(video_id: str, request: Request, quality: str = "high"):
         raise HTTPException(status_code=502, detail=f"Failed to connect to media host: {str(e)}")
 
     if upstream_res.status_code == 403:
+        from src.services.audio_service import get_audio_url
         data = get_audio_url(video_id, quality=clean_quality)
         direct_url = data.get("audio_url") if data else None
         if direct_url:
