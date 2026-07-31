@@ -1,5 +1,8 @@
+import time
 from pytubefix import YouTube
 from yt_dlp import YoutubeDL
+
+_url_cache = {}
 
 
 def get_audio_url(video_id: str, quality: str = "high"):
@@ -10,23 +13,46 @@ def get_audio_url(video_id: str, quality: str = "high"):
     url = f"https://www.youtube.com/watch?v={video_id}"
     quality_key = (quality or "high").lower()
 
-    # Strategy 1: Try pytubefix (WEB, MWEB, TV, ANDROID)
-    for client in ["WEB", "MWEB", "TV", "ANDROID"]:
+    # Check cache first
+    cached = _url_cache.get(video_id)
+    if cached and (time.time() - cached["timestamp"] < 3600):
+        return cached["data"]
+
+    # Strategy 1: Try pytubefix with WEB client
+    try:
+        yt = YouTube(url, client="WEB")
+        stream = yt.streams.filter(only_audio=True).order_by("abr").desc().first()
+        if stream and stream.url:
+            res_data = {
+                "title": getattr(yt, "title", "Track"),
+                "audio_url": stream.url,
+                "quality": quality_key,
+                "ext": getattr(stream, "subtype", "webm"),
+            }
+            _url_cache[video_id] = {"timestamp": time.time(), "data": res_data}
+            return res_data
+    except Exception as e:
+        print(f"pytubefix WEB attempt failed for {video_id}:", e)
+
+    # Strategy 2: Try pytubefix with MWEB / TV clients
+    for client in ["MWEB", "TV", "IOS"]:
         try:
             yt = YouTube(url, client=client)
             stream = yt.streams.filter(only_audio=True).order_by("abr").desc().first()
             if stream and stream.url:
-                return {
+                res_data = {
                     "title": getattr(yt, "title", "Track"),
                     "audio_url": stream.url,
                     "quality": quality_key,
                     "ext": getattr(stream, "subtype", "webm"),
                 }
+                _url_cache[video_id] = {"timestamp": time.time(), "data": res_data}
+                return res_data
         except Exception as e:
-            print(f"pytubefix attempt for {video_id} with client '{client}' failed:", e)
+            print(f"pytubefix client '{client}' failed for {video_id}:", e)
 
-    # Strategy 2: yt-dlp fallback
-    client_list = ["tv_embedded", "android_embedded", "ios_embedded", "mweb_embedded", "android", "mweb"]
+    # Strategy 3: yt-dlp fallback
+    client_list = ["android", "ios", "mweb"]
     for client in client_list:
         ydl_opts = {
             "format": "bestaudio/best",
@@ -40,7 +66,7 @@ def get_audio_url(video_id: str, quality: str = "high"):
             with YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
                 if info and info.get("url"):
-                    return {
+                    res_data = {
                         "title": info.get("title"),
                         "audio_url": info.get("url"),
                         "quality": quality_key,
@@ -49,6 +75,8 @@ def get_audio_url(video_id: str, quality: str = "high"):
                         "asr": info.get("asr"),
                         "ext": info.get("ext", "webm"),
                     }
+                    _url_cache[video_id] = {"timestamp": time.time(), "data": res_data}
+                    return res_data
         except Exception as e:
             print(f"yt-dlp attempt for {video_id} with client '{client}' failed:", e)
 
