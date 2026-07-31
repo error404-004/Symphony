@@ -332,10 +332,13 @@ import { searchMusic } from "../services/api";
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
           await audioCtxRef.current.resume();
         }
-        await player.play();
+        await player.play().catch((playErr) => {
+          if (playErr.name !== "AbortError") {
+            playIframeFallback(song.videoId);
+          }
+        });
         setIsPlaying(true);
       } else {
-        // Fallback to embedded player
         playIframeFallback(song.videoId);
       }
     } catch (err) {
@@ -351,7 +354,11 @@ import { searchMusic } from "../services/api";
   }
 
   function playIframeFallback(videoId) {
-    player.pause();
+    try {
+      player.pause();
+    } catch (e) {
+      /* ignore interrupt pause */
+    }
     player.src = "";
     setIsIframeActive(true);
     setIframeSrc(`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1`);
@@ -362,7 +369,11 @@ import { searchMusic } from "../services/api";
     if (isIframeActive) {
       setIframeSrc((prev) => prev.replace("autoplay=1", "autoplay=0"));
     } else {
-      player.pause();
+      try {
+        player.pause();
+      } catch (e) {
+        /* ignore interrupt pause */
+      }
     }
     setIsPlaying(false);
   }
@@ -371,7 +382,9 @@ import { searchMusic } from "../services/api";
     if (isIframeActive && currentSong) {
       setIframeSrc(`https://www.youtube-nocookie.com/embed/${currentSong.videoId}?autoplay=1&enablejsapi=1`);
     } else {
-      player.play();
+      player.play().catch((e) => {
+        if (e.name !== "AbortError") console.warn("Resume play error:", e);
+      });
     }
     setIsPlaying(true);
   }
