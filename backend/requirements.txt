@@ -17,3 +17,5 @@ typing_extensions==4.16.0
 urllib3==2.7.0
 uvicorn==0.49.0
 ytmusicapi==1.12.1
+yt-dlp
+

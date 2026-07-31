@@ -110,7 +110,8 @@ export default function SettingsPage() {
   const [apiStatus, setApiStatus] = useState('Checking...')
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/')
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+    fetch(`${apiBase}/`)
       .then((res) => (res.ok ? setApiStatus('Online & Connected') : setApiStatus('Offline')))
       .catch(() => setApiStatus('PyTube Engine Standby'))
   }, [activeModal])

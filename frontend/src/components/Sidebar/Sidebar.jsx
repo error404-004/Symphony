@@ -358,7 +358,7 @@ export default function Sidebar() {
         </div>
       </motion.aside>
 
-      {/* 5. Glassmorphic Popup Modal (Square-Proportioned, Rounded-36px, Spacious & Clean Alignment) */}
+      {/* 5. Glassmorphic Popup Modal (Square-Proportioned, Rounded-10px, Spacious & Clean Alignment) */}
       <AnimatePresence>
         {isPopupOpen && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6">
@@ -370,7 +370,7 @@ export default function Sidebar() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="bg-[#0f0724]/95 border-2 border-purple-500/60 shadow-[0_0_80px_rgba(168,85,247,0.5)] backdrop-blur-3xl rounded-[36px] p-7 sm:p-9 max-w-[620px] w-full relative z-10 overflow-hidden text-white select-none space-y-5"
+              className="bg-[#0f0724]/95 border-2 border-purple-500/60 shadow-[0_0_80px_rgba(168,85,247,0.5)] backdrop-blur-3xl rounded-[10px] p-7 sm:p-9 max-w-[620px] w-full relative z-10 overflow-hidden text-white select-none space-y-5"
             >
               {/* Backlight glowing orb inside popup card */}
               <div className="absolute -top-20 -right-20 w-80 h-80 bg-purple-600/30 rounded-full blur-[130px] pointer-events-none" />

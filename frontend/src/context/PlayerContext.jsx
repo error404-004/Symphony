@@ -101,25 +101,32 @@ import { searchMusic } from "../services/api";
           sourceNodeRef.current = source;
 
           // Low Shelf Bass Filter (120Hz Sub-bass Warmth)
-          const bassFilter = ctx.createBiquadFilter();
-          bassFilter.type = 'lowshelf';
-          bassFilter.frequency.value = 120;
-          eqBassRef.current = bassFilter;
+          const bassFilter = ctx.createBiquadFilter ? ctx.createBiquadFilter() : null;
+          if (bassFilter) {
+            bassFilter.type = 'lowshelf';
+            bassFilter.frequency.value = 120;
+            eqBassRef.current = bassFilter;
+          }
 
           // High Shelf Treble Filter (8kHz Crystal Acoustics)
-          const trebleFilter = ctx.createBiquadFilter();
-          trebleFilter.type = 'highshelf';
-          trebleFilter.frequency.value = 8000;
-          eqTrebleRef.current = trebleFilter;
+          const trebleFilter = ctx.createBiquadFilter ? ctx.createBiquadFilter() : null;
+          if (trebleFilter) {
+            trebleFilter.type = 'highshelf';
+            trebleFilter.frequency.value = 8000;
+            eqTrebleRef.current = trebleFilter;
+          }
 
           // Dynamic Compressor / Limiter (Amazon HD Studio Mastering)
-          const compressor = ctx.createDynamicCompressor();
-          compressor.threshold.value = -12;
-          compressor.knee.value = 30;
-          compressor.ratio.value = 12;
-          compressor.attack.value = 0.003;
-          compressor.release.value = 0.25;
-          compressorRef.current = compressor;
+          let compressor = null;
+          if (ctx.createDynamicsCompressor) {
+            compressor = ctx.createDynamicsCompressor();
+            compressor.threshold.value = -12;
+            compressor.knee.value = 30;
+            compressor.ratio.value = 12;
+            compressor.attack.value = 0.003;
+            compressor.release.value = 0.25;
+            compressorRef.current = compressor;
+          }
 
           // Stereo Panner (Apple Spatial Audio 3D Soundstage)
           let panner = null;
@@ -129,20 +136,23 @@ import { searchMusic } from "../services/api";
             pannerRef.current = panner;
           }
 
-          if (panner) {
-            source.connect(bassFilter);
-            bassFilter.connect(trebleFilter);
-            trebleFilter.connect(panner);
-            panner.connect(compressor);
-            compressor.connect(ctx.destination);
-          } else {
-            source.connect(bassFilter);
-            bassFilter.connect(trebleFilter);
-            trebleFilter.connect(compressor);
-            compressor.connect(ctx.destination);
+          // Build DSP audio processing pipeline safely
+          const dspChain = [bassFilter, trebleFilter, panner, compressor].filter(Boolean);
+          let prevNode = source;
+          for (const nextNode of dspChain) {
+            prevNode.connect(nextNode);
+            prevNode = nextNode;
           }
+          prevNode.connect(ctx.destination);
         } catch (err) {
           console.warn("WebAudio Master DSP init handled:", err);
+          if (sourceNodeRef.current && audioCtxRef.current) {
+            try {
+              sourceNodeRef.current.connect(audioCtxRef.current.destination);
+            } catch (e) {
+              /* ignore fallback error */
+            }
+          }
         }
       };
 
@@ -369,7 +379,11 @@ import { searchMusic } from "../services/api";
       const stream = await getAudio(song.videoId, audioQuality);
 
       if (stream && stream.audio_url) {
+        player.crossOrigin = "anonymous";
         player.src = stream.audio_url;
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          await audioCtxRef.current.resume();
+        }
         await player.play();
         setIsPlaying(true);
       } else {

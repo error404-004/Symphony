@@ -133,18 +133,20 @@ export default function HomePage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-16 sm:space-y-20 lg:space-y-24 pb-6 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative"
+      className="space-y-10 sm:space-y-12 lg:space-y-14 pb-6 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative"
     >
       {/* Hero Greeting Section */}
-      <motion.div variants={sectionVariants} className="relative pt-6 sm:pt-8 lg:pt-10 pb-2 sm:pb-4 flex flex-col items-center justify-center text-center">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
+      <motion.div variants={sectionVariants} className="relative pt-4 sm:pt-6 pb-2 flex flex-col items-center justify-center text-center">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-36 bg-purple-600/12 rounded-full blur-[85px] pointer-events-none" />
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight relative drop-shadow-sm leading-tight text-center">
-          {greeting.title}
-        </h1>
-        <p className="text-zinc-400 mt-2.5 sm:mt-3 text-base sm:text-lg font-medium relative tracking-normal text-center max-w-xl">
-          {greeting.subtitle}
-        </p>
+        <div className="relative flex flex-col items-center gap-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight leading-snug text-center">
+            {greeting.title}
+          </h1>
+          <p className="text-zinc-400 text-sm sm:text-base font-normal text-center max-w-lg leading-relaxed">
+            {greeting.subtitle}
+          </p>
+        </div>
       </motion.div>
 
       {/* Continue Listening - Active Playlists & Session Collections */}
@@ -260,24 +262,24 @@ function getGreeting() {
   const hour = new Date().getHours()
   if (hour >= 5 && hour < 12) {
     return {
-      title: 'Good Morning 👋',
-      subtitle: 'Start your day with the perfect soundscape.',
+      title: 'Good morning ☀️',
+      subtitle: 'ease into your day with your favorite soundscape',
     }
   }
   if (hour >= 12 && hour < 17) {
     return {
-      title: 'Midday Harmonies 🎵',
-      subtitle: 'Fuel your focus with your favorite tracks.',
+      title: 'Midday harmonies 🎵',
+      subtitle: 'light tunes and casual vibes for your afternoon',
     }
   }
   if (hour >= 17 && hour < 22) {
     return {
-      title: 'Sunset Sessions 🌆',
-      subtitle: 'Unwind, relax, and let the music take over.',
+      title: 'Sunset sessions 🌆',
+      subtitle: 'unwind, relax, and let the music play',
     }
   }
   return {
-    title: 'Midnight Resonance 🌙',
-    subtitle: 'Deep cuts & quiet melodies for the night hours.',
+    title: 'Midnight resonance 🌙',
+    subtitle: 'quiet melodies and soft tracks for late hours',
   }
 }

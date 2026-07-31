@@ -28,33 +28,33 @@ function getLibraryHeaderQuote() {
   const hour = new Date().getHours()
   if (hour >= 5 && hour < 12) {
     return {
-      title: 'Morning Harmonies',
+      title: 'Morning harmonies',
       icon: Sun,
       iconColor: 'text-amber-400',
-      subtitle: 'Start your day with your curated soundscape.',
+      subtitle: 'start your day with your curated soundscape',
     }
   }
   if (hour >= 12 && hour < 17) {
     return {
-      title: 'Midday Focus',
+      title: 'Midday focus',
       icon: Coffee,
       iconColor: 'text-amber-500',
-      subtitle: 'Fuel your day with your saved collections.',
+      subtitle: 'light tunes and casual vibes for your day',
     }
   }
   if (hour >= 17 && hour < 22) {
     return {
-      title: 'Sunset Sessions',
+      title: 'Sunset sessions',
       icon: Sunset,
       iconColor: 'text-rose-400',
-      subtitle: 'Unwind with your personal music vault.',
+      subtitle: 'unwind with your personal music vault',
     }
   }
   return {
-    title: 'Midnight Resonance',
+    title: 'Midnight resonance',
     icon: Moon,
     iconColor: 'text-indigo-400',
-    subtitle: 'Quiet melodies for late night hours.',
+    subtitle: 'quiet melodies for late night hours',
   }
 }
 
@@ -85,16 +85,16 @@ export default function LibraryPage() {
       <motion.div
         variants={itemVariants}
         className="flex flex-col items-center justify-center text-center relative border-b border-white/10"
-        style={{ marginBottom: '28px', paddingBottom: '20px' }}
+        style={{ marginBottom: '20px', paddingBottom: '16px' }}
       >
-        <div className="max-w-2xl mx-auto space-y-2">
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight flex items-center justify-center gap-3">
-            <span className="text-gradient-purple">{headerQuote.title}</span>
+        <div className="max-w-lg mx-auto space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight flex items-center justify-center gap-2.5">
+            <span>{headerQuote.title}</span>
             {HeaderIcon && (
-              <HeaderIcon className={`w-8 h-8 sm:w-10 sm:h-10 ${headerQuote.iconColor} shrink-0 drop-shadow-md`} />
+              <HeaderIcon className={`w-6 h-6 sm:w-7 sm:h-7 ${headerQuote.iconColor} shrink-0 opacity-90`} />
             )}
           </h1>
-          <p className="text-zinc-400 text-sm sm:text-base font-medium">
+          <p className="text-zinc-400 text-sm sm:text-base font-normal">
             {headerQuote.subtitle}
           </p>
         </div>
