@@ -11,6 +11,8 @@ import { searchMusic } from "../services/api";
 
     const [currentSong, setCurrentSong] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [iframeSrc, setIframeSrc] = useState("");
+    const [isIframeActive, setIsIframeActive] = useState(false);
 
     const [queue, setQueue] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(-1);
@@ -100,52 +102,37 @@ import { searchMusic } from "../services/api";
           const source = ctx.createMediaElementSource(player);
           sourceNodeRef.current = source;
 
-          // Low Shelf Bass Filter (120Hz Sub-bass Warmth)
-          const bassFilter = ctx.createBiquadFilter ? ctx.createBiquadFilter() : null;
-          if (bassFilter) {
-            bassFilter.type = 'lowshelf';
-            bassFilter.frequency.value = 120;
-            eqBassRef.current = bassFilter;
-          }
+          const compressor = ctx.createDynamicsCompressor();
+          compressor.threshold.value = -12;
+          compressor.knee.value = 30;
+          compressor.ratio.value = 8;
+          compressor.attack.value = 0.003;
+          compressor.release.value = 0.25;
+          compressorRef.current = compressor;
 
-          // High Shelf Treble Filter (8kHz Crystal Acoustics)
-          const trebleFilter = ctx.createBiquadFilter ? ctx.createBiquadFilter() : null;
-          if (trebleFilter) {
-            trebleFilter.type = 'highshelf';
-            trebleFilter.frequency.value = 8000;
-            eqTrebleRef.current = trebleFilter;
-          }
+          const bassFilter = ctx.createBiquadFilter();
+          bassFilter.type = "lowshelf";
+          bassFilter.frequency.value = 120;
+          bassFilter.gain.value = 4.5;
+          eqBassRef.current = bassFilter;
 
-          // Dynamic Compressor / Limiter (Amazon HD Studio Mastering)
-          let compressor = null;
-          if (ctx.createDynamicsCompressor) {
-            compressor = ctx.createDynamicsCompressor();
-            compressor.threshold.value = -12;
-            compressor.knee.value = 30;
-            compressor.ratio.value = 12;
-            compressor.attack.value = 0.003;
-            compressor.release.value = 0.25;
-            compressorRef.current = compressor;
-          }
+          const trebleFilter = ctx.createBiquadFilter();
+          trebleFilter.type = "highshelf";
+          trebleFilter.frequency.value = 8000;
+          trebleFilter.gain.value = 3.5;
+          eqTrebleRef.current = trebleFilter;
 
-          // Stereo Panner (Apple Spatial Audio 3D Soundstage)
-          let panner = null;
-          if (ctx.createStereoPanner) {
-            panner = ctx.createStereoPanner();
-            panner.pan.value = 0;
-            pannerRef.current = panner;
-          }
+          const panner = ctx.createStereoPanner();
+          panner.pan.value = 0.15;
+          pannerRef.current = panner;
 
-          // Build DSP audio processing pipeline safely
-          const dspChain = [bassFilter, trebleFilter, panner, compressor].filter(Boolean);
-          let prevNode = source;
-          for (const nextNode of dspChain) {
-            prevNode.connect(nextNode);
-            prevNode = nextNode;
-          }
-          prevNode.connect(ctx.destination);
-        } catch (err) {
-          console.warn("WebAudio Master DSP init handled:", err);
+          source.connect(bassFilter);
+          bassFilter.connect(trebleFilter);
+          trebleFilter.connect(compressor);
+          compressor.connect(panner);
+          panner.connect(ctx.destination);
+        } catch (e) {
+          console.warn("WebAudio DSP Initialization fallback:", e);
           if (sourceNodeRef.current && audioCtxRef.current) {
             try {
               sourceNodeRef.current.connect(audioCtxRef.current.destination);
@@ -176,17 +163,14 @@ import { searchMusic } from "../services/api";
       const q = (audioQuality || '').toLowerCase();
 
       if (q.includes('spatial') || q.includes('dolby') || q.includes('3d')) {
-        // Apple Spatial Audio 3D + Amazon HD: 3D soundstage, 4.5dB Bass boost, 3.5dB Treble lift
         if (eqBassRef.current) eqBassRef.current.gain.value = 4.5;
         if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 3.5;
         if (pannerRef.current) pannerRef.current.pan.value = 0.15;
       } else if (q.includes('lossless') || q.includes('alac') || q.includes('flac') || q.includes('192khz')) {
-        // Apple Lossless ALAC: Uncompressed Pure Studio Monitor Flat Response
         if (eqBassRef.current) eqBassRef.current.gain.value = 1.0;
         if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 1.0;
         if (pannerRef.current) pannerRef.current.pan.value = 0;
       } else if (q.includes('ultra hd') || q.includes('amazon') || q.includes('320')) {
-        // Amazon Ultra HD Master: 6dB Bass boost, crisp high-end treble
         if (eqBassRef.current) eqBassRef.current.gain.value = 6.0;
         if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 2.5;
         if (pannerRef.current) pannerRef.current.pan.value = 0;
@@ -217,16 +201,18 @@ import { searchMusic } from "../services/api";
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
-    // -----------------------------
     // Audio Events
-    // -----------------------------
     useEffect(() => {
       function updateTime() {
-        setCurrentTime(player.currentTime);
+        if (!isIframeActive) {
+          setCurrentTime(player.currentTime);
+        }
       }
 
       function loadedMetadata() {
-        setDuration(player.duration || 0);
+        if (!isIframeActive) {
+          setDuration(player.duration || 0);
+        }
       }
 
       player.addEventListener("timeupdate", updateTime);
@@ -236,85 +222,51 @@ import { searchMusic } from "../services/api";
         player.removeEventListener("timeupdate", updateTime);
         player.removeEventListener("loadedmetadata", loadedMetadata);
       };
-    }, [player]);
+    }, [player, isIframeActive]);
 
-    // -------------------------------------------------------------
-    // Genre Resolver & Dynamic Autoplay Radio Engine
-    // -------------------------------------------------------------
     function getGenreForSong(song) {
       if (!song) return "Top Hits";
       if (song.genre) return song.genre;
 
       const text = `${song.title || ""} ${song.artist || ""} ${song.author || ""} ${song.album || ""}`.toLowerCase();
 
-      if (
-        /arijit|atif|lata|kishore|kumar sanu|udit|shreya|jubin|pritam|mithoon|armaan|nehha|badshah|rahat|mohit|sonu|palak|amaal|versatile|bollywood|hindi|tum hi|tereliye|khairiyat|pyaare|raabta|channa|kesariya/i.test(
-          text
-        )
-      ) {
-        return "Hindi Romantic Melodies";
-      }
-
-      if (
-        /punjabi|diljit|sidhu|karan aujla|ap dhillon|shubh|harness|bhangra|guru randhawa|jassie|amrinder/i.test(
-          text
-        )
-      ) {
-        return "Punjabi Top Hits";
-      }
-
-      if (/lofi|lo-fi|chill|beat|study|relax|ambient|sleep|piano/i.test(text)) {
-        return "Lo-Fi Beats Chill";
-      }
-
-      if (/synthwave|retro|80s|cyber|electronic|edm|dj|house|remix/i.test(text)) {
-        return "Synthwave Electronic Beats";
-      }
-
-      if (/rock|metal|guitar|band|anthem|queen|linkin|nirvana/i.test(text)) {
-        return "Rock Anthems";
-      }
-
-      if (/classical|mozart|beethoven|symphony|orchestra|piano/i.test(text)) {
-        return "Classical Symphony";
-      }
-
-      if (song.artist && song.artist !== "Unknown Artist") {
-        return `${song.artist} radio mix`;
-      }
-
-      return "Global Top Hits";
+      if (text.includes("pop") || text.includes("starboy") || text.includes("weeknd") || text.includes("taylor")) return "Pop Hits";
+      if (text.includes("hip hop") || text.includes("rap") || text.includes("drake") || text.includes("travis") || text.includes("kanye")) return "Hip-Hop";
+      if (text.includes("lofi") || text.includes("chill") || text.includes("relax") || text.includes("beats")) return "Lo-Fi Beats";
+      if (text.includes("rock") || text.includes("metal") || text.includes("queen") || text.includes("nirvana")) return "Rock";
+      if (text.includes("edm") || text.includes("dance") || text.includes("dj") || text.includes("house")) return "EDM & Dance";
+      if (text.includes("indie") || text.includes("alt") || text.includes("arctic")) return "Indie Alternative";
+      if (text.includes("classical") || text.includes("piano") || text.includes("mozart")) return "Classical & Piano";
+      return "Top Hits";
     }
 
-    async function autoFetchNextGenreTracks(targetSong) {
-      if (!targetSong) return null;
+    async function autoFetchNextGenreTracks(currentSong) {
+      if (!currentSong) return null;
       try {
-        const genreQuery = getGenreForSong(targetSong);
-        const data = await searchMusic(genreQuery);
-        const fetchedSongs = Array.isArray(data) ? data : data.songs || [];
+        const genre = getGenreForSong(currentSong);
+        const searchQuery = `${genre} popular songs`;
+        const searchResults = await searchMusic(searchQuery);
 
-        const currentHidden = JSON.parse(localStorage.getItem("symphony_not_recommended")) || [];
-        const filtered = fetchedSongs.filter(
-          (s) =>
-            s.videoId !== targetSong.videoId &&
-            !currentHidden.includes(s.videoId) &&
-            !queue.some((q) => q.videoId === s.videoId)
-        );
+        if (searchResults && searchResults.length > 0) {
+          const notRec = JSON.parse(localStorage.getItem("symphony_not_recommended")) || [];
+          const currentQueueIds = queue.map((s) => s.videoId);
+          const filtered = searchResults.filter(
+            (s) => s.videoId !== currentSong.videoId && !currentQueueIds.includes(s.videoId) && !notRec.includes(s.videoId)
+          );
 
-        if (filtered.length > 0) {
-          const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-          setQueue((prevQueue) => [...prevQueue, ...shuffled]);
-          return shuffled[0];
+          const pool = filtered.length > 0 ? filtered : searchResults;
+          const randomIndex = Math.floor(Math.random() * pool.length);
+          const candidate = pool[randomIndex];
+
+          setQueue((prevQueue) => [...prevQueue, candidate]);
+          return candidate;
         }
       } catch (err) {
-        console.error("Auto genre queue generation error:", err);
+        console.warn("Autoplay fetch failed:", err);
       }
       return null;
     }
 
-    // -----------------------------
-    // Song End & Continuous Genre Autoplay Logic
-    // -----------------------------
     useEffect(() => {
       async function handleSongEnd() {
         if (isRepeat && queue[currentIndex]) {
@@ -355,9 +307,6 @@ import { searchMusic } from "../services/api";
       };
     }, [player, currentIndex, queue, isRepeat, isShuffle, currentSong, isAutoplayEnabled]);
 
-    // -----------------------------
-    // Local Storage
-    // -----------------------------
     useEffect(() => {
       localStorage.setItem("favorites", JSON.stringify(favorites));
     }, [favorites]);
@@ -366,10 +315,7 @@ import { searchMusic } from "../services/api";
       localStorage.setItem("playlists", JSON.stringify(playlists));
     }, [playlists]);
 
-
   // Player Controls
-  // -----------------------------
-
   async function playSong(song) {
     if (!song) return;
 
@@ -379,6 +325,8 @@ import { searchMusic } from "../services/api";
       const stream = await getAudio(song.videoId, audioQuality);
 
       if (stream && stream.audio_url) {
+        setIsIframeActive(false);
+        setIframeSrc("");
         player.crossOrigin = "anonymous";
         player.src = stream.audio_url;
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
@@ -387,32 +335,44 @@ import { searchMusic } from "../services/api";
         await player.play();
         setIsPlaying(true);
       } else {
-        setIsPlaying(false);
+        // Fallback to embedded player
+        playIframeFallback(song.videoId);
       }
-
-      // Update Recently Played (Single track chronological history)
-      const recentHistory = JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
-      const uniqueRecent = recentHistory.filter(
-        (s) => s.videoId !== song.videoId
-      );
-      uniqueRecent.unshift(song);
-      localStorage.setItem(
-        "recentlyPlayed",
-        JSON.stringify(uniqueRecent.slice(0, 12))
-      );
     } catch (err) {
-      console.error("Error playing song:", err);
-      setIsPlaying(false);
+      console.warn("Direct stream load error, engaging embedded audio player fallback:", err);
+      playIframeFallback(song.videoId);
     }
+
+    // Update Recently Played
+    const recentHistory = JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
+    const uniqueRecent = recentHistory.filter((s) => s.videoId !== song.videoId);
+    uniqueRecent.unshift(song);
+    localStorage.setItem("recentlyPlayed", JSON.stringify(uniqueRecent.slice(0, 12)));
+  }
+
+  function playIframeFallback(videoId) {
+    player.pause();
+    player.src = "";
+    setIsIframeActive(true);
+    setIframeSrc(`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1`);
+    setIsPlaying(true);
   }
 
   function pauseSong() {
-    player.pause();
+    if (isIframeActive) {
+      setIframeSrc((prev) => prev.replace("autoplay=1", "autoplay=0"));
+    } else {
+      player.pause();
+    }
     setIsPlaying(false);
   }
 
   function resumeSong() {
-    player.play();
+    if (isIframeActive && currentSong) {
+      setIframeSrc(`https://www.youtube-nocookie.com/embed/${currentSong.videoId}?autoplay=1&enablejsapi=1`);
+    } else {
+      player.play();
+    }
     setIsPlaying(true);
   }
 
@@ -424,293 +384,280 @@ import { searchMusic } from "../services/api";
     if (isShuffle) {
       nextIndex = Math.floor(Math.random() * queue.length);
     } else {
-      nextIndex =
-        currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
+      nextIndex = currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
     }
 
     setCurrentIndex(nextIndex);
     playSong(queue[nextIndex]);
   }
 
-  function playPrevious() {
+  function playPrev() {
     if (queue.length === 0) return;
 
     let prevIndex;
 
-    if (currentIndex <= 0) {
-      prevIndex = queue.length - 1;
+    if (isShuffle) {
+      prevIndex = Math.floor(Math.random() * queue.length);
     } else {
-      prevIndex = currentIndex - 1;
+      prevIndex = currentIndex > 0 ? currentIndex - 1 : queue.length - 1;
     }
 
     setCurrentIndex(prevIndex);
     playSong(queue[prevIndex]);
   }
-  function addToQueue(song) {
+
+  function setTrackQueue(newQueue, index = 0) {
+    setQueue(newQueue);
+    setCurrentIndex(index);
+    if (newQueue[index]) {
+      playSong(newQueue[index]);
+    }
+  }
+
+  function togglePlay() {
+    if (!currentSong) return;
+    if (isPlaying) {
+      pauseSong();
+    } else {
+      resumeSong();
+    }
+  }
+
+  function seek(time) {
+    if (!isIframeActive) {
+      player.currentTime = time;
+      setCurrentTime(time);
+    }
+  }
+
+  function setVolume(vol) {
+    player.volume = vol;
+  }
+
+  function toggleFavorite(song) {
     if (!song) return;
 
-    const exists = queue.some((item) => item.videoId === song.videoId);
-
-    if (exists) {
-      showToast(`Already in queue`, song);
-      return;
-    }
-
-    setQueue((prev) => {
-      if (currentIndex >= 0 && currentIndex < prev.length) {
-        const updated = [...prev];
-        updated.splice(currentIndex + 1, 0, song);
-        return updated;
-      }
-      return [...prev, song];
-    });
-
-    showToast(`Added to queue`, song);
-  }
-
-  function removeFromQueue(songOrId) {
-    if (!songOrId) return;
-    const targetId = typeof songOrId === "object" ? songOrId.videoId : songOrId;
-    const removedSong = typeof songOrId === "object" ? songOrId : queue.find((s) => s.videoId === targetId);
-
-    setQueue((prev) => {
-      const idx = prev.findIndex((item) => item.videoId === targetId);
-      if (idx === -1) return prev;
-
-      if (idx < currentIndex) {
-        setCurrentIndex((c) => Math.max(0, c - 1));
-      } else if (idx === currentIndex) {
-        if (prev.length <= 1) {
-          setCurrentIndex(-1);
-        } else if (currentIndex >= prev.length - 1) {
-          setCurrentIndex(prev.length - 2);
-        }
-      }
-
-      return prev.filter((item) => item.videoId !== targetId);
-    });
-
-    showToast(`Removed from queue`, removedSong);
-  }
-    // -----------------------------
-    // Favorites
-    // -----------------------------
-    function toggleFavorite(song) {
-      const exists = favorites.some(
-        (item) => item.videoId === song.videoId
-      );
+    setFavorites((prev) => {
+      const exists = prev.some((item) => item.videoId === song.videoId);
 
       if (exists) {
-        setFavorites(
-          favorites.filter(
-            (item) => item.videoId !== song.videoId
-          )
-        );
+        showToast("Removed from Favorites", song);
+        return prev.filter((item) => item.videoId !== song.videoId);
       } else {
-        setFavorites([...favorites, song]);
+        showToast("Added to Favorites", song);
+        return [...prev, song];
       }
-    }
+    });
+  }
 
-    // -----------------------------
-    // Playlists
-    // -----------------------------
-    function createPlaylist(playlistData) {
-      let name = "";
-      let description = "";
-      let gradient = "from-purple-600 to-indigo-600";
+  function isFavorite(song) {
+    if (!song) return false;
+    return favorites.some((item) => item.videoId === song.videoId);
+  }
 
-      if (typeof playlistData === "object" && playlistData !== null) {
-        name = playlistData.name || "";
-        description = playlistData.description || "";
-        gradient = playlistData.gradient || gradient;
-      } else if (typeof playlistData === "string") {
-        name = playlistData;
-      }
+  function createPlaylist(name, description = "") {
+    if (!name || !name.trim()) return null;
 
-      if (!name.trim()) return null;
+    const newPlaylist = {
+      id: "pl_" + Date.now(),
+      name: name.trim(),
+      description: description.trim(),
+      createdAt: new Date().toISOString(),
+      songs: [],
+    };
 
-      const playlist = {
-        id: `pl-${Date.now()}`,
-        name: name.trim(),
-        description: description.trim(),
-        gradient: gradient,
-        songs: [],
-        createdAt: new Date().toISOString(),
-      };
+    setPlaylists((prev) => [...prev, newPlaylist]);
+    showToast(`Playlist "${newPlaylist.name}" created`);
+    return newPlaylist;
+  }
 
-      setPlaylists((prev) => [...prev, playlist]);
-      return playlist;
-    }
-    function deletePlaylist(id) {
-      setPlaylists((prev) =>
-        prev.filter((playlist) => playlist.id !== id)
-      );
-    } 
+  function addSongToPlaylist(playlistId, song) {
+    if (!playlistId || !song) return;
 
-    function addSongToPlaylist(playlistId, song) {
     setPlaylists((prev) =>
-      prev.map((playlist) => {
-        if (playlist.id !== playlistId) return playlist;
+      prev.map((pl) => {
+        if (pl.id !== playlistId) return pl;
 
-        const exists = playlist.songs.some(
-          (s) => s.videoId === song.videoId
-        );
+        const exists = pl.songs.some((s) => s.videoId === song.videoId);
+        if (exists) {
+          showToast(`Already in "${pl.name}"`, song);
+          return pl;
+        }
 
-        if (exists) return playlist;
-
+        showToast(`Added to "${pl.name}"`, song);
         return {
-          ...playlist,
-          songs: [...playlist.songs, song],
+          ...pl,
+          songs: [...pl.songs, song],
         };
       })
     );
   }
 
-    function removeSongFromPlaylist(playlistId, videoId) {
+  function removeSongFromPlaylist(playlistId, videoId) {
+    if (!playlistId || !videoId) return;
+
     setPlaylists((prev) =>
-      prev.map((playlist) => {
-        if (playlist.id !== playlistId) return playlist;
+      prev.map((pl) => {
+        if (pl.id !== playlistId) return pl;
 
         return {
-          ...playlist,
-          songs: playlist.songs.filter(
-            (song) => song.videoId !== videoId
-          ),
+          ...pl,
+          songs: pl.songs.filter((s) => s.videoId !== videoId),
         };
       })
     );
+
+    showToast("Song removed from playlist");
   }
 
-    function updatePlaylistName(playlistId, newName) {
-      if (!newName || !newName.trim()) return;
-      setPlaylists((prev) =>
-        prev.map((playlist) => {
-          if (String(playlist.id) !== String(playlistId)) return playlist;
-          return {
-            ...playlist,
-            name: newName.trim(),
-          };
-        })
-      );
-    }
+  function deletePlaylist(playlistId) {
+    if (!playlistId) return;
 
-    function updatePlaylistDetails(playlistId, { name, description }) {
-      setPlaylists((prev) =>
-        prev.map((playlist) => {
-          if (String(playlist.id) !== String(playlistId)) return playlist;
-          return {
-            ...playlist,
-            name: name !== undefined && name.trim() ? name.trim() : playlist.name,
-            description: description !== undefined ? description.trim() : (playlist.description || ""),
-          };
-        })
-      );
-    }
+    setPlaylists((prev) => {
+      const target = prev.find((p) => p.id === playlistId);
+      if (target) {
+        showToast(`Deleted playlist "${target.name}"`);
+      }
+      return prev.filter((p) => p.id !== playlistId);
+    });
+  }
 
-    return (
-      <PlayerContext.Provider
-        value={{
-          player,
+  function updatePlaylistName(playlistId, newName) {
+    if (!playlistId || !newName || !newName.trim()) return;
 
-          currentSong,
-          setCurrentSong,
+    setPlaylists((prev) =>
+      prev.map((pl) => {
+        if (pl.id !== playlistId) return pl;
+        return { ...pl, name: newName.trim() };
+      })
+    );
 
-          isPlaying,
-          playSong,
-          pauseSong,
-          resumeSong,
+    showToast("Playlist renamed");
+  }
 
-          currentTime,
-          duration,
+  function updatePlaylistDetails(playlistId, { name, description }) {
+    if (!playlistId) return;
 
-          queue,
-          setQueue,
-          customQueue: queue,
-          setCustomQueue: setQueue,
+    setPlaylists((prev) =>
+      prev.map((pl) => {
+        if (pl.id !== playlistId) return pl;
+        return {
+          ...pl,
+          name: name !== undefined ? name.trim() : pl.name,
+          description: description !== undefined ? description.trim() : pl.description,
+        };
+      })
+    );
 
-          currentIndex,
-          setCurrentIndex,
+    showToast("Playlist updated");
+  }
 
-          playNext,
-          playPrevious,
-          addToQueue,
-          removeFromQueue,
+  return (
+    <PlayerContext.Provider
+      value={{
+        currentSong,
+        isPlaying,
+        currentTime,
+        duration,
 
-          toast,
-          showToast,
+        playSong,
+        pauseSong,
+        resumeSong,
+        togglePlay,
+        seek,
+        setVolume,
 
-          isShuffle,
-          setIsShuffle,
+        queue,
+        currentIndex,
+        playNext,
+        playPrev,
+        setTrackQueue,
 
-          isRepeat,
-          setIsRepeat,
+        isShuffle,
+        setIsShuffle,
+        isRepeat,
+        setIsRepeat,
 
-          favorites,
-          toggleFavorite,
+        favorites,
+        toggleFavorite,
+        isFavorite,
 
-          playlists,
-          createPlaylist,
-          addSongToPlaylist,
+        playlists,
+        createPlaylist,
+        addSongToPlaylist,
 
-          deletePlaylist,
-          removeSongFromPlaylist,
-          updatePlaylistName,
-          updatePlaylistDetails,
+        deletePlaylist,
+        removeSongFromPlaylist,
+        updatePlaylistName,
+        updatePlaylistDetails,
 
-          isCreatePlaylistOpen,
-          openCreatePlaylistModal,
-          closeCreatePlaylistModal,
+        isCreatePlaylistOpen,
+        openCreatePlaylistModal,
+        closeCreatePlaylistModal,
 
-          notRecommended,
-          hideFromRecommendations,
+        notRecommended,
+        hideFromRecommendations,
 
-          audioQuality,
-          setAudioQuality,
+        audioQuality,
+        setAudioQuality,
 
-          isAutoplayEnabled,
-          setIsAutoplayEnabled,
+        isAutoplayEnabled,
+        setIsAutoplayEnabled,
 
-          isAuthenticated,
-          loginUser,
-          logoutUser,
-        }}
-      >
-        {children}
+        isAuthenticated,
+        loginUser,
+        logoutUser,
+      }}
+    >
+      {children}
 
-        {/* Global Symphony Toast Banner */}
-        <AnimatePresence>
-          {toast && (
-            <motion.div
-              initial={{ opacity: 0, y: 24, scale: 0.92 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 24, scale: 0.92 }}
-              transition={{ type: "spring", stiffness: 400, damping: 28 }}
-              className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[10000] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-[#18181b]/95 border border-purple-500/40 text-white shadow-[0_15px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl pointer-events-none select-none max-w-xs sm:max-w-sm"
-            >
-              {toast.song?.thumbnail && (
-                <img
-                  src={toast.song.thumbnail}
-                  alt=""
-                  className="w-9 h-9 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
-                />
-              )}
-              <div className="flex flex-col text-left min-w-0">
-                <span className="text-xs font-bold text-purple-300 tracking-tight">
-                  {toast.message}
+      {/* Hidden YouTube Audio Player Fallback */}
+      {iframeSrc && (
+        <iframe
+          id="symphony-youtube-audio-player"
+          width="1"
+          height="1"
+          src={iframeSrc}
+          allow="autoplay"
+          title="Symphony Audio Engine"
+          style={{ position: "absolute", top: "-9999px", left: "-9999px", opacity: 0, pointerEvents: "none" }}
+        />
+      )}
+
+      {/* Global Symphony Toast Banner */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 24, scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[10000] flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-[#18181b]/95 border border-purple-500/40 text-white shadow-[0_15px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl pointer-events-none select-none max-w-xs sm:max-w-sm"
+          >
+            {toast.song?.thumbnail && (
+              <img
+                src={toast.song.thumbnail}
+                alt=""
+                className="w-9 h-9 rounded-xl object-cover border border-white/10 shrink-0 shadow-md"
+              />
+            )}
+            <div className="flex flex-col text-left min-w-0">
+              <span className="text-xs font-bold text-purple-300 tracking-tight">
+                {toast.message}
+              </span>
+              {toast.song?.title && (
+                <span className="text-[11px] text-zinc-300 font-medium truncate mt-0.5">
+                  {toast.song.title}
                 </span>
-                {toast.song?.title && (
-                  <span className="text-[11px] text-zinc-300 font-medium truncate mt-0.5">
-                    {toast.song.title}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </PlayerContext.Provider>
-    );
-  }
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </PlayerContext.Provider>
+  );
+}
 
-  export function usePlayer() {
-    return useContext(PlayerContext);
-  }
+export function usePlayer() {
+  return useContext(PlayerContext);
+}
