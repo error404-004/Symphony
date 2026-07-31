@@ -89,6 +89,7 @@ import { searchMusic } from "../services/api";
     const pannerRef = useRef(null);
     const eqBassRef = useRef(null);
     const eqTrebleRef = useRef(null);
+    const iframeTimerRef = useRef(null);
 
     useEffect(() => {
       const initAudioDSP = () => {
@@ -224,6 +225,15 @@ import { searchMusic } from "../services/api";
       };
     }, [player, isIframeActive]);
 
+    // Parse "3:51" or "1:03:22" style duration strings into seconds
+    function parseSongDuration(durationStr) {
+      if (!durationStr) return 0;
+      const parts = String(durationStr).split(":").map(Number);
+      if (parts.length === 2) return (parts[0] || 0) * 60 + (parts[1] || 0);
+      if (parts.length === 3) return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
+      return 0;
+    }
+
     function getGenreForSong(song) {
       if (!song) return "Top Hits";
       if (song.genre) return song.genre;
@@ -315,6 +325,30 @@ import { searchMusic } from "../services/api";
       localStorage.setItem("playlists", JSON.stringify(playlists));
     }, [playlists]);
 
+    // Simulate progress bar movement when iframe is active (can't read YouTube iframe currentTime)
+    useEffect(() => {
+      if (isIframeActive && isPlaying) {
+        if (iframeTimerRef.current) clearInterval(iframeTimerRef.current);
+        iframeTimerRef.current = setInterval(() => {
+          setCurrentTime((prev) => {
+            if (duration > 0 && prev >= duration - 1) {
+              clearInterval(iframeTimerRef.current);
+              return duration;
+            }
+            return prev + 1;
+          });
+        }, 1000);
+      } else {
+        if (iframeTimerRef.current) {
+          clearInterval(iframeTimerRef.current);
+          iframeTimerRef.current = null;
+        }
+      }
+      return () => {
+        if (iframeTimerRef.current) clearInterval(iframeTimerRef.current);
+      };
+    }, [isIframeActive, isPlaying, duration]);
+
   // Player Controls
   async function playSong(song) {
     if (!song) return;
@@ -339,11 +373,11 @@ import { searchMusic } from "../services/api";
         });
         setIsPlaying(true);
       } else {
-        playIframeFallback(song.videoId);
+        playIframeFallback(song);
       }
     } catch (err) {
       console.warn("Direct stream load error, engaging embedded audio player fallback:", err);
-      playIframeFallback(song.videoId);
+      playIframeFallback(song);
     }
 
     // Update Recently Played
@@ -353,7 +387,10 @@ import { searchMusic } from "../services/api";
     localStorage.setItem("recentlyPlayed", JSON.stringify(uniqueRecent.slice(0, 12)));
   }
 
-  function playIframeFallback(videoId) {
+  function playIframeFallback(songOrId) {
+    const videoId = typeof songOrId === "string" ? songOrId : songOrId?.videoId;
+    if (!videoId) return;
+
     try {
       player.pause();
     } catch (e) {
@@ -363,6 +400,12 @@ import { searchMusic } from "../services/api";
     setIsIframeActive(true);
     setIframeSrc(`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1`);
     setIsPlaying(true);
+    setCurrentTime(0);
+
+    // Set duration from song metadata so the progress bar can simulate movement
+    const songObj = typeof songOrId === "object" ? songOrId : currentSong;
+    const dur = parseSongDuration(songObj?.duration);
+    if (dur > 0) setDuration(dur);
   }
 
   function pauseSong() {
