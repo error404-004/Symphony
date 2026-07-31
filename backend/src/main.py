@@ -10,24 +10,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-frontend_url = os.getenv("FRONTEND_URL", "").strip()
-origins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174",
-]
-
-if frontend_url:
-    for url in frontend_url.split(","):
-        cleaned = url.strip()
-        if cleaned and cleaned not in origins:
-            origins.append(cleaned)
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if frontend_url == "*" else origins,
-    allow_credentials=True if frontend_url != "*" else False,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

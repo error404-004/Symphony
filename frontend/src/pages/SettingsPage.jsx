@@ -110,7 +110,7 @@ export default function SettingsPage() {
   const [apiStatus, setApiStatus] = useState('Checking...')
 
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'https://symphony-backend-s7lt.onrender.com';
     fetch(`${apiBase}/`)
       .then((res) => (res.ok ? setApiStatus('Online & Connected') : setApiStatus('Offline')))
       .catch(() => setApiStatus('PyTube Engine Standby'))
