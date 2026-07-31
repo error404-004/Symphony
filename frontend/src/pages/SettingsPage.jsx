@@ -88,7 +88,7 @@ export default function SettingsPage() {
   const [notifications, setNotifications] = useState(getSavedNotifications)
   const [privacy, setPrivacy] = useState(getSavedPrivacy)
   const [audioQuality, setAudioQuality] = useState(
-    () => localStorage.getItem('symphony_audio_quality') || '👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)'
+    () => localStorage.getItem('symphony_audio_quality') || '👑 Symphony Spatial 3D Master (Binaural Soundstage)'
   )
   const [volumeNorm, setVolumeNorm] = useState(getSavedVolumeNorm)
   const [theme, setTheme] = useState(
@@ -535,38 +535,38 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-white">Audio Quality & Master DSP</h3>
-                      <p className="text-xs text-zinc-400">Select Apple Music & Amazon Music Ultra HD streaming profile</p>
+                      <p className="text-xs text-zinc-400">Select Symphony Ultra High-Fidelity streaming sound profile</p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     {[
                       {
-                        label: '👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)',
+                        label: '👑 Symphony Spatial 3D Master (Binaural Soundstage)',
                         badge: '3D Spatial Soundstage',
-                        desc: 'Binaural 3D audio expansion, immersive surround warmth & studio mastering',
-                        tech: '48kHz / 32-bit DSP • Apple Spatial Audio + Amazon 3D Engine',
+                        desc: 'Binaural 3D audio expansion, immersive surround warmth & master DSP processing',
+                        tech: '48kHz / 32-bit DSP • Symphony Spatial 3D Master Engine',
                         accent: 'border-purple-400/50 bg-gradient-to-r from-purple-900/40 via-indigo-900/40 to-fuchsia-950/40',
                       },
                       {
-                        label: '💎 Hi-Res Lossless (24-bit / 192kHz ALAC Master)',
+                        label: '💎 Studio Lossless Master (24-bit / 192kHz Pure FLAC)',
                         badge: 'Studio Master Lossless',
-                        desc: 'Apple Music & Amazon Music HD uncompressed studio master fidelity',
-                        tech: '192kHz / 24-bit ALAC • Bit-perfect uncompressed studio monitor sound',
+                        desc: 'Bit-perfect uncompressed studio monitor fidelity & pure acoustic transparency',
+                        tech: '192kHz / 24-bit FLAC/ALAC • Uncompressed Studio Reference Sound',
                         accent: 'border-cyan-400/50 bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-indigo-950/40',
                       },
                       {
-                        label: '🔥 Amazon Ultra HD (320kbps Master)',
+                        label: '🔥 Ultra HD Dynamic Pulse (320kbps Master)',
                         badge: 'Ultra HD 320kbps',
                         desc: 'Punchy sub-bass boost, crystal clear acoustics & dynamic range mastering',
-                        tech: '320kbps Opus / AAC • Amazon HD Sub-bass & Treble Lift',
+                        tech: '320kbps Opus / AAC • Sub-bass & Treble Enhancement',
                         accent: 'border-amber-400/50 bg-gradient-to-r from-amber-950/40 via-orange-950/40 to-red-950/40',
                       },
                       {
-                        label: '🎵 High Quality (256kbps AAC / Opus)',
+                        label: '🎵 High Fidelity Clarity (256kbps AAC / Opus)',
                         badge: 'High Fidelity',
                         desc: 'Full fidelity high-bitrate clear audio streaming',
-                        tech: '256kbps AAC / Opus • Balanced studio response',
+                        tech: '256kbps AAC / Opus • Balanced Studio Response',
                         accent: 'border-emerald-400/50 bg-gradient-to-r from-emerald-950/40 to-teal-950/40',
                       },
                       {

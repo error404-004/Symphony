@@ -20,7 +20,7 @@ import { searchMusic } from "../services/api";
     const [isAutoplayEnabled, setIsAutoplayEnabled] = useState(true);
 
     const [audioQuality, setAudioQuality] = useState(() => {
-      return localStorage.getItem("symphony_audio_quality") || "👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)";
+      return localStorage.getItem("symphony_audio_quality") || "👑 Symphony Spatial 3D Master (Binaural Soundstage)";
     });
 
     const [favorites, setFavorites] = useState(() => {
