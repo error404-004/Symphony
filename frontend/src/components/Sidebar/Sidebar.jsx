@@ -115,8 +115,8 @@ export default function Sidebar() {
                 className="w-9 h-9 rounded-xl object-cover shadow-lg shadow-purple-500/40 group-hover:scale-105 transition-all duration-300 border border-purple-400/40 shrink-0"
               />
               {!isCollapsed && (
-                <span className="text-xl font-extrabold tracking-wider text-white group-hover:text-purple-300 transition-colors uppercase drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">
-                  SYMPHONY
+                <span className="text-xl font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors drop-shadow-sm">
+                  Symphony
                 </span>
               )}
             </NavLink>
