@@ -176,7 +176,8 @@ export default function TopNav() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="absolute top-full left-0 right-0 mt-2 bg-[#100826] border-2 border-purple-500/60 rounded-2xl p-3.5 shadow-[0_25px_80px_rgba(0,0,0,0.98)] z-[100] text-white select-none overflow-hidden space-y-2.5"
+              style={{ backgroundColor: '#0c061e', opacity: 1 }}
+              className="absolute top-full left-0 right-0 mt-2 border-2 border-purple-500/80 rounded-2xl p-3.5 shadow-[0_30px_100px_rgba(0,0,0,1)] z-[9999] text-white select-none overflow-hidden space-y-2.5 backdrop-blur-none"
             >
               {/* Dropdown Header */}
               <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-purple-500/30">
