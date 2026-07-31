@@ -15,13 +15,23 @@ def debug_audio(video_id: str):
     url = f"https://www.youtube.com/watch?v={video_id}"
     logs = []
     
-    clients = ["tv_embedded", "android_embedded", "ios_embedded", "mweb_embedded", "android", "mweb"]
-    for c in clients:
+    test_configs = [
+        {"name": "android_only", "args": {"youtube": {"player_client": ["android"]}}},
+        {"name": "tv_only", "args": {"youtube": {"player_client": ["tv"]}}},
+        {"name": "mweb_only", "args": {"youtube": {"player_client": ["mweb"]}}},
+        {"name": "ios_only", "args": {"youtube": {"player_client": ["ios"]}}},
+        {"name": "android_creator", "args": {"youtube": {"player_client": ["android_creator"]}}},
+        {"name": "web_creator", "args": {"youtube": {"player_client": ["web_creator"]}}},
+    ]
+    
+    for item in test_configs:
         opts = {
             "format": "bestaudio/best",
             "quiet": True,
             "noplaylist": True,
-            "extractor_args": {"youtube": {"player_client": [c]}}
+            "nocheckcertificate": True,
+            "geo_bypass": True,
+            "extractor_args": item["args"]
         }
         try:
             with YoutubeDL(opts) as ydl:
@@ -29,13 +39,13 @@ def debug_audio(video_id: str):
                 if info and info.get("url"):
                     return {
                         "status": "success",
-                        "client": c,
+                        "config_name": item["name"],
                         "title": info.get("title"),
                         "audio_url": info.get("url")[:100] + "..."
                     }
         except Exception as e:
-            logs.append(f"Client {c} failed: {type(e).__name__}: {str(e)}")
-            
+            logs.append(f"Config '{item['name']}' failed: {type(e).__name__}: {str(e)}")
+
     return {"status": "failed", "logs": logs}
 
 
