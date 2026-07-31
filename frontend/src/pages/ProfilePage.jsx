@@ -23,6 +23,7 @@ import {
   Search,
   Shuffle,
   Plus,
+  LogOut,
 } from 'lucide-react'
 import SongContextMenu from '../components/ui/SongContextMenu'
 
@@ -215,6 +216,16 @@ export default function ProfilePage() {
             >
               <Settings className="w-4 h-4 text-purple-300" />
               <span>Settings</span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.04, backgroundColor: 'rgba(239, 68, 68, 0.25)' }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => showToast('Log out requested')}
+              className="px-5 py-2.5 rounded-2xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 hover:text-red-100 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+            >
+              <LogOut className="w-4 h-4 text-red-400" />
+              <span>Log Out</span>
             </motion.button>
           </div>
         </div>

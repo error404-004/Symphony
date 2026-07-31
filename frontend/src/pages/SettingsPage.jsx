@@ -29,6 +29,7 @@ import {
   Terminal,
   Activity,
   Zap,
+  LogOut,
 } from 'lucide-react'
 
 /* ============================================
@@ -203,6 +204,15 @@ export default function SettingsPage() {
           badge: privacy.incognito ? 'Incognito ON' : 'Standard',
           onClick: () => setActiveModal('privacy'),
         },
+        {
+          id: 'logout',
+          label: 'Log Out',
+          description: 'Sign out of your active Symphony session',
+          icon: LogOut,
+          badge: 'Log Out',
+          isDanger: true,
+          onClick: () => showToast('Log out requested'),
+        },
       ],
     },
     {
@@ -340,32 +350,56 @@ export default function SettingsPage() {
           </h2>
 
           <div className="glass-card backdrop-blur-2xl bg-gradient-to-br from-[#120a26]/90 via-[#0a0618]/90 to-[#06030e]/95 border border-purple-500/20 rounded-3xl overflow-hidden divide-y divide-purple-500/10 shadow-2xl shadow-purple-950/30">
-            {items.map(({ id, label, description, icon: Icon, badge, onClick }) => (
+            {items.map(({ id, label, description, icon: Icon, badge, isDanger, onClick }) => (
               <motion.button
                 key={id}
                 onClick={onClick}
-                whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}
+                whileHover={{ backgroundColor: isDanger ? 'rgba(239, 68, 68, 0.08)' : 'rgba(255, 255, 255, 0.04)' }}
                 whileTap={{ scale: 0.995 }}
-                className="flex items-center gap-4.5 w-full p-4 sm:p-5 text-left transition-all duration-200 group cursor-pointer"
+                className={`flex items-center gap-4.5 w-full p-4 sm:p-5 text-left transition-all duration-200 group cursor-pointer ${
+                  isDanger ? 'hover:bg-red-500/10' : ''
+                }`}
               >
-                <div className="flex items-center justify-center w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300 group-hover:text-purple-200 group-hover:bg-purple-600/25 group-hover:border-purple-400/40 transition-all duration-300 shrink-0 shadow-md">
+                <div
+                  className={`flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-300 shrink-0 shadow-md ${
+                    isDanger
+                      ? 'bg-red-500/15 border border-red-500/30 text-red-400 group-hover:bg-red-600/30 group-hover:border-red-400/50 group-hover:text-red-200'
+                      : 'bg-purple-500/10 border border-purple-500/20 text-purple-300 group-hover:text-purple-200 group-hover:bg-purple-600/25 group-hover:border-purple-400/40'
+                  }`}
+                >
                   <Icon className="w-5 h-5" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm sm:text-base font-bold text-white tracking-tight group-hover:text-purple-200 transition-colors">
+                  <p
+                    className={`text-sm sm:text-base font-bold tracking-tight transition-colors ${
+                      isDanger ? 'text-red-300 group-hover:text-red-100' : 'text-white group-hover:text-purple-200'
+                    }`}
+                  >
                     {label}
                   </p>
                   <p className="text-xs text-zinc-400 truncate mt-0.5 font-medium">{description}</p>
                 </div>
 
                 {badge && (
-                  <span className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 text-purple-300 text-xs font-bold border border-purple-500/30 shadow-sm shrink-0">
+                  <span
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-sm shrink-0 ${
+                      isDanger
+                        ? 'bg-red-500/15 text-red-300 border-red-500/30'
+                        : 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+                    }`}
+                  >
                     {badge}
                   </span>
                 )}
 
-                <div className="w-8 h-8 rounded-full bg-white/[0.03] group-hover:bg-purple-500/20 border border-white/10 group-hover:border-purple-400/40 flex items-center justify-center text-zinc-400 group-hover:text-white transition-all shrink-0">
+                <div
+                  className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all shrink-0 ${
+                    isDanger
+                      ? 'bg-red-500/10 border-red-500/20 group-hover:bg-red-500/30 text-red-300 group-hover:text-white'
+                      : 'bg-white/[0.03] border-white/10 group-hover:bg-purple-500/20 group-hover:border-purple-400/40 text-zinc-400 group-hover:text-white'
+                  }`}
+                >
                   <ChevronRight className="w-4 h-4" />
                 </div>
               </motion.button>
@@ -373,6 +407,19 @@ export default function SettingsPage() {
           </div>
         </motion.section>
       ))}
+
+      {/* Log Out Action Card */}
+      <motion.div variants={itemVariants} className="pt-2">
+        <motion.button
+          whileHover={{ scale: 1.01, backgroundColor: 'rgba(239, 68, 68, 0.15)' }}
+          whileTap={{ scale: 0.985 }}
+          onClick={() => showToast('Log out requested')}
+          className="w-full py-4 px-6 rounded-3xl bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/30 hover:border-red-500/60 text-red-300 hover:text-red-100 font-extrabold text-sm flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-red-950/30 cursor-pointer"
+        >
+          <LogOut className="w-5 h-5 text-red-400" />
+          <span>Log Out of Symphony</span>
+        </motion.button>
+      </motion.div>
 
       {/* Footer Branding */}
       <motion.div variants={itemVariants} className="text-center py-8 border-t border-purple-500/15">
