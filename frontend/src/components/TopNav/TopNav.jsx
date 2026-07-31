@@ -176,52 +176,52 @@ export default function TopNav() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="absolute top-full left-0 right-0 mt-2 bg-[#120a2a]/95 backdrop-blur-3xl border-2 border-purple-500/40 rounded-2xl p-3 shadow-[0_20px_60px_rgba(0,0,0,0.85)] z-50 text-white select-none overflow-hidden space-y-2"
+              className="absolute top-full left-0 right-0 mt-2 bg-[#100826] border-2 border-purple-500/60 rounded-2xl p-3.5 shadow-[0_25px_80px_rgba(0,0,0,0.98)] z-[100] text-white select-none overflow-hidden space-y-2.5"
             >
               {/* Dropdown Header */}
-              <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-purple-500/20">
-                <span className="text-[11px] font-black uppercase text-purple-300 tracking-wider flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-purple-400" />
+              <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-purple-500/30">
+                <span className="text-xs font-black uppercase text-purple-300 tracking-wider flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-400" />
                   {query.trim() ? 'Search Suggestions' : 'Recent Searches'}
                 </span>
                 {recentSearches.length > 0 && !query.trim() && (
                   <button
                     onClick={clearAllRecentSearches}
-                    className="text-[11px] font-bold text-zinc-400 hover:text-purple-300 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-xs font-bold text-purple-300/90 hover:text-white hover:underline flex items-center gap-1 cursor-pointer transition-colors"
                   >
-                    <Trash2 className="w-3 h-3 text-purple-400" />
+                    <Trash2 className="w-3.5 h-3.5 text-purple-400" />
                     <span>Clear all</span>
                   </button>
                 )}
               </div>
 
               {/* Recent Searches Items List */}
-              <div className="max-h-60 overflow-y-auto space-y-1 pr-0.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-purple-500/20">
+              <div className="max-h-64 overflow-y-auto space-y-1.5 pr-0.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-purple-500/30">
                 {filteredRecent.length === 0 ? (
-                  <div className="py-4 text-center text-xs text-zinc-400 font-medium">
+                  <div className="py-4 text-center text-xs text-zinc-300 font-semibold">
                     {query.trim() ? `Press Enter to search "${query}"` : 'No recent searches'}
                   </div>
                 ) : (
                   filteredRecent.map((item) => (
                     <motion.div
                       key={item}
-                      whileHover={{ x: 2 }}
+                      whileHover={{ x: 3 }}
                       onClick={() => {
                         setQuery(item)
                         handleExecuteSearch(item)
                       }}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-purple-600/20 hover:border hover:border-purple-500/30 text-zinc-200 hover:text-white transition-all cursor-pointer group"
+                      className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-purple-950/40 hover:bg-purple-600/30 border border-purple-500/25 hover:border-purple-400/60 text-zinc-100 hover:text-white transition-all cursor-pointer group shadow-sm"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <History className="w-4 h-4 text-purple-400/80 group-hover:text-purple-300 group-hover:scale-110 transition-all shrink-0" />
-                        <span className="text-xs font-semibold truncate group-hover:text-white">
+                        <History className="w-4 h-4 text-purple-300 group-hover:scale-110 transition-all shrink-0" />
+                        <span className="text-xs font-bold truncate text-white">
                           {item}
                         </span>
                       </div>
 
                       <button
                         onClick={(e) => removeRecentSearch(item, e)}
-                        className="p-1 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
+                        className="p-1 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
                         title="Remove from recent searches"
                       >
                         <X className="w-3.5 h-3.5" />
