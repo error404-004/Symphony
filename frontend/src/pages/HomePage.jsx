@@ -42,7 +42,7 @@ export default function HomePage() {
   const [trending, setTrending] = useState([])
   const [recommended, setRecommended] = useState([])
 
-  /* Build distinct Continue Listening sessions (Liked Vault + Custom Playlists + Curated Mixes) */
+  /* Build distinct Continue Listening sessions (Real Liked Vault + Real User Playlists only) */
   const userPlaylists = playlists.map((pl) => ({
     id: pl.id,
     type: 'playlist',
@@ -53,55 +53,19 @@ export default function HomePage() {
     onClick: () => navigate(`/playlists/${pl.id}`),
   }))
 
-  const likedVaultCard = {
+  const likedVaultCard = favorites.length > 0 ? [{
     id: 'liked-vault',
     type: 'vault',
     title: 'Liked Songs Vault',
-    artist: `${favorites.length} curated tracks in library`,
+    artist: `${favorites.length} ${favorites.length === 1 ? 'track' : 'tracks'} in library`,
     thumbnail: favorites[0]?.thumbnail,
     gradient: 'from-purple-600 via-indigo-600 to-purple-900',
     onClick: () => navigate('/favorites'),
-  }
-
-  const defaultMixes = [
-    {
-      id: 'mix-top50',
-      type: 'mix',
-      title: 'Top 50 Global',
-      artist: 'Trending Worldwide Hits',
-      gradient: 'from-blue-600 to-cyan-800',
-      onClick: () => navigate('/search?q=Top 50 Global'),
-    },
-    {
-      id: 'mix-sunset',
-      type: 'mix',
-      title: 'Sunset Sessions',
-      artist: 'Acoustics & Chill Mix',
-      gradient: 'from-rose-600 to-orange-700',
-      onClick: () => navigate('/search?q=Sunset Sessions'),
-    },
-    {
-      id: 'mix-synth',
-      type: 'mix',
-      title: 'Synthwave Retro',
-      artist: '80s Electronic Beats',
-      gradient: 'from-fuchsia-600 to-purple-900',
-      onClick: () => navigate('/search?q=Synthwave Retro'),
-    },
-    {
-      id: 'mix-lofi',
-      type: 'mix',
-      title: 'Deep Focus Lo-Fi',
-      artist: 'Ambient beats for work',
-      gradient: 'from-emerald-600 to-teal-800',
-      onClick: () => navigate('/search?q=Lo-Fi beats'),
-    },
-  ]
+  }] : []
 
   const continueListening = [
-    likedVaultCard,
+    ...likedVaultCard,
     ...userPlaylists,
-    ...defaultMixes,
   ].slice(0, 6)
 
   async function loadSection(query, setter) {
@@ -153,27 +117,29 @@ export default function HomePage() {
         </p>
       </motion.div>
 
-      {/* Continue Listening - Active Playlists & Session Mixes */}
-      <motion.section variants={sectionVariants}>
-        <SectionHeader
-          title="Continue Listening"
-          subtitle="Pick up your playlists & session mixes where you left off"
-        />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-0">
-          {continueListening.map((item, i) => (
-            <WideCard
-              key={item.id || item.title}
-              title={item.title}
-              subtitle={item.artist}
-              artist={item.artist}
-              thumbnail={item.thumbnail}
-              gradient={item.gradient}
-              index={i}
-              onClick={item.onClick}
-            />
-          ))}
-        </div>
-      </motion.section>
+      {/* Continue Listening - Active Playlists & Session Collections */}
+      {continueListening.length > 0 && (
+        <motion.section variants={sectionVariants}>
+          <SectionHeader
+            title="Continue Listening"
+            subtitle="Pick up your playlists & saved collections where you left off"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-0">
+            {continueListening.map((item, i) => (
+              <WideCard
+                key={item.id || item.title}
+                title={item.title}
+                subtitle={item.artist}
+                artist={item.artist}
+                thumbnail={item.thumbnail}
+                gradient={item.gradient}
+                index={i}
+                onClick={item.onClick}
+              />
+            ))}
+          </div>
+        </motion.section>
+      )}
 
       {/* Recently Played - Single Track History */}
       {recentlyPlayed.length > 0 && (
