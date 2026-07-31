@@ -182,12 +182,12 @@ export default function PlaylistPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-10 relative select-none"
+      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-8 relative select-none"
     >
-      {/* 1. Spotify-Style Ambient Hero Header Banner */}
+      {/* 1. Spotify-Style Ambient Hero Header Banner with Huge Bottom Padding */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-end gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-8"
+        className="relative rounded-3xl pt-8 sm:pt-12 px-8 sm:px-12 pb-14 sm:pb-20 lg:pb-24 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-end gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-4"
       >
         {/* Background Ambient Glow */}
         <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[150px] pointer-events-none" />
@@ -221,7 +221,7 @@ export default function PlaylistPage() {
         </div>
 
         {/* Header Metadata Info */}
-        <div className="flex-1 text-center md:text-left min-w-0 pb-3 z-10">
+        <div className="flex-1 text-center md:text-left min-w-0 pb-6 z-10">
           <div className="flex items-center justify-center md:justify-start gap-2.5 flex-wrap mb-3">
             <span className="px-3.5 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-200 text-xs font-extrabold uppercase tracking-widest">
               PLAYLIST
@@ -298,10 +298,10 @@ export default function PlaylistPage() {
         </div>
       </motion.div>
 
-      {/* 2. Action Controls Toolbar — Clear Spacing Above and Below (NO inline border line!) */}
+      {/* 2. Action Controls Toolbar — Massive 48px+ Vertical Clearance */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-2 my-10 py-2 flex-wrap gap-4"
+        className="flex items-center justify-between px-4 mt-8 sm:mt-12 mb-10 pt-2 pb-4 flex-wrap gap-4"
       >
         <div className="flex items-center gap-8">
           {/* Big Spotify-Style Round Play Button */}

@@ -52,12 +52,12 @@ export default function FavoritesPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-10 relative select-none"
+      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-8 relative select-none"
     >
-      {/* 1. Spotify-Style Ambient Hero Header Banner */}
+      {/* 1. Spotify-Style Ambient Hero Header Banner with Huge Bottom Padding */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-end gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-8"
+        className="relative rounded-3xl pt-8 sm:pt-12 px-8 sm:px-12 pb-14 sm:pb-20 lg:pb-24 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-end gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-4"
       >
         {/* Background Ambient Glow */}
         <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[150px] pointer-events-none" />
@@ -72,9 +72,9 @@ export default function FavoritesPage() {
           </div>
         </div>
 
-        {/* Title & Metadata Header Info with Generous Spacing */}
-        <div className="flex-1 text-center md:text-left min-w-0 pb-3 z-10">
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+        {/* Title & Metadata Header Info */}
+        <div className="flex-1 text-center md:text-left min-w-0 pb-6 z-10">
+          <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
             <span className="text-xs font-extrabold uppercase tracking-widest text-purple-300 bg-purple-500/20 border border-purple-500/30 px-3.5 py-1 rounded-full">
               Playlist
             </span>
@@ -84,7 +84,7 @@ export default function FavoritesPage() {
             Liked Songs
           </h1>
 
-          <div className="flex items-center justify-center md:justify-start gap-3 text-xs sm:text-sm font-semibold text-zinc-300 pt-2 flex-wrap">
+          <div className="flex items-center justify-center md:justify-start gap-3 text-xs sm:text-sm font-semibold text-zinc-300 pt-3 flex-wrap">
             <span className="text-white font-bold">User</span>
             <span className="text-zinc-500">•</span>
             <span className="text-purple-200 font-bold">
@@ -94,10 +94,10 @@ export default function FavoritesPage() {
         </div>
       </motion.div>
 
-      {/* 2. Action Controls Toolbar — Clear Spacing Above and Below (NO inline border line!) */}
+      {/* 2. Action Controls Toolbar — Massive 48px+ Vertical Clearance */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-2 my-10 py-2"
+        className="flex items-center justify-between px-4 mt-8 sm:mt-12 mb-10 pt-2 pb-4"
       >
         <div className="flex items-center gap-8">
           {/* Big Spotify-Style Round Play Button */}
