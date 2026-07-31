@@ -5,5 +5,5 @@ router = APIRouter()
 
 
 @router.get("/audio/{video_id}")
-def get_audio(video_id: str):
-    return get_audio_url(video_id)
+def get_audio(video_id: str, quality: str = "high"):
+    return get_audio_url(video_id, quality=quality)

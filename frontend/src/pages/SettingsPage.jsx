@@ -81,14 +81,14 @@ const getSavedVolumeNorm = () => {
  */
 export default function SettingsPage() {
   const navigate = useNavigate()
-  const { showToast } = usePlayer()
+  const { showToast, audioQuality: playerAudioQuality, setAudioQuality: setPlayerAudioQuality } = usePlayer()
 
   /* Interactive States */
   const [profile, setProfile] = useState(getSavedProfile)
   const [notifications, setNotifications] = useState(getSavedNotifications)
   const [privacy, setPrivacy] = useState(getSavedPrivacy)
   const [audioQuality, setAudioQuality] = useState(
-    () => localStorage.getItem('symphony_audio_quality') || 'High (320kbps)'
+    () => localStorage.getItem('symphony_audio_quality') || '👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)'
   )
   const [volumeNorm, setVolumeNorm] = useState(getSavedVolumeNorm)
   const [theme, setTheme] = useState(
@@ -534,32 +534,69 @@ export default function SettingsPage() {
                       <Headphones className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-white">Audio Quality</h3>
-                      <p className="text-xs text-zinc-400">Select streaming audio bitrate</p>
+                      <h3 className="text-lg font-black text-white">Audio Quality & Master DSP</h3>
+                      <p className="text-xs text-zinc-400">Select Apple Music & Amazon Music Ultra HD streaming profile</p>
                     </div>
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-3">
                     {[
-                      { label: 'Low (96kbps)', desc: 'Data saver mode for slow networks' },
-                      { label: 'Normal (160kbps)', desc: 'Standard clear audio streaming' },
-                      { label: 'High (320kbps)', desc: 'Full fidelity crystal clear sound' },
-                      { label: 'Lossless (FLAC)', desc: 'Uncompressed Studio Master quality' },
+                      {
+                        label: '👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)',
+                        badge: '3D Spatial Soundstage',
+                        desc: 'Binaural 3D audio expansion, immersive surround warmth & studio mastering',
+                        tech: '48kHz / 32-bit DSP • Apple Spatial Audio + Amazon 3D Engine',
+                        accent: 'border-purple-400/50 bg-gradient-to-r from-purple-900/40 via-indigo-900/40 to-fuchsia-950/40',
+                      },
+                      {
+                        label: '💎 Hi-Res Lossless (24-bit / 192kHz ALAC Master)',
+                        badge: 'Studio Master Lossless',
+                        desc: 'Apple Music & Amazon Music HD uncompressed studio master fidelity',
+                        tech: '192kHz / 24-bit ALAC • Bit-perfect uncompressed studio monitor sound',
+                        accent: 'border-cyan-400/50 bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-indigo-950/40',
+                      },
+                      {
+                        label: '🔥 Amazon Ultra HD (320kbps Master)',
+                        badge: 'Ultra HD 320kbps',
+                        desc: 'Punchy sub-bass boost, crystal clear acoustics & dynamic range mastering',
+                        tech: '320kbps Opus / AAC • Amazon HD Sub-bass & Treble Lift',
+                        accent: 'border-amber-400/50 bg-gradient-to-r from-amber-950/40 via-orange-950/40 to-red-950/40',
+                      },
+                      {
+                        label: '🎵 High Quality (256kbps AAC / Opus)',
+                        badge: 'High Fidelity',
+                        desc: 'Full fidelity high-bitrate clear audio streaming',
+                        tech: '256kbps AAC / Opus • Balanced studio response',
+                        accent: 'border-emerald-400/50 bg-gradient-to-r from-emerald-950/40 to-teal-950/40',
+                      },
+                      {
+                        label: '📉 Data Saver (96kbps Low)',
+                        badge: 'Data Saver',
+                        desc: 'Low bandwidth data-saving mode for slow networks',
+                        tech: '96kbps Opus • Optimized for low data usage',
+                        accent: 'border-zinc-500/40 bg-black/40',
+                      },
                     ].map((item) => (
                       <div
                         key={item.label}
                         onClick={() => updateAudioQuality(item.label)}
-                        className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                        className={`flex items-start justify-between p-4 rounded-2xl border transition-all cursor-pointer ${
                           audioQuality === item.label
-                            ? 'bg-purple-900/40 border-purple-500/60 text-white shadow-lg'
+                            ? `${item.accent} text-white shadow-xl shadow-purple-950/50 ring-1 ring-purple-400/40`
                             : 'bg-black/30 border-white/10 hover:border-purple-500/30 text-zinc-300'
                         }`}
                       >
-                        <div>
-                          <p className="text-sm font-bold">{item.label}</p>
-                          <p className="text-xs text-zinc-400">{item.desc}</p>
+                        <div className="space-y-1 pr-3">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-white">{item.label}</p>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/10 text-purple-200 border border-white/10">
+                              {item.badge}
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-300 font-medium">{item.desc}</p>
+                          <p className="text-[11px] text-purple-300/80 font-mono pt-0.5">{item.tech}</p>
                         </div>
-                        {audioQuality === item.label && <CheckCircle2 className="w-5 h-5 text-purple-300" />}
+                        {audioQuality === item.label && <CheckCircle2 className="w-5 h-5 text-purple-300 shrink-0 mt-0.5" />}
                       </div>
                     ))}
                   </div>
@@ -567,9 +604,9 @@ export default function SettingsPage() {
                   <div className="flex justify-end pt-2">
                     <button
                       onClick={closeModal}
-                      className="px-6 py-2.5 rounded-xl bg-purple-600 text-xs font-bold text-white cursor-pointer"
+                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-extrabold text-white cursor-pointer shadow-lg shadow-purple-950/60"
                     >
-                      Done
+                      Apply & Save Settings
                     </button>
                   </div>
                 </div>

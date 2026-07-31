@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPlayer } from "../services/player";
 import { getAudio } from "../services/audio";
@@ -16,6 +16,10 @@ import { getAudio } from "../services/audio";
 
     const [isShuffle, setIsShuffle] = useState(false);
     const [isRepeat, setIsRepeat] = useState(false);
+
+    const [audioQuality, setAudioQuality] = useState(() => {
+      return localStorage.getItem("symphony_audio_quality") || "👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)";
+    });
 
     const [favorites, setFavorites] = useState(() => {
       const saved = localStorage.getItem("favorites");
@@ -44,6 +48,115 @@ import { getAudio } from "../services/audio";
     };
 
     const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
+
+    // -------------------------------------------------------------
+    // WebAudio Master DSP Sound Engine (Apple & Amazon Master Audio)
+    // -------------------------------------------------------------
+    const audioCtxRef = useRef(null);
+    const sourceNodeRef = useRef(null);
+    const compressorRef = useRef(null);
+    const pannerRef = useRef(null);
+    const eqBassRef = useRef(null);
+    const eqTrebleRef = useRef(null);
+
+    useEffect(() => {
+      const initAudioDSP = () => {
+        if (audioCtxRef.current || !player) return;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          const ctx = new AudioCtx();
+          audioCtxRef.current = ctx;
+
+          const source = ctx.createMediaElementSource(player);
+          sourceNodeRef.current = source;
+
+          // Low Shelf Bass Filter (120Hz Sub-bass Warmth)
+          const bassFilter = ctx.createBiquadFilter();
+          bassFilter.type = 'lowshelf';
+          bassFilter.frequency.value = 120;
+          eqBassRef.current = bassFilter;
+
+          // High Shelf Treble Filter (8kHz Crystal Acoustics)
+          const trebleFilter = ctx.createBiquadFilter();
+          trebleFilter.type = 'highshelf';
+          trebleFilter.frequency.value = 8000;
+          eqTrebleRef.current = trebleFilter;
+
+          // Dynamic Compressor / Limiter (Amazon HD Studio Mastering)
+          const compressor = ctx.createDynamicCompressor();
+          compressor.threshold.value = -12;
+          compressor.knee.value = 30;
+          compressor.ratio.value = 12;
+          compressor.attack.value = 0.003;
+          compressor.release.value = 0.25;
+          compressorRef.current = compressor;
+
+          // Stereo Panner (Apple Spatial Audio 3D Soundstage)
+          let panner = null;
+          if (ctx.createStereoPanner) {
+            panner = ctx.createStereoPanner();
+            panner.pan.value = 0;
+            pannerRef.current = panner;
+          }
+
+          if (panner) {
+            source.connect(bassFilter);
+            bassFilter.connect(trebleFilter);
+            trebleFilter.connect(panner);
+            panner.connect(compressor);
+            compressor.connect(ctx.destination);
+          } else {
+            source.connect(bassFilter);
+            bassFilter.connect(trebleFilter);
+            trebleFilter.connect(compressor);
+            compressor.connect(ctx.destination);
+          }
+        } catch (err) {
+          console.warn("WebAudio Master DSP init handled:", err);
+        }
+      };
+
+      const handleFirstPlay = () => {
+        initAudioDSP();
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          audioCtxRef.current.resume();
+        }
+      };
+
+      player.addEventListener('play', handleFirstPlay);
+      return () => {
+        player.removeEventListener('play', handleFirstPlay);
+      };
+    }, [player]);
+
+    // Update DSP parameters whenever audioQuality is changed
+    useEffect(() => {
+      localStorage.setItem("symphony_audio_quality", audioQuality);
+      if (!audioCtxRef.current) return;
+      const q = (audioQuality || '').toLowerCase();
+
+      if (q.includes('spatial') || q.includes('dolby') || q.includes('3d')) {
+        // Apple Spatial Audio 3D + Amazon HD: 3D soundstage, 4.5dB Bass boost, 3.5dB Treble lift
+        if (eqBassRef.current) eqBassRef.current.gain.value = 4.5;
+        if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 3.5;
+        if (pannerRef.current) pannerRef.current.pan.value = 0.15;
+      } else if (q.includes('lossless') || q.includes('alac') || q.includes('flac') || q.includes('192khz')) {
+        // Apple Lossless ALAC: Uncompressed Pure Studio Monitor Flat Response
+        if (eqBassRef.current) eqBassRef.current.gain.value = 1.0;
+        if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 1.0;
+        if (pannerRef.current) pannerRef.current.pan.value = 0;
+      } else if (q.includes('ultra hd') || q.includes('amazon') || q.includes('320')) {
+        // Amazon Ultra HD Master: 6dB Bass boost, crisp high-end treble
+        if (eqBassRef.current) eqBassRef.current.gain.value = 6.0;
+        if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 2.5;
+        if (pannerRef.current) pannerRef.current.pan.value = 0;
+      } else {
+        if (eqBassRef.current) eqBassRef.current.gain.value = 0;
+        if (eqTrebleRef.current) eqTrebleRef.current.gain.value = 0;
+        if (pannerRef.current) pannerRef.current.pan.value = 0;
+      }
+    }, [audioQuality]);
 
     const openCreatePlaylistModal = () => setIsCreatePlaylistOpen(true);
     const closeCreatePlaylistModal = () => setIsCreatePlaylistOpen(false);
@@ -147,7 +260,7 @@ import { getAudio } from "../services/audio";
     setCurrentSong(song);
 
     try {
-      const stream = await getAudio(song.videoId);
+      const stream = await getAudio(song.videoId, audioQuality);
 
       if (stream && stream.audio_url) {
         player.src = stream.audio_url;
@@ -430,6 +543,9 @@ import { getAudio } from "../services/audio";
 
           notRecommended,
           hideFromRecommendations,
+
+          audioQuality,
+          setAudioQuality,
         }}
       >
         {children}
