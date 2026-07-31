@@ -17,14 +17,12 @@ export async function getAudio(videoId, quality = "high") {
                 return data;
             }
         }
+        // Non-ok responses (like 404) are silently handled below
     } catch (e) {
-        console.warn("Backend audio stream fetch error, falling back to stream proxy:", e);
+        console.warn("Backend audio stream fetch error, falling back to iframe:", e);
     }
 
-    // Direct proxy stream URL fallback
-    return {
-        title: "Track",
-        audio_url: `${API_BASE}/audio/stream/${videoId}?quality=${encodeURIComponent(cleanQuality)}`,
-        quality: cleanQuality
-    };
+    // When backend fails, return null to trigger iframe fallback in PlayerContext
+    // (do NOT return a broken stream URL that causes audio element to throw)
+    return null;
 }

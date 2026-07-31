@@ -626,16 +626,27 @@ import { searchMusic } from "../services/api";
     >
       {children}
 
-      {/* Hidden YouTube Audio Player Fallback */}
+      {/* YouTube Audio Engine Fallback — must be in-viewport (1×1px) for Chrome autoplay policy */}
       {iframeSrc && (
         <iframe
           id="symphony-youtube-audio-player"
           width="1"
           height="1"
           src={iframeSrc}
-          allow="autoplay"
+          allow="autoplay; encrypted-media"
+          allowFullScreen={false}
           title="Symphony Audio Engine"
-          style={{ position: "absolute", top: "-9999px", left: "-9999px", opacity: 0, pointerEvents: "none" }}
+          style={{
+            position: "fixed",
+            bottom: 0,
+            right: 0,
+            width: "1px",
+            height: "1px",
+            border: "none",
+            opacity: 0.01,
+            pointerEvents: "none",
+            zIndex: -1,
+          }}
         />
       )}
 
