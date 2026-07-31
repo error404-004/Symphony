@@ -26,7 +26,7 @@ export default function MainLayout() {
       <Sidebar />
 
       {/* Main Content Card Panel with Ambient Glow & Watermark */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18]/90 backdrop-blur-3xl rounded-xl sm:rounded-2xl border border-white/[0.08] relative shadow-2xl shadow-black">
+      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18] rounded-xl sm:rounded-2xl border border-white/[0.08] relative shadow-2xl shadow-black">
         
         {/* Ambient Purple Radial Glow Orbs */}
         <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-purple-600/18 rounded-full blur-[150px] pointer-events-none z-0" />

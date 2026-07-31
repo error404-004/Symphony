@@ -182,19 +182,28 @@ export default function TopNav() {
         <AnimatePresence>
           {isDropdownOpen && dropdownRect && createPortal(
             <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.99 }}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
               style={{
                 position: 'fixed',
                 top: dropdownRect.bottom + 8,
                 left: dropdownRect.left,
                 width: dropdownRect.width,
-                zIndex: 99999,
-                backgroundColor: '#181424',
+                zIndex: 999999,
+                background: 'rgb(18, 14, 32)',
+                opacity: 1,
+                backdropFilter: 'none',
+                WebkitBackdropFilter: 'none',
+                isolation: 'isolate',
+                borderRadius: '16px',
+                border: '1px solid rgba(255,255,255,0.12)',
+                padding: '10px',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.98), 0 0 0 1px rgba(168,85,247,0.15)',
+                color: 'white',
+                userSelect: 'none',
               }}
-              className="bg-[#181424] border border-white/10 rounded-2xl p-2.5 shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-white select-none space-y-1"
             >
               {/* Dropdown Header */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 mb-1">
