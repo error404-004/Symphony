@@ -141,27 +141,15 @@ import { getAudio } from "../services/audio";
         setIsPlaying(false);
       }
 
-      const history = JSON.parse(localStorage.getItem("continueListening")) || [];
-      const filtered = history.filter(
-        (s) => s.videoId !== song.videoId
-      );
-      const recentHistory =
-        JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
-
+      // Update Recently Played (Single track chronological history)
+      const recentHistory = JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
       const uniqueRecent = recentHistory.filter(
         (s) => s.videoId !== song.videoId
       );
-
       uniqueRecent.unshift(song);
-
       localStorage.setItem(
         "recentlyPlayed",
-        JSON.stringify(uniqueRecent.slice(0, 6))
-      );
-      filtered.unshift(song);
-      localStorage.setItem(
-        "continueListening",
-        JSON.stringify(filtered.slice(0, 6))
+        JSON.stringify(uniqueRecent.slice(0, 12))
       );
     } catch (err) {
       console.error("Error playing song:", err);

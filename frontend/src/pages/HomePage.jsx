@@ -2,9 +2,10 @@ import { motion } from 'framer-motion'
 import SectionHeader from '../components/ui/SectionHeader'
 import MusicCard from '../components/ui/MusicCard'
 import WideCard from '../components/ui/WideCard'
-import usePlayer from "../hooks/usePlayer";
-import { useEffect, useState } from "react";
-import { searchMusic } from "../services/api";
+import usePlayer from '../hooks/usePlayer'
+import { useEffect, useState } from 'react'
+import { searchMusic } from '../services/api'
+import { useNavigate } from 'react-router-dom'
 
 /* ============================================
    Page & Section Animation Variants
@@ -20,75 +21,118 @@ const sectionVariants = {
 }
 
 /**
- * HomePage - Symphony Design Language (SDL) Landing Page with exact 8px rhythm system.
+ * HomePage - Symphony Design Language (SDL) Landing Page with differentiated Continue Listening vs Recently Played.
  */
 export default function HomePage() {
-  const [greeting, setGreeting] = useState(getGreeting());
+  const navigate = useNavigate()
+  const [greeting, setGreeting] = useState(getGreeting())
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setGreeting(getGreeting());
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
+      setGreeting(getGreeting())
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
-  const { playSong } = usePlayer();
+  const { playSong, favorites, playlists } = usePlayer()
 
-  const continueListening =
-    (JSON.parse(localStorage.getItem("continueListening")) || []).slice(0, 6);
+  /* Chronological history of individual tracks */
+  const recentlyPlayed = (JSON.parse(localStorage.getItem('recentlyPlayed')) || []).slice(0, 6)
 
-  const recentlyPlayed =
-    (JSON.parse(localStorage.getItem("recentlyPlayed")) || []).slice(0, 6);
+  const [trending, setTrending] = useState([])
+  const [recommended, setRecommended] = useState([])
 
-  const [trending, setTrending] = useState([]);
-  const [recommended, setRecommended] = useState([]);
+  /* Build distinct Continue Listening sessions (Liked Vault + Custom Playlists + Curated Mixes) */
+  const userPlaylists = playlists.map((pl) => ({
+    id: pl.id,
+    type: 'playlist',
+    title: pl.name,
+    artist: `${pl.songs?.length || 0} ${pl.songs?.length === 1 ? 'track' : 'tracks'} • Custom Playlist`,
+    thumbnail: pl.songs?.[0]?.thumbnail,
+    gradient: pl.gradient || 'from-purple-600 to-indigo-800',
+    onClick: () => navigate(`/playlists/${pl.id}`),
+  }))
+
+  const likedVaultCard = {
+    id: 'liked-vault',
+    type: 'vault',
+    title: 'Liked Songs Vault',
+    artist: `${favorites.length} curated tracks in library`,
+    thumbnail: favorites[0]?.thumbnail,
+    gradient: 'from-purple-600 via-indigo-600 to-purple-900',
+    onClick: () => navigate('/favorites'),
+  }
+
+  const defaultMixes = [
+    {
+      id: 'mix-top50',
+      type: 'mix',
+      title: 'Top 50 Global',
+      artist: 'Trending Worldwide Hits',
+      gradient: 'from-blue-600 to-cyan-800',
+      onClick: () => navigate('/search?q=Top 50 Global'),
+    },
+    {
+      id: 'mix-sunset',
+      type: 'mix',
+      title: 'Sunset Sessions',
+      artist: 'Acoustics & Chill Mix',
+      gradient: 'from-rose-600 to-orange-700',
+      onClick: () => navigate('/search?q=Sunset Sessions'),
+    },
+    {
+      id: 'mix-synth',
+      type: 'mix',
+      title: 'Synthwave Retro',
+      artist: '80s Electronic Beats',
+      gradient: 'from-fuchsia-600 to-purple-900',
+      onClick: () => navigate('/search?q=Synthwave Retro'),
+    },
+    {
+      id: 'mix-lofi',
+      type: 'mix',
+      title: 'Deep Focus Lo-Fi',
+      artist: 'Ambient beats for work',
+      gradient: 'from-emerald-600 to-teal-800',
+      onClick: () => navigate('/search?q=Lo-Fi beats'),
+    },
+  ]
+
+  const continueListening = [
+    likedVaultCard,
+    ...userPlaylists,
+    ...defaultMixes,
+  ].slice(0, 6)
 
   async function loadSection(query, setter) {
     try {
-      const data = await searchMusic(query);
-
-      setter(
-        Array.isArray(data)
-          ? data
-          : data.songs || []
-      );
+      const data = await searchMusic(query)
+      setter(Array.isArray(data) ? data : data.songs || [])
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
   }
 
   async function loadRecommendations() {
     try {
-      const history =
-        JSON.parse(localStorage.getItem("recentlyPlayed")) || [];
+      const history = JSON.parse(localStorage.getItem('recentlyPlayed')) || []
+      if (history.length === 0) return
 
-      if (history.length === 0) {
-        return;
-      }
-
-      const artist =
-        history[0].artist || history[0].author;
-
-      const data = await searchMusic(artist);
-
-      setRecommended(
-        Array.isArray(data)
-          ? data
-          : data.songs || []
-      );
+      const artist = history[0].artist || history[0].author
+      const data = await searchMusic(artist)
+      setRecommended(Array.isArray(data) ? data : data.songs || [])
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
   }
 
   useEffect(() => {
     async function loadHomeSections() {
-      await loadSection("Top 50 Global", setTrending);
-      await loadRecommendations();
+      await loadSection('Top 50 Global', setTrending)
+      await loadRecommendations()
     }
-
-    loadHomeSections();
-  }, []);
+    loadHomeSections()
+  }, [])
 
   return (
     <motion.div
@@ -99,7 +143,6 @@ export default function HomePage() {
     >
       {/* Hero Greeting Section */}
       <motion.div variants={sectionVariants} className="relative pt-6 sm:pt-8 lg:pt-10 pb-2 sm:pb-4 flex flex-col items-center justify-center text-center">
-        {/* Subtle Purple Radial Ambient Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight relative drop-shadow-sm leading-tight text-center">
@@ -110,31 +153,32 @@ export default function HomePage() {
         </p>
       </motion.div>
 
-      {/* Continue Listening - Wide Cards Grid */}
+      {/* Continue Listening - Active Playlists & Session Mixes */}
       <motion.section variants={sectionVariants}>
         <SectionHeader
           title="Continue Listening"
-          subtitle="Pick up where you left off"
+          subtitle="Pick up your playlists & session mixes where you left off"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-0">
           {continueListening.map((item, i) => (
             <WideCard
-              key={item.videoId || item.title}
-              song={item}
+              key={item.id || item.title}
               title={item.title}
+              subtitle={item.artist}
               artist={item.artist}
               thumbnail={item.thumbnail}
+              gradient={item.gradient}
               index={i}
-              onClick={() => playSong(item)}
+              onClick={item.onClick}
             />
           ))}
         </div>
       </motion.section>
 
-      {/* Recently Played */}
+      {/* Recently Played - Single Track History */}
       {recentlyPlayed.length > 0 && (
         <motion.section variants={sectionVariants}>
-          <SectionHeader title="Recently Played" subtitle="Your recently played tracks and albums" />
+          <SectionHeader title="Recently Played" subtitle="Your recently played tracks and single songs" />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
             {recentlyPlayed.map((item, i) => (
               <MusicCard
@@ -200,23 +244,23 @@ function getGreeting() {
   if (hour >= 5 && hour < 12) {
     return {
       title: 'Good Morning 👋',
-      subtitle: 'Start your day with the perfect soundscape.'
+      subtitle: 'Start your day with the perfect soundscape.',
     }
   }
   if (hour >= 12 && hour < 17) {
     return {
       title: 'Midday Harmonies 🎵',
-      subtitle: 'Fuel your focus with your favorite tracks.'
+      subtitle: 'Fuel your focus with your favorite tracks.',
     }
   }
   if (hour >= 17 && hour < 22) {
     return {
       title: 'Sunset Sessions 🌆',
-      subtitle: 'Unwind, relax, and let the music take over.'
+      subtitle: 'Unwind, relax, and let the music take over.',
     }
   }
   return {
     title: 'Midnight Resonance 🌙',
-    subtitle: 'Deep cuts & quiet melodies for the night hours.'
+    subtitle: 'Deep cuts & quiet melodies for the night hours.',
   }
 }
