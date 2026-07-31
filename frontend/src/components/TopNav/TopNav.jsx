@@ -168,66 +168,72 @@ export default function TopNav() {
           )}
         </div>
 
-        {/* Spotify-style Recent Searches Glass Dropdown */}
+        {/* Spotify-style Recent Searches Dropdown */}
         <AnimatePresence>
           {isDropdownOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              initial={{ opacity: 0, y: -4, scale: 0.99 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -6, scale: 0.98 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              style={{ backgroundColor: '#0c061e', opacity: 1 }}
-              className="absolute top-full left-0 right-0 mt-2 border-2 border-purple-500/80 rounded-2xl p-3.5 shadow-[0_30px_100px_rgba(0,0,0,1)] z-[9999] text-white select-none overflow-hidden space-y-2.5 backdrop-blur-none"
+              exit={{ opacity: 0, y: -4, scale: 0.99 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              style={{ backgroundColor: '#181424' }}
+              className="absolute top-full left-0 right-0 mt-2 bg-[#181424] border border-white/10 rounded-2xl p-2.5 shadow-[0_25px_70px_rgba(0,0,0,0.9)] z-[99999] text-white select-none space-y-1"
             >
               {/* Dropdown Header */}
-              <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-purple-500/30">
-                <span className="text-xs font-black uppercase text-purple-300 tracking-wider flex items-center gap-2">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 mb-1">
+                <span className="text-xs font-bold text-zinc-300 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-purple-400" />
-                  {query.trim() ? 'Search Suggestions' : 'Recent Searches'}
+                  {query.trim() ? 'Search Suggestions' : 'Recent searches'}
                 </span>
                 {recentSearches.length > 0 && !query.trim() && (
                   <button
                     onClick={clearAllRecentSearches}
-                    className="text-xs font-bold text-purple-300/90 hover:text-white hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1"
                   >
-                    <Trash2 className="w-3.5 h-3.5 text-purple-400" />
+                    <Trash2 className="w-3.5 h-3.5" />
                     <span>Clear all</span>
                   </button>
                 )}
               </div>
 
               {/* Recent Searches Items List */}
-              <div className="max-h-64 overflow-y-auto space-y-1.5 pr-0.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-purple-500/30">
+              <div className="max-h-72 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
                 {filteredRecent.length === 0 ? (
-                  <div className="py-4 text-center text-xs text-zinc-300 font-semibold">
+                  <div className="py-6 text-center text-xs text-zinc-400 font-medium">
                     {query.trim() ? `Press Enter to search "${query}"` : 'No recent searches'}
                   </div>
                 ) : (
                   filteredRecent.map((item) => (
-                    <motion.div
+                    <div
                       key={item}
-                      whileHover={{ x: 3 }}
                       onClick={() => {
                         setQuery(item)
                         handleExecuteSearch(item)
                       }}
-                      className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-purple-950/40 hover:bg-purple-600/30 border border-purple-500/25 hover:border-purple-400/60 text-zinc-100 hover:text-white transition-all cursor-pointer group shadow-sm"
+                      className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/10 text-zinc-200 hover:text-white transition-colors cursor-pointer group"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <History className="w-4 h-4 text-purple-300 group-hover:scale-110 transition-all shrink-0" />
-                        <span className="text-xs font-bold truncate text-white">
-                          {item}
-                        </span>
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-9 h-9 rounded-md bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-purple-500/20 group-hover:border-purple-500/30 transition-colors">
+                          <History className="w-4 h-4 text-zinc-400 group-hover:text-purple-300 transition-colors" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold truncate text-white leading-tight">
+                            {item}
+                          </p>
+                          <p className="text-xs text-zinc-400 truncate mt-0.5 font-normal">
+                            Search history
+                          </p>
+                        </div>
                       </div>
 
                       <button
                         onClick={(e) => removeRecentSearch(item, e)}
-                        className="p-1 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
+                        className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/15 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
                         title="Remove from recent searches"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
-                    </motion.div>
+                    </div>
                   ))
                 )}
               </div>
