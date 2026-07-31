@@ -568,7 +568,9 @@ import { searchMusic } from "../services/api";
         setVolume,
 
         queue,
+        setQueue,
         currentIndex,
+        setCurrentIndex,
         playNext,
         playPrev,
         setTrackQueue,
