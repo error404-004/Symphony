@@ -1,11 +1,11 @@
 import subprocess
 import urllib.parse
 import traceback
+import shutil
 import requests
 from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import StreamingResponse
 from yt_dlp import YoutubeDL
-from pytubefix import YouTube
 
 router = APIRouter()
 
@@ -18,27 +18,41 @@ def debug_audio(video_id: str):
     logs = []
     
     # Check node availability
-    try:
-        node_ver = subprocess.check_output(["node", "-v"], stderr=subprocess.STDOUT).decode().strip()
-        logs.append(f"Node.js version: {node_ver}")
-    except Exception as e:
-        logs.append(f"Node.js check failed: {e}")
-
-    # Test pytubefix with clients
-    for client in ["WEB", "MWEB", "TV", "ANDROID"]:
+    has_node = bool(shutil.which("node"))
+    logs.append(f"Has node: {has_node}")
+    if has_node:
         try:
-            yt = YouTube(url, client=client)
-            stream = yt.streams.filter(only_audio=True).order_by("abr").desc().first()
-            if stream and stream.url:
-                return {
-                    "status": "success",
-                    "engine": "pytubefix",
-                    "client": client,
-                    "title": getattr(yt, "title", "Track"),
-                    "audio_url": stream.url[:120] + "..."
-                }
+            node_ver = subprocess.check_output(["node", "-v"], stderr=subprocess.STDOUT).decode().strip()
+            logs.append(f"Node.js version: {node_ver}")
         except Exception as e:
-            logs.append(f"pytubefix '{client}' error: {type(e).__name__}: {str(e)}")
+            logs.append(f"Node check error: {e}")
+
+    js_runtimes = {"node": {}} if has_node else {}
+
+    for client in ["android_vr", "android", "ios", "mweb", "web"]:
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "quiet": True,
+            "noplaylist": True,
+            "nocheckcertificate": True,
+            "geo_bypass": True,
+            "extractor_args": {"youtube": {"player_client": [client]}}
+        }
+        if js_runtimes:
+            ydl_opts["js_runtimes"] = js_runtimes
+
+        try:
+            with YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                if info and info.get("url"):
+                    return {
+                        "status": "success",
+                        "client": client,
+                        "title": info.get("title"),
+                        "audio_url": info.get("url")[:120] + "..."
+                    }
+        except Exception as e:
+            logs.append(f"yt-dlp '{client}' error: {type(e).__name__}: {str(e)}")
 
     return {"status": "failed", "logs": logs}
 
