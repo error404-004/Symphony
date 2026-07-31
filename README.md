@@ -2,7 +2,7 @@
 
 # 🎵 Symphony Music Player
 
-**A State-of-the-Art, High-Performance Streaming & Control Center built with React, FastAPI, and YouTube Music.**
+**A State-of-the-Art, High-Performance Streaming & Control Center built with React 19, FastAPI, and YouTube Music.**
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -10,7 +10,7 @@
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4.3-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 
-[Features](#-key-features) • [Architecture](#-architecture-overview) • [Installation](#-getting-started) • [API Documentation](#-api-endpoints) • [Keyboard Shortcuts](#-keyboard-shortcuts)
+[Features](#-key-features) • [Master Audio Engine](#-master-audio--dsp-engine) • [Architecture](#-architecture-overview) • [Installation](#-getting-started) • [API Documentation](#-api-endpoints) • [Keyboard Shortcuts](#-keyboard-shortcuts)
 
 ---
 
@@ -18,20 +18,37 @@
 
 ## ✨ Overview
 
-**Symphony** is an ultra-modern, glassmorphic music application designed to provide a premium soundscape listening experience. It features real-time search powered by YouTube Music (`ytmusicapi`), high-fidelity audio extraction (`yt-dlp`), synchronized lyrics via LRCLIB, an interactive control center for audio/theme preferences, and custom playlist management.
+**Symphony** is an ultra-modern, glassmorphic music application designed to provide a premium soundscape listening experience. It features real-time search powered by YouTube Music (`ytmusicapi`), high-fidelity audio extraction (`yt-dlp`), a custom WebAudio Master DSP processing engine, synchronized lyrics via LRCLIB, an interactive control center, continuous genre radio autoplay, and session authentication.
 
 ---
 
 ## 🚀 Key Features
 
 - **🎨 Symphony Design Language (SDL)**: Ultra-sleek glassmorphic UI (`backdrop-blur-3xl`), glowing radial ambient backgrounds, specular hair lines, and fluid Framer Motion animations.
-- **🔍 YouTube Music Search Integration**: Instant search across millions of tracks, albums, and artists with fallback null-safety.
-- **⚡ High-Fidelity Audio Streaming**: Stream audio URLs directly using Python's `yt-dlp` backend.
+- **👑 Master Audio & WebAudio DSP Engine**: Real-time 3D spatial expansion, sub-bass warmth boost, studio treble lift, and dynamic range mastering compressor.
+- **📻 Continuous Genre Autoplay & Dynamic Radio**: Automatically detects music genre and continuously plays top tracks from **different artists, authors, and albums** when the queue ends.
+- **🔐 Glassmorphic Auth Suite**: Full-screen authentication system (`LoginPage.jsx`) featuring Sign In, Create Account, preferred music vibe selection, and 1-Click Guest Demo Entry.
+- **🔎 Spotify-Style Recent Searches Bar**: Instant search history drop-down with solid high-contrast panel, item removal, and real-time suggestion filtering.
+- **🚫 "Don't Recommend" Context Menu**: Hide tracks directly from home recommendations with instant real-time list updating and persistent storage.
 - **🎤 Synchronized Live Lyrics Canvas**: Fullscreen lyrics view powered by LRCLIB with automatic LRC parsing, multi-tiered search fallback, and script normalization (Gurmukhi-to-Devanagari converter).
-- **👤 Dedicated Profile & Music Vault**: Personalized profile view displaying user stats, public playlists, top liked tracks, and customizable avatar gradient themes.
-- **⚙️ Interactive Settings Control Center**: Persistent preferences for audio quality presets (96kbps to Lossless FLAC), volume normalization, visual themes (Dark, Midnight, AMOLED, Cyberpunk), accent colors, and data management.
+- **👤 Dedicated Explorer-Style Profile**: Personalized profile view displaying user stats, public playlists, top liked tracks, and customizable avatar gradient themes.
+- **⚙️ Interactive Settings Control Center**: Persistent preferences for audio quality profiles, volume normalization, visual themes (Dark, Midnight, AMOLED, Cyberpunk), accent colors, and data management.
 - **📁 Playlists & Favorites**: Create, edit, and manage custom playlists and liked songs with local storage persistence.
 - **⌨️ Keyboard Navigation**: Keyboard shortcuts for fast playback control (`Space`, `N`, `P`, `/`).
+
+---
+
+## 🎛️ Master Audio & DSP Engine
+
+Symphony incorporates an in-memory **WebAudio API Processing Graph** with custom studio mastering profiles:
+
+| Profile Label | Tech Specs | Sound Characteristics |
+| :--- | :--- | :--- |
+| 👑 **Symphony Spatial 3D Master** | `48kHz / 32-bit DSP` | 3D binaural soundstage, sub-bass warmth & master compression |
+| 💎 **Studio Lossless Master** | `192kHz / 24-bit FLAC` | Bit-perfect uncompressed studio monitor reference sound |
+| 🔥 **Ultra HD Dynamic Pulse** | `320kbps Opus / AAC` | Punchy 6dB sub-bass boost & crisp high-end treble lift |
+| 🎵 **High Fidelity Clarity** | `256kbps AAC / Opus` | Full fidelity balanced studio response |
+| 📉 **Data Saver** | `96kbps Opus` | Low-bandwidth mode for slow network connections |
 
 ---
 
@@ -43,6 +60,7 @@
 - **Animations**: Framer Motion 12
 - **Icons**: Lucide React
 - **Routing**: React Router DOM v7
+- **DSP Processing**: WebAudio API (`AudioContext`, `BiquadFilterNode`, `StereoPannerNode`, `DynamicCompressorNode`)
 - **Lyrics Service**: LRCLIB API Integration + Custom LRC Parser
 
 ### Backend
@@ -59,7 +77,7 @@
 ```
                         ┌────────────────────────────────────────┐
                         │            Symphony Web UI             │
-                        │       (React 19 + Framer Motion)       │
+                        │     (React 19 + WebAudio DSP Engine)   │
                         └──────────────────┬─────────────────────┘
                                            │
                                   REST API / HTTP
@@ -92,10 +110,10 @@ Symphony/
 ├── frontend/                 # Vite + React Web Application
 │   ├── src/
 │   │   ├── components/       # UI Components (MusicPlayer, TopNav, Sidebar, LyricsPanel)
-│   │   ├── context/          # Global PlayerContext & Audio Provider
+│   │   ├── context/          # Global PlayerContext & WebAudio DSP Provider
 │   │   ├── hooks/            # Custom hooks (usePlayer)
 │   │   ├── layouts/          # Main Shell Layout
-│   │   ├── pages/            # App Views (HomePage, SearchPage, LibraryPage, ProfilePage, SettingsPage)
+│   │   ├── pages/            # App Views (HomePage, SearchPage, LibraryPage, ProfilePage, SettingsPage, LoginPage)
 │   │   ├── services/         # API clients & LRCLIB lyrics service
 │   │   └── utils/            # LRC Parser & helper utilities
 │   └── package.json          # Node dependencies & Vite scripts
@@ -163,7 +181,7 @@ The frontend will run at `http://localhost:5173`.
 | `GET` | `/` | API status check |
 | `GET` | `/health` | Health check endpoint |
 | `GET` | `/search?query={q}&limit={n}` | Search songs via YouTube Music |
-| `GET` | `/audio/{video_id}` | Extract direct stream audio URL via `yt-dlp` |
+| `GET` | `/audio/{video_id}?quality={q}` | Extract direct stream audio URL via `yt-dlp` based on quality profile |
 
 ---
 
