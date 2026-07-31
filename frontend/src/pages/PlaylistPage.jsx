@@ -187,7 +187,7 @@ export default function PlaylistPage() {
       {/* 1. Spotify-Style Ambient Hero Header Banner with Center Alignment & Generous Padding */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl p-8 sm:p-12 lg:p-14 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-12"
+        className="relative rounded-3xl p-8 sm:p-12 lg:p-14 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-8"
       >
         {/* Background Ambient Glow */}
         <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[150px] pointer-events-none" />
@@ -220,7 +220,7 @@ export default function PlaylistPage() {
           </div>
         </div>
 
-        {/* Header Metadata Info — Vertically Centered with Clear Bottom Room */}
+        {/* Header Metadata Info — Vertically Centered */}
         <div className="flex-1 text-center md:text-left min-w-0 z-10 py-2">
           <div className="flex items-center justify-center md:justify-start gap-2.5 flex-wrap mb-3">
             <span className="px-3.5 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-200 text-xs font-extrabold uppercase tracking-widest">
@@ -298,25 +298,25 @@ export default function PlaylistPage() {
         </div>
       </motion.div>
 
-      {/* 2. Action Controls Toolbar — Giant 48px+ Clear Vertical Separation */}
+      {/* 2. Action Controls Toolbar — Compact & Sleek Play Button */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-4 mt-12 sm:mt-16 mb-12 flex-wrap gap-4"
+        className="flex items-center justify-between px-4 mt-8 sm:mt-10 mb-10 pt-2 pb-4 flex-wrap gap-4"
       >
-        <div className="flex items-center gap-8">
-          {/* Big Spotify-Style Round Play Button */}
+        <div className="flex items-center gap-6">
+          {/* Reduced Sleek Play Button (48px) */}
           <motion.button
             onClick={handlePlayAll}
             disabled={playlist.songs.length === 0}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="w-16 h-16 rounded-full bg-purple-500 hover:bg-purple-400 text-white flex items-center justify-center shadow-2xl shadow-purple-950/80 border border-white/20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-12 h-12 rounded-full bg-purple-500 hover:bg-purple-400 text-white flex items-center justify-center shadow-xl shadow-purple-950/80 border border-white/20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Play all"
           >
             {isCurrentPlaylistPlaying ? (
-              <Pause className="w-7 h-7 fill-white text-white" fill="white" />
+              <Pause className="w-5 h-5 fill-white text-white" fill="white" />
             ) : (
-              <Play className="w-7 h-7 fill-white text-white ml-1" fill="white" />
+              <Play className="w-5 h-5 fill-white text-white ml-0.5" fill="white" />
             )}
           </motion.button>
 
@@ -324,54 +324,54 @@ export default function PlaylistPage() {
           <button
             onClick={handleShufflePlay}
             disabled={playlist.songs.length === 0}
-            className={`p-3.5 rounded-full transition-all cursor-pointer ${
+            className={`p-2.5 rounded-full transition-all cursor-pointer ${
               isShuffle
                 ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
                 : "text-zinc-400 hover:text-white hover:bg-white/10"
             }`}
             title="Shuffle"
           >
-            <Shuffle className="w-6 h-6" />
+            <Shuffle className="w-5 h-5" />
           </button>
 
           {/* Favorite Toggle */}
           <button
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-3.5 rounded-full transition-all cursor-pointer ${
+            className={`p-2.5 rounded-full transition-all cursor-pointer ${
               isLiked ? "text-rose-400 bg-rose-500/20" : "text-zinc-400 hover:text-white hover:bg-white/10"
             }`}
             title="Favorite"
           >
-            <Heart className={`w-6 h-6 ${isLiked ? "fill-rose-500 text-rose-500" : ""}`} fill={isLiked ? "currentColor" : "none"} />
+            <Heart className={`w-5 h-5 ${isLiked ? "fill-rose-500 text-rose-500" : ""}`} fill={isLiked ? "currentColor" : "none"} />
           </button>
 
           {/* Edit Details */}
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="p-3.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+            className="p-2.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
             title="Edit Details"
           >
-            <Edit3 className="w-6 h-6" />
+            <Edit3 className="w-5 h-5" />
           </button>
 
           {/* Add Active Song */}
           {currentSong && (
             <button
               onClick={() => addSongToPlaylist(playlist.id, currentSong)}
-              className="p-3.5 rounded-full text-purple-300 hover:text-white hover:bg-purple-500/20 transition-all cursor-pointer"
+              className="p-2.5 rounded-full text-purple-300 hover:text-white hover:bg-purple-500/20 transition-all cursor-pointer"
               title="Add current active song to playlist"
             >
-              <Plus className="w-6 h-6" />
+              <Plus className="w-5 h-5" />
             </button>
           )}
 
           {/* Share */}
           <button
             onClick={handleShare}
-            className="p-3.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer relative"
+            className="p-2.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer relative"
             title="Share Link"
           >
-            <Share2 className="w-6 h-6" />
+            <Share2 className="w-5 h-5" />
             {copiedNotification && (
               <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-purple-900 text-purple-100 text-[10px] font-bold rounded shadow-lg whitespace-nowrap">
                 Copied!
