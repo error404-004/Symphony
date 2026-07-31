@@ -4,25 +4,22 @@ from yt_dlp import YoutubeDL
 def get_audio_url(video_id: str, quality: str = "high"):
     """
     Extract high-fidelity direct audio stream URLs using yt-dlp.
-    Uses multi-client fallback strategy for high compatibility on datacenter IPs.
+    Uses multi-client fallback strategy optimized for YouTube audio extraction.
     """
     url = f"https://www.youtube.com/watch?v={video_id}"
     quality_key = (quality or "high").lower()
 
-    client_configs = [
-        ["android", "android_vr"],
-        ["web_creator", "tvhtml5"],
-        ["mweb", "web"]
-    ]
+    # Try clients individually for maximum reliability
+    client_list = ["android", "android_vr", "mweb", "web_creator", "tvhtml5"]
 
-    for clients in client_configs:
+    for client in client_list:
         ydl_opts = {
             "format": "bestaudio/best",
             "quiet": True,
             "noplaylist": True,
             "extractor_args": {
                 "youtube": {
-                    "player_client": clients
+                    "player_client": [client]
                 }
             }
         }
@@ -40,7 +37,7 @@ def get_audio_url(video_id: str, quality: str = "high"):
                         "ext": info.get("ext", "webm"),
                     }
         except Exception as e:
-            print(f"yt-dlp extraction attempt for {video_id} with clients {clients} failed:", e)
+            print(f"yt-dlp attempt for {video_id} with client '{client}' failed:", e)
 
     # Final fallback attempt
     try:
