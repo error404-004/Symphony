@@ -44,7 +44,7 @@ export default function MainLayout() {
         </div>
 
         {/* Scrollable Page Content */}
-        <main className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 relative z-10 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 relative z-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
           <div>
             <Outlet />
             {/* Master Spacer ensuring content ends cleanly above MusicPlayer & MobileNav */}

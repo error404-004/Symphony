@@ -136,11 +136,11 @@ export default function HomePage() {
       className="space-y-10 sm:space-y-12 lg:space-y-14 pb-6 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative"
     >
       {/* Hero Greeting Section */}
-      <motion.div variants={sectionVariants} className="relative pt-4 sm:pt-6 pb-2 flex flex-col items-center justify-center text-center">
+      <motion.div variants={sectionVariants} className="relative pt-4 sm:pt-6 pb-2 flex flex-col items-center justify-center text-center" style={{ zIndex: 0 }}>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-36 bg-purple-600/12 rounded-full blur-[85px] pointer-events-none" />
 
         <div className="relative flex flex-col items-center gap-1.5">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight leading-snug text-center">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white tracking-tight leading-snug text-center">
             {greeting.title}
           </h1>
           <p className="text-zinc-400 text-sm sm:text-base font-normal text-center max-w-lg leading-relaxed">
