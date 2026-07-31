@@ -1,3 +1,4 @@
+import urllib.parse
 import requests
 from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import StreamingResponse
@@ -10,23 +11,30 @@ url_cache = {}
 
 @router.get("/audio/{video_id}")
 def get_audio(video_id: str, request: Request, quality: str = "high"):
-    data = get_audio_url(video_id, quality=quality)
-    if data and data.get("audio_url"):
-        cache_key = f"{video_id}_{quality.lower()}"
-        url_cache[cache_key] = data["audio_url"]
-        base_url = str(request.base_url).rstrip("/")
-        # Return proxied stream URL so browser audio tag loads via CORS proxy
-        data["audio_url"] = f"{base_url}/audio/stream/{video_id}?quality={quality}"
-    return data
+    clean_quality = urllib.parse.unquote(quality or "high").strip()
+    try:
+        data = get_audio_url(video_id, quality=clean_quality)
+        if data and data.get("audio_url"):
+            cache_key = f"{video_id}_{clean_quality.lower()}"
+            url_cache[cache_key] = data["audio_url"]
+            base_url = str(request.base_url).rstrip("/")
+            encoded_q = urllib.parse.quote(clean_quality)
+            data["audio_url"] = f"{base_url}/audio/stream/{video_id}?quality={encoded_q}"
+            return data
+    except Exception as e:
+        print(f"Error fetching audio metadata for {video_id}:", e)
+
+    raise HTTPException(status_code=404, detail="Audio stream not found for track")
 
 
 @router.get("/audio/stream/{video_id}")
 def stream_audio(video_id: str, request: Request, quality: str = "high"):
-    cache_key = f"{video_id}_{quality.lower()}"
+    clean_quality = urllib.parse.unquote(quality or "high").strip()
+    cache_key = f"{video_id}_{clean_quality.lower()}"
     direct_url = url_cache.get(cache_key)
 
     if not direct_url:
-        data = get_audio_url(video_id, quality=quality)
+        data = get_audio_url(video_id, quality=clean_quality)
         direct_url = data.get("audio_url") if data else None
         if direct_url:
             url_cache[cache_key] = direct_url
@@ -43,16 +51,19 @@ def stream_audio(video_id: str, request: Request, quality: str = "high"):
         req_headers["Range"] = range_header
 
     try:
-        upstream_res = requests.get(direct_url, headers=req_headers, stream=True, timeout=10)
+        upstream_res = requests.get(direct_url, headers=req_headers, stream=True, timeout=15)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Failed to connect to media host: {str(e)}")
 
     if upstream_res.status_code == 403:
-        data = get_audio_url(video_id, quality=quality)
+        data = get_audio_url(video_id, quality=clean_quality)
         direct_url = data.get("audio_url") if data else None
         if direct_url:
             url_cache[cache_key] = direct_url
-            upstream_res = requests.get(direct_url, headers=req_headers, stream=True, timeout=10)
+            try:
+                upstream_res = requests.get(direct_url, headers=req_headers, stream=True, timeout=15)
+            except Exception as e:
+                raise HTTPException(status_code=502, detail=f"Failed to reconnect to media host: {str(e)}")
 
     def stream_generator():
         for chunk in upstream_res.iter_content(chunk_size=64 * 1024):
