@@ -1,7 +1,8 @@
 import { Search, Bell, User, ChevronLeft, ChevronRight, Clock, History, X, Trash2 } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 
 const pageTitles = {
   '/': 'Home',
@@ -33,6 +34,15 @@ export default function TopNav() {
   const [recentSearches, setRecentSearches] = useState(getStoredRecentSearches)
 
   const searchContainerRef = useRef(null)
+  const [dropdownRect, setDropdownRect] = useState(null)
+
+  // Recalculate dropdown position whenever it opens
+  useEffect(() => {
+    if (isDropdownOpen && searchContainerRef.current) {
+      const rect = searchContainerRef.current.getBoundingClientRect()
+      setDropdownRect(rect)
+    }
+  }, [isDropdownOpen])
 
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem('symphony_user_profile')
@@ -108,7 +118,7 @@ export default function TopNav() {
     : recentSearches
 
   return (
-    <header className="flex items-center justify-between h-16 px-6 glass-card backdrop-blur-2xl backdrop-saturate-150 bg-surface-950/80 border-b border-white/10 shadow-lg shadow-black/40 shrink-0 z-30 sticky top-0">
+    <header className="flex items-center justify-between h-16 px-6 glass-card backdrop-blur-2xl backdrop-saturate-150 bg-surface-950/80 border-b border-white/10 shadow-lg shadow-black/40 shrink-0 sticky top-0" style={{ zIndex: 9000 }}>
       {/* Navigation Buttons (< >) & Page Title */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
@@ -168,16 +178,23 @@ export default function TopNav() {
           )}
         </div>
 
-        {/* Spotify-style Recent Searches Dropdown */}
+        {/* Spotify-style Recent Searches Dropdown — rendered via portal to avoid stacking context issues */}
         <AnimatePresence>
-          {isDropdownOpen && (
+          {isDropdownOpen && dropdownRect && createPortal(
             <motion.div
               initial={{ opacity: 0, y: -4, scale: 0.99 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.99 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              style={{ backgroundColor: '#181424' }}
-              className="absolute top-full left-0 right-0 mt-2 bg-[#181424] border border-white/10 rounded-2xl p-2.5 shadow-[0_25px_70px_rgba(0,0,0,0.9)] z-[99999] text-white select-none space-y-1"
+              style={{
+                position: 'fixed',
+                top: dropdownRect.bottom + 8,
+                left: dropdownRect.left,
+                width: dropdownRect.width,
+                zIndex: 99999,
+                backgroundColor: '#181424',
+              }}
+              className="bg-[#181424] border border-white/10 rounded-2xl p-2.5 shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-white select-none space-y-1"
             >
               {/* Dropdown Header */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 mb-1">
@@ -237,7 +254,8 @@ export default function TopNav() {
                   ))
                 )}
               </div>
-            </motion.div>
+            </motion.div>,
+            document.body
           )}
         </AnimatePresence>
       </div>
