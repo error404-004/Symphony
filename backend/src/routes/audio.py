@@ -2,11 +2,54 @@ import urllib.parse
 import requests
 from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import StreamingResponse
+from yt_dlp import YoutubeDL
 from src.services.audio_service import get_audio_url
 
 router = APIRouter()
 
 url_cache = {}
+
+
+@router.get("/audio_debug/{video_id}")
+def debug_audio(video_id: str):
+    url = f"https://www.youtube.com/watch?v={video_id}"
+    logs = []
+    
+    clients = ["android", "android_vr", "ios", "mweb", "web"]
+    for c in clients:
+        opts = {
+            "format": "bestaudio/best",
+            "quiet": True,
+            "noplaylist": True,
+            "extractor_args": {"youtube": {"player_client": [c]}}
+        }
+        try:
+            with YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                if info and info.get("url"):
+                    return {
+                        "status": "success",
+                        "client": c,
+                        "title": info.get("title"),
+                        "audio_url": info.get("url")[:100] + "..."
+                    }
+        except Exception as e:
+            logs.append(f"Client {c} failed: {type(e).__name__}: {str(e)}")
+            
+    # Test fallback without extractor args
+    try:
+        with YoutubeDL({"format": "bestaudio/best", "quiet": True, "noplaylist": True}) as ydl:
+            info = ydl.extract_info(url, download=False)
+            if info and info.get("url"):
+                return {
+                    "status": "success",
+                    "client": "fallback",
+                    "audio_url": info.get("url")[:100] + "..."
+                }
+    except Exception as e:
+        logs.append(f"Fallback failed: {type(e).__name__}: {str(e)}")
+
+    return {"status": "failed", "logs": logs}
 
 
 @router.get("/audio/{video_id}")
