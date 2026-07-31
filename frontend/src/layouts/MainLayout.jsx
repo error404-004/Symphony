@@ -1,4 +1,5 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
+import usePlayer from '../hooks/usePlayer'
 import Sidebar from '../components/Sidebar/Sidebar'
 import TopNav from '../components/TopNav/TopNav'
 import MusicPlayer from '../components/MusicPlayer/MusicPlayer'
@@ -10,6 +11,12 @@ import { Music2 } from 'lucide-react'
  * MainLayout - Symphony Desktop & Mobile Application Shell.
  */
 export default function MainLayout() {
+  const { isAuthenticated } = usePlayer()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-1 sm:p-2.5 gap-2 sm:gap-3 relative select-none">
       {/* Global Create Playlist Modal */}

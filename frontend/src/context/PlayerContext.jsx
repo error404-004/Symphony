@@ -19,6 +19,33 @@ import { searchMusic } from "../services/api";
     const [isRepeat, setIsRepeat] = useState(false);
     const [isAutoplayEnabled, setIsAutoplayEnabled] = useState(true);
 
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+      const token = localStorage.getItem("symphony_auth_token");
+      return token !== "logged_out";
+    });
+
+    const loginUser = (userData) => {
+      const token = "symphony_session_" + Date.now();
+      localStorage.setItem("symphony_auth_token", token);
+      const userProfile = {
+        name: userData?.name || "Zade",
+        email: userData?.email || "zade@symphony.audio",
+        avatarColor: "from-purple-500 via-indigo-600 to-purple-800",
+        bio: "Audio Enthusiast & Music Curator • Symphony Hi-Fi Premier",
+        genre: "Synthwave / Lo-Fi",
+      };
+      localStorage.setItem("symphony_user_profile", JSON.stringify(userProfile));
+      window.dispatchEvent(new Event("symphony-profile-updated"));
+      setIsAuthenticated(true);
+      showToast("Welcome back to Symphony, " + userProfile.name);
+    };
+
+    const logoutUser = () => {
+      localStorage.setItem("symphony_auth_token", "logged_out");
+      setIsAuthenticated(false);
+      showToast("Logged out of Symphony");
+    };
+
     const [audioQuality, setAudioQuality] = useState(() => {
       return localStorage.getItem("symphony_audio_quality") || "👑 Symphony Spatial 3D Master (Binaural Soundstage)";
     });
@@ -628,6 +655,10 @@ import { searchMusic } from "../services/api";
 
           isAutoplayEnabled,
           setIsAutoplayEnabled,
+
+          isAuthenticated,
+          loginUser,
+          logoutUser,
         }}
       >
         {children}

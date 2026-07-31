@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
+import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import SearchPage from './pages/SearchPage'
 import LibraryPage from './pages/LibraryPage'
@@ -12,6 +13,7 @@ import ArtistPage from "./pages/ArtistPage";
 function App() {
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />

@@ -82,7 +82,7 @@ const getSavedVolumeNorm = () => {
  */
 export default function SettingsPage() {
   const navigate = useNavigate()
-  const { showToast, audioQuality: playerAudioQuality, setAudioQuality: setPlayerAudioQuality } = usePlayer()
+  const { showToast, audioQuality: playerAudioQuality, setAudioQuality: setPlayerAudioQuality, logoutUser } = usePlayer()
 
   /* Interactive States */
   const [profile, setProfile] = useState(getSavedProfile)
@@ -211,7 +211,10 @@ export default function SettingsPage() {
           icon: LogOut,
           badge: 'Log Out',
           isDanger: true,
-          onClick: () => showToast('Log out requested'),
+          onClick: () => {
+            if (logoutUser) logoutUser()
+            else showToast('Log out requested')
+          },
         },
       ],
     },
@@ -407,19 +410,6 @@ export default function SettingsPage() {
           </div>
         </motion.section>
       ))}
-
-      {/* Log Out Action Card */}
-      <motion.div variants={itemVariants} className="pt-2">
-        <motion.button
-          whileHover={{ scale: 1.01, backgroundColor: 'rgba(239, 68, 68, 0.15)' }}
-          whileTap={{ scale: 0.985 }}
-          onClick={() => showToast('Log out requested')}
-          className="w-full py-4 px-6 rounded-3xl bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/30 hover:border-red-500/60 text-red-300 hover:text-red-100 font-extrabold text-sm flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-red-950/30 cursor-pointer"
-        >
-          <LogOut className="w-5 h-5 text-red-400" />
-          <span>Log Out of Symphony</span>
-        </motion.button>
-      </motion.div>
 
       {/* Footer Branding */}
       <motion.div variants={itemVariants} className="text-center py-8 border-t border-purple-500/15">
