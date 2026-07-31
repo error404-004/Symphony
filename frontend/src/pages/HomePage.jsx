@@ -53,15 +53,24 @@ export default function HomePage() {
 
   const activeHidden = Array.from(new Set([...(notRecommended || []), ...hiddenIds]))
 
-  /* Chronological history of individual tracks */
-  const rawRecentlyPlayed = (JSON.parse(localStorage.getItem('recentlyPlayed')) || []).slice(0, 6)
+  /* Expansion states for See all actions */
+  const [showAllRecent, setShowAllRecent] = useState(false)
+  const [showAllTrending, setShowAllTrending] = useState(false)
+  const [showAllRecommended, setShowAllRecommended] = useState(false)
+
+  /* Chronological history of individual tracks (up to 12) */
+  const rawRecentlyPlayed = (JSON.parse(localStorage.getItem('recentlyPlayed')) || []).slice(0, 12)
   const recentlyPlayed = rawRecentlyPlayed.filter((s) => !activeHidden.includes(s.videoId))
+  const displayedRecentlyPlayed = showAllRecent ? recentlyPlayed : recentlyPlayed.slice(0, 6)
 
   const [trending, setTrending] = useState([])
   const [recommended, setRecommended] = useState([])
 
   const filteredTrending = trending.filter((s) => !activeHidden.includes(s.videoId))
+  const displayedTrending = showAllTrending ? filteredTrending.slice(0, 12) : filteredTrending.slice(0, 6)
+
   const filteredRecommended = recommended.filter((s) => !activeHidden.includes(s.videoId))
+  const displayedRecommended = showAllRecommended ? filteredRecommended.slice(0, 12) : filteredRecommended.slice(0, 6)
 
   /* Build distinct Continue Listening sessions (Real Liked Vault + Real User Playlists only) */
   const userPlaylists = playlists.map((pl) => ({
@@ -144,6 +153,7 @@ export default function HomePage() {
           <SectionHeader
             title="Continue Listening"
             subtitle="Pick up your playlists & saved collections where you left off"
+            showSeeAll={false}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-0">
             {continueListening.map((item, i) => (
@@ -165,9 +175,15 @@ export default function HomePage() {
       {/* Recently Played - Single Track History */}
       {recentlyPlayed.length > 0 && (
         <motion.section variants={sectionVariants}>
-          <SectionHeader title="Recently Played" subtitle="Your recently played tracks and single songs" />
+          <SectionHeader
+            title="Recently Played"
+            subtitle="Your recently played tracks and single songs"
+            onSeeAll={() => setShowAllRecent(!showAllRecent)}
+            isExpanded={showAllRecent}
+            showSeeAll={recentlyPlayed.length > 6}
+          />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
-            {recentlyPlayed.map((item, i) => (
+            {displayedRecentlyPlayed.map((item, i) => (
               <MusicCard
                 key={`${item.videoId}-${i}`}
                 song={item}
@@ -185,9 +201,15 @@ export default function HomePage() {
       {/* Trending */}
       {filteredTrending.length > 0 && (
         <motion.section variants={sectionVariants}>
-          <SectionHeader title="Trending Now" subtitle="What everyone is listening to" />
+          <SectionHeader
+            title="Trending Now"
+            subtitle="What everyone is listening to"
+            onSeeAll={() => setShowAllTrending(!showAllTrending)}
+            isExpanded={showAllTrending}
+            showSeeAll={filteredTrending.length > 6}
+          />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
-            {filteredTrending.slice(0, 6).map((item, i) => (
+            {displayedTrending.map((item, i) => (
               <MusicCard
                 key={item.videoId}
                 song={item}
@@ -205,9 +227,15 @@ export default function HomePage() {
       {/* Recommended */}
       {filteredRecommended.length > 0 && (
         <motion.section variants={sectionVariants}>
-          <SectionHeader title="Recommended for You" subtitle="Based on your taste" />
+          <SectionHeader
+            title="Recommended for You"
+            subtitle="Based on your taste"
+            onSeeAll={() => setShowAllRecommended(!showAllRecommended)}
+            isExpanded={showAllRecommended}
+            showSeeAll={filteredRecommended.length > 6}
+          />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
-            {filteredRecommended.slice(0, 6).map((item, i) => (
+            {displayedRecommended.map((item, i) => (
               <MusicCard
                 key={item.videoId}
                 song={item}
