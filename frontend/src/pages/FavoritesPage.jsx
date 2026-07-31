@@ -52,12 +52,12 @@ export default function FavoritesPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="pb-40 max-w-full mx-auto px-4 sm:px-8 relative select-none"
+      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-12 relative select-none"
     >
-      {/* 1. Spotify-Style Ambient Hero Header Banner with Center Alignment & Generous Padding */}
+      {/* 1. Spotify-Style Ambient Hero Header Banner with Extra Bottom Clearance */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl p-8 sm:p-12 lg:p-14 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-8"
+        className="relative rounded-3xl p-8 sm:p-12 lg:p-14 pb-14 sm:pb-18 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-14"
       >
         {/* Background Ambient Glow */}
         <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[150px] pointer-events-none" />
@@ -94,10 +94,10 @@ export default function FavoritesPage() {
         </div>
       </motion.div>
 
-      {/* 2. Action Controls Toolbar — Compact & Sleek Play Button */}
+      {/* 2. Action Controls Toolbar — Huge 64px+ Vertical Clearance */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-4 mt-8 sm:mt-10 mb-10 pt-2 pb-4"
+        className="flex items-center justify-between px-4 mt-14 sm:mt-16 mb-12 pt-2 pb-4"
       >
         <div className="flex items-center gap-6">
           {/* Reduced Sleek Play Button (48px) */}
