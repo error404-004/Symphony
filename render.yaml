@@ -3,10 +3,10 @@ services:
     name: symphony-backend
     env: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: mkdir -p node_bin && curl -fsSL https://nodejs.org/dist/v20.18.0/node-v20.18.0-linux-x64.tar.xz | tar -xJ --strip-components=1 -C node_bin && export PATH="$(pwd)/node_bin/bin:$PATH" && pip install -r requirements.txt
+    startCommand: export PATH="$(pwd)/node_bin/bin:$PATH" && uvicorn src.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: FRONTEND_URL
-        sync: false
+        value: "*"

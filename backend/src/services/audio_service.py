@@ -4,13 +4,13 @@ from yt_dlp import YoutubeDL
 def get_audio_url(video_id: str, quality: str = "high"):
     """
     Extract high-fidelity direct audio stream URLs using yt-dlp.
-    Uses multi-client fallback strategy optimized for YouTube audio extraction.
+    Uses embedded player clients to bypass YouTube datacenter bot detection.
     """
     url = f"https://www.youtube.com/watch?v={video_id}"
     quality_key = (quality or "high").lower()
 
-    # Try clients individually for maximum reliability
-    client_list = ["android", "android_vr", "mweb", "web_creator", "tvhtml5"]
+    # Embedded player clients bypass YouTube's datacenter IP bot verification
+    client_list = ["tv_embedded", "android_embedded", "ios_embedded", "mweb_embedded", "android", "mweb"]
 
     for client in client_list:
         ydl_opts = {
