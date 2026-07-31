@@ -1,8 +1,7 @@
 import { Search, Bell, User, ChevronLeft, ChevronRight, Clock, History, X, Trash2 } from 'lucide-react'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createPortal } from 'react-dom'
 
 const pageTitles = {
   '/': 'Home',
@@ -34,15 +33,6 @@ export default function TopNav() {
   const [recentSearches, setRecentSearches] = useState(getStoredRecentSearches)
 
   const searchContainerRef = useRef(null)
-  const [dropdownRect, setDropdownRect] = useState(null)
-
-  // Recalculate dropdown position whenever it opens
-  useEffect(() => {
-    if (isDropdownOpen && searchContainerRef.current) {
-      const rect = searchContainerRef.current.getBoundingClientRect()
-      setDropdownRect(rect)
-    }
-  }, [isDropdownOpen])
 
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem('symphony_user_profile')
@@ -178,29 +168,26 @@ export default function TopNav() {
           )}
         </div>
 
-        {/* Spotify-style Recent Searches Dropdown — rendered via portal to avoid stacking context issues */}
+        {/* Recent Searches Dropdown — absolute inside header, above all page content */}
         <AnimatePresence>
-          {isDropdownOpen && dropdownRect && createPortal(
+          {isDropdownOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -4 }}
+              initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
               style={{
-                position: 'fixed',
-                top: dropdownRect.bottom + 8,
-                left: dropdownRect.left,
-                width: dropdownRect.width,
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                marginTop: '8px',
                 zIndex: 999999,
-                background: 'rgb(18, 14, 32)',
-                opacity: 1,
-                backdropFilter: 'none',
-                WebkitBackdropFilter: 'none',
-                isolation: 'isolate',
-                borderRadius: '16px',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgb(14, 11, 26)',
+                borderRadius: '14px',
+                border: '1px solid rgba(255,255,255,0.1)',
                 padding: '10px',
-                boxShadow: '0 32px 80px rgba(0,0,0,0.98), 0 0 0 1px rgba(168,85,247,0.15)',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.95)',
                 color: 'white',
                 userSelect: 'none',
               }}
@@ -263,8 +250,7 @@ export default function TopNav() {
                   ))
                 )}
               </div>
-            </motion.div>,
-            document.body
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
