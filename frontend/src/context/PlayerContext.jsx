@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPlayer } from "../services/player";
 import { getAudio } from "../services/audio";
+import { searchMusic } from "../services/api";
 
   export const PlayerContext = createContext();
 
@@ -16,6 +17,7 @@ import { getAudio } from "../services/audio";
 
     const [isShuffle, setIsShuffle] = useState(false);
     const [isRepeat, setIsRepeat] = useState(false);
+    const [isAutoplayEnabled, setIsAutoplayEnabled] = useState(true);
 
     const [audioQuality, setAudioQuality] = useState(() => {
       return localStorage.getItem("symphony_audio_quality") || "👑 Spatial Audio Master (Apple Dolby Atmos & Amazon 3D)";
@@ -199,22 +201,91 @@ import { getAudio } from "../services/audio";
       };
     }, [player]);
 
+    // -------------------------------------------------------------
+    // Genre Resolver & Dynamic Autoplay Radio Engine
+    // -------------------------------------------------------------
+    function getGenreForSong(song) {
+      if (!song) return "Top Hits";
+      if (song.genre) return song.genre;
+
+      const text = `${song.title || ""} ${song.artist || ""} ${song.author || ""} ${song.album || ""}`.toLowerCase();
+
+      if (
+        /arijit|atif|lata|kishore|kumar sanu|udit|shreya|jubin|pritam|mithoon|armaan|nehha|badshah|rahat|mohit|sonu|palak|amaal|versatile|bollywood|hindi|tum hi|tereliye|khairiyat|pyaare|raabta|channa|kesariya/i.test(
+          text
+        )
+      ) {
+        return "Hindi Romantic Melodies";
+      }
+
+      if (
+        /punjabi|diljit|sidhu|karan aujla|ap dhillon|shubh|harness|bhangra|guru randhawa|jassie|amrinder/i.test(
+          text
+        )
+      ) {
+        return "Punjabi Top Hits";
+      }
+
+      if (/lofi|lo-fi|chill|beat|study|relax|ambient|sleep|piano/i.test(text)) {
+        return "Lo-Fi Beats Chill";
+      }
+
+      if (/synthwave|retro|80s|cyber|electronic|edm|dj|house|remix/i.test(text)) {
+        return "Synthwave Electronic Beats";
+      }
+
+      if (/rock|metal|guitar|band|anthem|queen|linkin|nirvana/i.test(text)) {
+        return "Rock Anthems";
+      }
+
+      if (/classical|mozart|beethoven|symphony|orchestra|piano/i.test(text)) {
+        return "Classical Symphony";
+      }
+
+      if (song.artist && song.artist !== "Unknown Artist") {
+        return `${song.artist} radio mix`;
+      }
+
+      return "Global Top Hits";
+    }
+
+    async function autoFetchNextGenreTracks(targetSong) {
+      if (!targetSong) return null;
+      try {
+        const genreQuery = getGenreForSong(targetSong);
+        const data = await searchMusic(genreQuery);
+        const fetchedSongs = Array.isArray(data) ? data : data.songs || [];
+
+        const currentHidden = JSON.parse(localStorage.getItem("symphony_not_recommended")) || [];
+        const filtered = fetchedSongs.filter(
+          (s) =>
+            s.videoId !== targetSong.videoId &&
+            !currentHidden.includes(s.videoId) &&
+            !queue.some((q) => q.videoId === s.videoId)
+        );
+
+        if (filtered.length > 0) {
+          const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+          setQueue((prevQueue) => [...prevQueue, ...shuffled]);
+          return shuffled[0];
+        }
+      } catch (err) {
+        console.error("Auto genre queue generation error:", err);
+      }
+      return null;
+    }
+
     // -----------------------------
-    // Song End Logic
+    // Song End & Continuous Genre Autoplay Logic
     // -----------------------------
     useEffect(() => {
-      function handleSongEnd() {
-        if (queue.length === 0) {
-          setIsPlaying(false);
-          return;
-        }
-
+      async function handleSongEnd() {
         if (isRepeat && queue[currentIndex]) {
           playSong(queue[currentIndex]);
           return;
         }
 
-        if (isShuffle) {
+        if (isShuffle && queue.length > 0) {
           const randomIndex = Math.floor(Math.random() * queue.length);
           setCurrentIndex(randomIndex);
           playSong(queue[randomIndex]);
@@ -226,8 +297,16 @@ import { getAudio } from "../services/audio";
           const nextSong = queue[nextIndex];
           setCurrentIndex(nextIndex);
           playSong(nextSong);
+        } else if (currentSong && isAutoplayEnabled) {
+          showToast("Autoplay: Loading next " + getGenreForSong(currentSong) + " track...", currentSong);
+          const nextSong = await autoFetchNextGenreTracks(currentSong);
+          if (nextSong) {
+            setCurrentIndex((prev) => (prev < 0 ? 0 : prev + 1));
+            playSong(nextSong);
+          } else {
+            setIsPlaying(false);
+          }
         } else {
-          // Reached end of queue: pause playback & set isPlaying to false
           setIsPlaying(false);
         }
       }
@@ -237,7 +316,7 @@ import { getAudio } from "../services/audio";
       return () => {
         player.removeEventListener("ended", handleSongEnd);
       };
-    }, [player, currentIndex, queue, isRepeat, isShuffle]);
+    }, [player, currentIndex, queue, isRepeat, isShuffle, currentSong, isAutoplayEnabled]);
 
     // -----------------------------
     // Local Storage
@@ -546,6 +625,9 @@ import { getAudio } from "../services/audio";
 
           audioQuality,
           setAudioQuality,
+
+          isAutoplayEnabled,
+          setIsAutoplayEnabled,
         }}
       >
         {children}
