@@ -182,19 +182,19 @@ export default function PlaylistPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-8 relative select-none"
+      className="pb-40 max-w-full mx-auto px-4 sm:px-8 relative select-none"
     >
-      {/* 1. Spotify-Style Ambient Hero Header Banner with Huge Bottom Padding */}
+      {/* 1. Spotify-Style Ambient Hero Header Banner with Center Alignment & Generous Padding */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl pt-8 sm:pt-12 px-8 sm:px-12 pb-14 sm:pb-20 lg:pb-24 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-end gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-4"
+        className="relative rounded-3xl p-8 sm:p-12 lg:p-14 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-12"
       >
         {/* Background Ambient Glow */}
         <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[150px] pointer-events-none" />
 
         {/* Large Clean Album Cover Art */}
         <div className="relative shrink-0 group">
-          <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-2xl bg-gradient-to-br from-purple-900/80 via-surface-900 to-surface-950 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden relative group-hover:scale-[1.02] transition-transform duration-300">
+          <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-60 lg:h-60 rounded-2xl bg-gradient-to-br from-purple-900/80 via-surface-900 to-surface-950 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden relative group-hover:scale-[1.02] transition-transform duration-300">
             {playlist.songs[0]?.thumbnail ? (
               <img
                 src={playlist.songs[0].thumbnail}
@@ -220,8 +220,8 @@ export default function PlaylistPage() {
           </div>
         </div>
 
-        {/* Header Metadata Info */}
-        <div className="flex-1 text-center md:text-left min-w-0 pb-6 z-10">
+        {/* Header Metadata Info — Vertically Centered with Clear Bottom Room */}
+        <div className="flex-1 text-center md:text-left min-w-0 z-10 py-2">
           <div className="flex items-center justify-center md:justify-start gap-2.5 flex-wrap mb-3">
             <span className="px-3.5 py-1 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-200 text-xs font-extrabold uppercase tracking-widest">
               PLAYLIST
@@ -288,7 +288,7 @@ export default function PlaylistPage() {
           )}
 
           {/* Subtitle Metadata */}
-          <div className="flex items-center justify-center md:justify-start gap-3 text-xs sm:text-sm font-semibold text-zinc-300 pt-2 flex-wrap">
+          <div className="flex items-center justify-center md:justify-start gap-3 text-xs sm:text-sm font-semibold text-zinc-300 pt-1 flex-wrap">
             <span className="text-white font-bold">User</span>
             <span className="text-zinc-500">•</span>
             <span className="text-purple-200 font-bold">{playlist.songs.length} {playlist.songs.length === 1 ? "song" : "songs"}</span>
@@ -298,10 +298,10 @@ export default function PlaylistPage() {
         </div>
       </motion.div>
 
-      {/* 2. Action Controls Toolbar — Massive 48px+ Vertical Clearance */}
+      {/* 2. Action Controls Toolbar — Giant 48px+ Clear Vertical Separation */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-4 mt-8 sm:mt-12 mb-10 pt-2 pb-4 flex-wrap gap-4"
+        className="flex items-center justify-between px-4 mt-12 sm:mt-16 mb-12 flex-wrap gap-4"
       >
         <div className="flex items-center gap-8">
           {/* Big Spotify-Style Round Play Button */}
@@ -397,7 +397,7 @@ export default function PlaylistPage() {
 
       {/* 3. Spotify-Style Tracklist Table with Clean Separation */}
       <motion.section variants={itemVariants} className="pt-4">
-        {/* Table Header Row — Clean border line exclusively under table header */}
+        {/* Table Header Row */}
         <div className="grid grid-cols-[32px_1fr_1fr_120px] gap-6 px-4 pb-4 mb-4 text-xs font-extrabold text-zinc-400 uppercase tracking-widest border-b border-white/15 select-none">
           <span className="text-center">#</span>
           <span>Title</span>
