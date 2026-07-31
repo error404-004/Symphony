@@ -34,13 +34,34 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [])
 
-  const { playSong, favorites, playlists } = usePlayer()
+  const { playSong, favorites, playlists, notRecommended = [] } = usePlayer()
+
+  const [hiddenIds, setHiddenIds] = useState(() => {
+    return JSON.parse(localStorage.getItem('symphony_not_recommended')) || []
+  })
+
+  useEffect(() => {
+    const handleNotRecommended = (e) => {
+      const hiddenSong = e.detail
+      if (hiddenSong && hiddenSong.videoId) {
+        setHiddenIds((prev) => [...prev, hiddenSong.videoId])
+      }
+    }
+    window.addEventListener('symphony-not-recommended', handleNotRecommended)
+    return () => window.removeEventListener('symphony-not-recommended', handleNotRecommended)
+  }, [])
+
+  const activeHidden = Array.from(new Set([...(notRecommended || []), ...hiddenIds]))
 
   /* Chronological history of individual tracks */
-  const recentlyPlayed = (JSON.parse(localStorage.getItem('recentlyPlayed')) || []).slice(0, 6)
+  const rawRecentlyPlayed = (JSON.parse(localStorage.getItem('recentlyPlayed')) || []).slice(0, 6)
+  const recentlyPlayed = rawRecentlyPlayed.filter((s) => !activeHidden.includes(s.videoId))
 
   const [trending, setTrending] = useState([])
   const [recommended, setRecommended] = useState([])
+
+  const filteredTrending = trending.filter((s) => !activeHidden.includes(s.videoId))
+  const filteredRecommended = recommended.filter((s) => !activeHidden.includes(s.videoId))
 
   /* Build distinct Continue Listening sessions (Real Liked Vault + Real User Playlists only) */
   const userPlaylists = playlists.map((pl) => ({
@@ -162,29 +183,31 @@ export default function HomePage() {
       )}
 
       {/* Trending */}
-      <motion.section variants={sectionVariants}>
-        <SectionHeader title="Trending Now" subtitle="What everyone is listening to" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
-          {trending.slice(0, 6).map((item, i) => (
-            <MusicCard
-              key={item.videoId}
-              song={item}
-              title={item.title}
-              artist={item.artist}
-              thumbnail={item.thumbnail}
-              index={i}
-              onClick={() => playSong(item)}
-            />
-          ))}
-        </div>
-      </motion.section>
+      {filteredTrending.length > 0 && (
+        <motion.section variants={sectionVariants}>
+          <SectionHeader title="Trending Now" subtitle="What everyone is listening to" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
+            {filteredTrending.slice(0, 6).map((item, i) => (
+              <MusicCard
+                key={item.videoId}
+                song={item}
+                title={item.title}
+                artist={item.artist}
+                thumbnail={item.thumbnail}
+                index={i}
+                onClick={() => playSong(item)}
+              />
+            ))}
+          </div>
+        </motion.section>
+      )}
 
       {/* Recommended */}
-      {recommended.length > 0 && (
+      {filteredRecommended.length > 0 && (
         <motion.section variants={sectionVariants}>
           <SectionHeader title="Recommended for You" subtitle="Based on your taste" />
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 lg:gap-6 mt-0">
-            {recommended.slice(0, 6).map((item, i) => (
+            {filteredRecommended.slice(0, 6).map((item, i) => (
               <MusicCard
                 key={item.videoId}
                 song={item}

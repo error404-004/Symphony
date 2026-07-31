@@ -27,6 +27,22 @@ import { getAudio } from "../services/audio";
       return saved ? JSON.parse(saved) : [];
     });
 
+    const [notRecommended, setNotRecommended] = useState(() => {
+      const saved = localStorage.getItem("symphony_not_recommended");
+      return saved ? JSON.parse(saved) : [];
+    });
+
+    const hideFromRecommendations = (song) => {
+      if (!song || !song.videoId) return;
+      setNotRecommended((prev) => {
+        if (prev.includes(song.videoId)) return prev;
+        const updated = [...prev, song.videoId];
+        localStorage.setItem("symphony_not_recommended", JSON.stringify(updated));
+        return updated;
+      });
+      window.dispatchEvent(new CustomEvent("symphony-not-recommended", { detail: song }));
+    };
+
     const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
 
     const openCreatePlaylistModal = () => setIsCreatePlaylistOpen(true);
@@ -411,6 +427,9 @@ import { getAudio } from "../services/audio";
           isCreatePlaylistOpen,
           openCreatePlaylistModal,
           closeCreatePlaylistModal,
+
+          notRecommended,
+          hideFromRecommendations,
         }}
       >
         {children}

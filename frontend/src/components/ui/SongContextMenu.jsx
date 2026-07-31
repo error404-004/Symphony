@@ -11,6 +11,7 @@ import {
   Share2,
   ChevronRight,
   Check,
+  EyeOff,
 } from "lucide-react";
 import { usePlayer } from "../../context/PlayerContext";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +50,7 @@ export default function SongContextMenu({
     addSongToPlaylist,
     openCreatePlaylistModal,
     showToast,
+    hideFromRecommendations,
   } = usePlayer();
 
   if (!song) return null;
@@ -167,6 +169,24 @@ export default function SongContextMenu({
     e.stopPropagation();
     addSongToPlaylist(playlistId, song);
     if (showToast) showToast("Added to playlist", song);
+    setIsOpen(false);
+  };
+
+  const handleNotRecommend = (e) => {
+    e.stopPropagation();
+    if (hideFromRecommendations) {
+      hideFromRecommendations(song);
+    } else {
+      const hidden = JSON.parse(localStorage.getItem("symphony_not_recommended")) || [];
+      if (song.videoId && !hidden.includes(song.videoId)) {
+        hidden.push(song.videoId);
+        localStorage.setItem("symphony_not_recommended", JSON.stringify(hidden));
+      }
+      window.dispatchEvent(new CustomEvent("symphony-not-recommended", { detail: song }));
+    }
+    if (showToast) {
+      showToast("We won't recommend this song anymore", song);
+    }
     setIsOpen(false);
   };
 
@@ -339,6 +359,17 @@ export default function SongContextMenu({
                 <div className="flex items-center gap-2.5">
                   <Share2 className="w-4 h-4 text-zinc-400 group-hover:text-purple-300 group-hover:scale-110 transition-transform" />
                   <span className="font-medium text-xs">Share track</span>
+                </div>
+              </button>
+
+              {/* Don't recommend */}
+              <button
+                onClick={handleNotRecommend}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-red-600/20 hover:text-white transition-colors cursor-pointer group text-left mt-0.5"
+              >
+                <div className="flex items-center gap-2.5">
+                  <EyeOff className="w-4 h-4 text-zinc-400 group-hover:text-red-400 group-hover:scale-110 transition-all" />
+                  <span className="font-medium text-xs">Don't recommend</span>
                 </div>
               </button>
             </motion.div>
