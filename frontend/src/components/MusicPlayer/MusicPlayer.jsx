@@ -84,12 +84,12 @@ export default function MusicPlayer() {
   return (
     <>
       {/* Bottom Floating Glassmorphic Playback Bar - Fitted into Home Main Content Alignment */}
-      <footer className="fixed md:absolute bottom-[66px] md:bottom-3 left-2 right-2 md:left-3 md:right-3 z-30 h-[80px] sm:h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-3 sm:px-7 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
+      <footer className="fixed md:absolute bottom-[66px] md:bottom-3 left-2 right-2 md:left-3 md:right-3 z-30 h-[88px] sm:h-[96px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-4 sm:px-8 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
         {/* Top Specular Purple Highlight */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent opacity-80 rounded-t-2xl pointer-events-none" />
 
         {/* Left Section: Track Info & Cover */}
-        <div className="flex items-center gap-2 sm:gap-3.5 max-w-[42%] sm:w-1/4 sm:min-w-[200px]">
+        <div className="flex items-center gap-3 sm:gap-4 max-w-[42%] sm:w-1/4 sm:min-w-[220px]">
           {/* Cover Thumbnail with Ambient Glow */}
           <div className="relative group shrink-0">
             <div className="absolute -inset-1 bg-purple-600/40 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -340,9 +340,9 @@ export default function MusicPlayer() {
         </div>
 
         {/* Center Section: Playback Controls & Timeline Progress */}
-        <div className="flex flex-col items-center gap-2 flex-1 max-w-[720px] px-6">
+        <div className="flex flex-col items-center gap-2.5 flex-1 max-w-[720px] px-8">
           {/* Controls Row */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             {/* Shuffle */}
             <button
               onClick={() => setIsShuffle(!isShuffle)}
@@ -463,7 +463,7 @@ export default function MusicPlayer() {
         </div>
 
         {/* Right Section: Lyrics, Queue, Volume & Fullscreen */}
-        <div className="flex items-center justify-end gap-2.5 w-1/4 min-w-[190px]">
+        <div className="flex items-center justify-end gap-3 w-1/4 min-w-[200px]">
           {/* Fullscreen Lyrics Trigger */}
           <button
             onClick={() => setIsFullscreen(true)}
@@ -487,7 +487,7 @@ export default function MusicPlayer() {
           </button>
 
           {/* Integrated Volume Control */}
-          <div className="hidden sm:flex items-center gap-2 bg-white/[0.04] p-1.5 px-3 rounded-full border border-white/10 shadow-inner">
+          <div className="hidden sm:flex items-center gap-2.5 bg-white/[0.04] p-2 px-3.5 rounded-full border border-white/10 shadow-inner">
             <button
               onClick={() => {
                 if (isMuted) {
@@ -513,7 +513,7 @@ export default function MusicPlayer() {
                 if (player) player.volume = newVol / 100;
                 if (newVol > 0) setIsMuted(false);
               }}
-              className="w-20 h-1 bg-white/10 accent-purple-500 cursor-pointer rounded-full"
+              className="w-24 h-1.5 bg-white/10 accent-purple-500 cursor-pointer rounded-full"
               aria-label="Volume"
             />
           </div>

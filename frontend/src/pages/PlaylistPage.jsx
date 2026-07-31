@@ -170,7 +170,7 @@ export default function PlaylistPage() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="mt-4 pb-40 relative space-y-10 sm:space-y-14"
+      className="pt-6 pb-40 relative space-y-12 sm:space-y-16"
     >
       {/* Background Ambient Glow Orbs */}
       <div className="absolute -top-32 -left-32 w-[520px] h-[520px] bg-purple-600/20 rounded-full blur-[140px] pointer-events-none z-0" />
@@ -179,7 +179,7 @@ export default function PlaylistPage() {
       {/* 1. Playlist Hero Showcase Header */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-[32px] overflow-hidden p-8 sm:p-10 lg:p-12 glass-card backdrop-blur-3xl bg-surface-950/85 border border-white/12 flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-10 lg:gap-12 select-none shadow-2xl shadow-purple-950/40 group/hero z-10"
+        className="relative rounded-[32px] overflow-hidden p-8 sm:p-10 lg:p-14 glass-card backdrop-blur-3xl bg-surface-950/85 border border-white/12 flex flex-col md:flex-row items-center md:items-center gap-10 sm:gap-12 lg:gap-16 select-none shadow-2xl shadow-purple-950/40 group/hero z-10"
       >
         {/* Specular Highlight Hairline */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-purple-300/50 to-transparent opacity-80 pointer-events-none" />
@@ -237,24 +237,24 @@ export default function PlaylistPage() {
         {/* Right Column: Playlist Metadata & Title Header */}
         <div className="flex-1 flex flex-col justify-center max-w-[700px] w-full min-w-0 text-center md:text-left z-10">
           {/* Playlist Badges */}
-          <div className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 flex-wrap mb-4 sm:mb-5">
+          <div className="flex items-center justify-center md:justify-start gap-2.5 sm:gap-3 flex-wrap mb-6 sm:mb-8">
             <div className="flex items-center gap-2.5">
-              <span className="px-3 py-1 rounded-full bg-purple-500/25 border border-purple-400/40 text-purple-200 text-[11px] font-black uppercase tracking-widest shadow-md">
+              <span className="px-3.5 py-1.5 rounded-full bg-purple-500/25 border border-purple-400/40 text-purple-200 text-[11px] font-black uppercase tracking-widest shadow-md">
                 PLAYLIST
               </span>
 
-              <span className="text-xs font-bold text-zinc-300 flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
+              <span className="text-xs font-bold text-zinc-300 flex items-center gap-1.5 bg-white/5 px-3.5 py-1.5 rounded-full border border-white/10">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Created by <strong className="text-white">User</strong>
               </span>
             </div>
 
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-400/25 text-purple-200 text-[10px] font-extrabold uppercase tracking-wider shadow-sm backdrop-blur-md">
+            <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-400/25 text-purple-200 text-[10px] font-extrabold uppercase tracking-wider shadow-sm backdrop-blur-md">
               <Sparkles className="w-3 h-3 text-purple-300" />
               Symphony Master
             </span>
 
-            <span className="px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[10px] font-extrabold tracking-wider uppercase">
+            <span className="px-3.5 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[10px] font-extrabold tracking-wider uppercase">
               DOLBY ATMOS
             </span>
           </div>
@@ -311,7 +311,7 @@ export default function PlaylistPage() {
           ) : (
             <>
               {/* Title Header */}
-              <div className="group/title flex items-center justify-center md:justify-start gap-3 mb-2">
+              <div className="group/title flex items-center justify-center md:justify-start gap-3 mb-4">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-gradient-purple drop-shadow-md truncate leading-tight">
                   {customTitle}
                 </h1>
@@ -325,7 +325,7 @@ export default function PlaylistPage() {
               </div>
 
               {/* Description Display / Edit */}
-              <div className="group/desc relative max-w-[640px] mb-5 sm:mb-6">
+              <div className="group/desc relative max-w-[640px] mb-6 sm:mb-8">
                 {customDescription && customDescription.trim() ? (
                   <div className="flex items-start justify-center md:justify-start gap-2">
                     <p className="text-sm sm:text-base text-zinc-300/90 font-medium leading-relaxed break-words">
@@ -353,7 +353,7 @@ export default function PlaylistPage() {
           )}
 
           {/* Concise Metadata Row */}
-          <div className="flex items-center justify-center md:justify-start gap-3.5 sm:gap-4.5 text-xs sm:text-sm font-semibold flex-wrap text-zinc-300 pt-1">
+          <div className="flex items-center justify-center md:justify-start gap-3.5 sm:gap-4.5 text-xs sm:text-sm font-semibold flex-wrap text-zinc-300 pt-2">
             <span className="text-white font-bold">{playlist.songs.length} {playlist.songs.length === 1 ? "song" : "songs"}</span>
             <span className="text-zinc-600">•</span>
             <span className="text-zinc-300 font-medium">{getTotalDuration(playlist.songs)}</span>
@@ -373,9 +373,9 @@ export default function PlaylistPage() {
       {/* 2. Action Buttons Toolbar */}
       <motion.div
         variants={itemVariants}
-        className="mt-8 sm:mt-10 mb-10 sm:mb-12 flex items-center justify-between py-4 border-b border-white/[0.08] pb-8 flex-wrap gap-6"
+        className="flex items-center justify-between py-6 border-b border-white/[0.08] pb-8 flex-wrap gap-6"
       >
-        <div className="flex items-center gap-4 sm:gap-5 flex-wrap">
+        <div className="flex items-center gap-5 sm:gap-6 flex-wrap">
           {/* Button Group 1: PLAY ALL + SHUFFLE */}
           <div className="flex items-center gap-3.5">
             {/* ▶ PLAY ALL */}
@@ -384,7 +384,7 @@ export default function PlaylistPage() {
               disabled={playlist.songs.length === 0}
               whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(168, 85, 247, 0.55)" }}
               whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-1 px-10 py-5 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm tracking-wider shadow-xl shadow-purple-950/80 border border-white/20 disabled:opacity-40 transition-all duration-300 cursor-pointer"
+              className="flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm tracking-wider shadow-xl shadow-purple-950/80 border border-white/20 disabled:opacity-40 transition-all duration-300 cursor-pointer"
             >
               <Play className="w-5 h-5 fill-white text-white ml-0.3" fill="white" />
               <span>PLAY ALL</span>
@@ -483,7 +483,7 @@ export default function PlaylistPage() {
       {/* 3. Tracks Section */}
       <motion.section variants={itemVariants}>
         {/* Minimal Tracks Heading */}
-        <div className="flex items-center justify-between px-1 mb-5">
+        <div className="flex items-center justify-between px-2 mb-6">
           <h2 className="text-base sm:text-lg font-extrabold text-white tracking-wider uppercase">
             Tracks
           </h2>
@@ -493,7 +493,7 @@ export default function PlaylistPage() {
         </div>
 
         {/* Track Table Header */}
-        <div className="grid grid-cols-[44px_1fr_1fr_130px] gap-4 px-6 py-4 text-xs font-extrabold text-zinc-400 uppercase tracking-widest border-b border-white/10 select-none mb-4">
+        <div className="grid grid-cols-[48px_1fr_1fr_140px] gap-6 px-6 py-3 text-xs font-extrabold text-zinc-400 uppercase tracking-widest border-b border-white/10 select-none mb-2">
           <span className="text-center">#</span>
           <span>TITLE</span>
           <span className="hidden md:block">ALBUM</span>
@@ -514,7 +514,7 @@ export default function PlaylistPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {playlist.songs.map((song, i) => {
               const isCurrent = currentSong?.videoId === song.videoId;
 
@@ -530,7 +530,7 @@ export default function PlaylistPage() {
                     setCurrentIndex(i);
                     playSong(song);
                   }}
-                  className={`grid grid-cols-[44px_1fr_1fr_130px] gap-4 items-center px-6 py-4 rounded-2xl glass-card backdrop-blur-2xl bg-white/[0.03] hover:bg-purple-600/20 border border-white/10 hover:border-purple-400/40 group cursor-pointer transition-all duration-300 shadow-md hover:shadow-2xl hover:shadow-purple-950/50 ${
+                  className={`grid grid-cols-[48px_1fr_1fr_140px] gap-6 items-center px-6 py-5 rounded-2xl glass-card backdrop-blur-2xl bg-white/[0.03] hover:bg-purple-600/15 border border-white/10 hover:border-purple-400/40 group cursor-pointer transition-all duration-300 shadow-md hover:shadow-2xl hover:shadow-purple-950/50 ${
                     isCurrent ? "border-purple-500/60 bg-purple-900/30 shadow-purple-950/60" : ""
                   }`}
                 >
@@ -558,10 +558,10 @@ export default function PlaylistPage() {
                       <img
                         src={song.thumbnail}
                         alt={song.title}
-                        className="w-12 h-12 object-cover"
+                        className="w-13 h-13 object-cover"
                       />
                     </div>
-                    <div className="min-w-0 space-y-0.5">
+                    <div className="min-w-0 space-y-1">
                       <p
                         className={`text-sm font-bold truncate tracking-tight transition-colors ${
                           isCurrent ? "text-purple-300 font-black" : "text-white group-hover:text-purple-200"
@@ -608,7 +608,7 @@ export default function PlaylistPage() {
 
       {/* 4. Recommended Additions Section */}
       {recommendedSongs.length > 0 && (
-        <motion.section variants={itemVariants} className="pt-8 border-t border-white/[0.08]">
+        <motion.section variants={itemVariants} className="pt-12 border-t border-white/[0.08]">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5 mb-2">
               <Sparkles className="w-6 h-6 text-purple-400" />
