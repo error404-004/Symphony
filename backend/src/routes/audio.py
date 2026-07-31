@@ -15,7 +15,7 @@ def debug_audio(video_id: str):
     url = f"https://www.youtube.com/watch?v={video_id}"
     logs = []
     
-    clients = ["android", "android_vr", "ios", "mweb", "web"]
+    clients = ["tv_embedded", "android_embedded", "ios_embedded", "mweb_embedded", "android", "mweb"]
     for c in clients:
         opts = {
             "format": "bestaudio/best",
@@ -36,19 +36,6 @@ def debug_audio(video_id: str):
         except Exception as e:
             logs.append(f"Client {c} failed: {type(e).__name__}: {str(e)}")
             
-    # Test fallback without extractor args
-    try:
-        with YoutubeDL({"format": "bestaudio/best", "quiet": True, "noplaylist": True}) as ydl:
-            info = ydl.extract_info(url, download=False)
-            if info and info.get("url"):
-                return {
-                    "status": "success",
-                    "client": "fallback",
-                    "audio_url": info.get("url")[:100] + "..."
-                }
-    except Exception as e:
-        logs.append(f"Fallback failed: {type(e).__name__}: {str(e)}")
-
     return {"status": "failed", "logs": logs}
 
 
