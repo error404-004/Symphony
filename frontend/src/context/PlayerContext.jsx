@@ -87,6 +87,7 @@ import { searchMusic } from "../services/api";
     const sourceNodeRef = useRef(null);
     const compressorRef = useRef(null);
     const pannerRef = useRef(null);
+    const gainNodeRef = useRef(null);
     const eqBassRef = useRef(null);
     const eqTrebleRef = useRef(null);
     const iframeTimerRef = useRef(null);
@@ -127,11 +128,17 @@ import { searchMusic } from "../services/api";
           panner.pan.value = 0.15;
           pannerRef.current = panner;
 
+          // GainNode for volume control (player.volume has no effect after createMediaElementSource)
+          const gainNode = ctx.createGain();
+          gainNode.gain.value = 0.75; // default 75%
+          gainNodeRef.current = gainNode;
+
           source.connect(bassFilter);
           bassFilter.connect(trebleFilter);
           trebleFilter.connect(compressor);
           compressor.connect(panner);
-          panner.connect(ctx.destination);
+          panner.connect(gainNode);
+          gainNode.connect(ctx.destination);
         } catch (e) {
           console.warn("WebAudio DSP Initialization fallback:", e);
           if (sourceNodeRef.current && audioCtxRef.current) {
@@ -487,6 +494,11 @@ import { searchMusic } from "../services/api";
   }
 
   function setVolume(vol) {
+    // Use GainNode if DSP chain is active (player.volume is bypassed by createMediaElementSource)
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = vol;
+    }
+    // Also set on the raw player as fallback (works when DSP chain hasn't initialized)
     player.volume = vol;
   }
 

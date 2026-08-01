@@ -30,7 +30,6 @@ import {
  */
 export default function MusicPlayer() {
   const {
-    player,
     currentSong,
     isPlaying,
     pauseSong,
@@ -38,7 +37,7 @@ export default function MusicPlayer() {
     currentTime,
     duration,
     playNext,
-    playPrevious,
+    playPrev: playPrevious,
     isShuffle,
     setIsShuffle,
     isRepeat,
@@ -51,6 +50,8 @@ export default function MusicPlayer() {
     playlists,
     addSongToPlaylist,
     openCreatePlaylistModal,
+    setVolume: setContextVolume,
+    seek,
   } = usePlayer();
 
   const isFavorite = currentSong
@@ -66,11 +67,10 @@ export default function MusicPlayer() {
   const [isHoveredProgress, setIsHoveredProgress] = useState(false);
   const [playlistSearchQuery, setPlaylistSearchQuery] = useState("");
 
+  // Sync volume to context whenever it changes
   useEffect(() => {
-    if (player) {
-      player.volume = volume / 100;
-    }
-  }, [player, volume]);
+    setContextVolume(volume / 100);
+  }, [volume]);
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
@@ -442,8 +442,8 @@ export default function MusicPlayer() {
                 value={progress}
                 onChange={(e) => {
                   const newProgress = Number(e.target.value);
-                  if (player && duration) {
-                    player.currentTime = (newProgress / 100) * duration;
+                  if (duration) {
+                    seek((newProgress / 100) * duration);
                   }
                 }}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -491,10 +491,10 @@ export default function MusicPlayer() {
             <button
               onClick={() => {
                 if (isMuted) {
-                  player.volume = volume / 100;
+                  setContextVolume(volume / 100);
                   setIsMuted(false);
                 } else {
-                  player.volume = 0;
+                  setContextVolume(0);
                   setIsMuted(true);
                 }
               }}
@@ -510,7 +510,7 @@ export default function MusicPlayer() {
               onChange={(e) => {
                 const newVol = Number(e.target.value);
                 setVolume(newVol);
-                if (player) player.volume = newVol / 100;
+                setContextVolume(newVol / 100);
                 if (newVol > 0) setIsMuted(false);
               }}
               className="w-24 h-1.5 bg-white/10 accent-purple-500 cursor-pointer rounded-full"
