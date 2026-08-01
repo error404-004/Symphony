@@ -11,8 +11,9 @@ import { searchMusic } from "../services/api";
 
     const [currentSong, setCurrentSong] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [iframeSrc, setIframeSrc] = useState("");
     const [isIframeActive, setIsIframeActive] = useState(false);
+    const ytPlayerRef = useRef(null);
+    const ytContainerRef = useRef(null);
 
     const [queue, setQueue] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(-1);
@@ -91,6 +92,16 @@ import { searchMusic } from "../services/api";
     const eqBassRef = useRef(null);
     const eqTrebleRef = useRef(null);
     const iframeTimerRef = useRef(null);
+    const volumeRef = useRef(75); // track current volume 0-100 for YT player
+
+    // Load YouTube IFrame API script once
+    useEffect(() => {
+      if (window.YT && window.YT.Player) return;
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode.insertBefore(tag, firstScript);
+    }, []);
 
     useEffect(() => {
       const initAudioDSP = () => {
@@ -318,9 +329,11 @@ import { searchMusic } from "../services/api";
       }
 
       player.addEventListener("ended", handleSongEnd);
+      window.addEventListener("symphony-yt-ended", handleSongEnd);
 
       return () => {
         player.removeEventListener("ended", handleSongEnd);
+        window.removeEventListener("symphony-yt-ended", handleSongEnd);
       };
     }, [player, currentIndex, queue, isRepeat, isShuffle, currentSong, isAutoplayEnabled]);
 
@@ -405,7 +418,6 @@ import { searchMusic } from "../services/api";
     }
     player.src = "";
     setIsIframeActive(true);
-    setIframeSrc(`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1`);
     setIsPlaying(true);
     setCurrentTime(0);
 
@@ -413,11 +425,55 @@ import { searchMusic } from "../services/api";
     const songObj = typeof songOrId === "object" ? songOrId : currentSong;
     const dur = parseSongDuration(songObj?.duration);
     if (dur > 0) setDuration(dur);
+
+    // Create or reuse YouTube IFrame Player
+    const createPlayer = () => {
+      if (ytPlayerRef.current && typeof ytPlayerRef.current.destroy === 'function') {
+        try { ytPlayerRef.current.destroy(); } catch (e) { /* ignore */ }
+      }
+      ytPlayerRef.current = new window.YT.Player('symphony-yt-player', {
+        height: '1',
+        width: '1',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          modestbranding: 1,
+          playsinline: 1,
+          rel: 0,
+          origin: window.location.origin,
+        },
+        events: {
+          onReady: (event) => {
+            event.target.setVolume(volumeRef.current);
+            event.target.playVideo();
+          },
+          onStateChange: (event) => {
+            // YT.PlayerState.ENDED === 0
+            if (event.data === 0) {
+              setIsPlaying(false);
+              // Trigger next song via same ended logic
+              window.dispatchEvent(new Event('symphony-yt-ended'));
+            }
+          },
+        },
+      });
+    };
+
+    if (window.YT && window.YT.Player) {
+      createPlayer();
+    } else {
+      // Wait for API to load
+      window.onYouTubeIframeAPIReady = createPlayer;
+    }
   }
 
   function pauseSong() {
     if (isIframeActive) {
-      setIframeSrc((prev) => prev.replace("autoplay=1", "autoplay=0"));
+      if (ytPlayerRef.current && typeof ytPlayerRef.current.pauseVideo === 'function') {
+        ytPlayerRef.current.pauseVideo();
+      }
     } else {
       try {
         player.pause();
@@ -429,11 +485,13 @@ import { searchMusic } from "../services/api";
   }
 
   function resumeSong() {
-    if (isIframeActive && currentSong) {
-      setIframeSrc(`https://www.youtube-nocookie.com/embed/${currentSong.videoId}?autoplay=1&enablejsapi=1`);
-    } else {
+    if (isIframeActive) {
+      if (ytPlayerRef.current && typeof ytPlayerRef.current.playVideo === 'function') {
+        ytPlayerRef.current.playVideo();
+      }
+    } else if (currentSong) {
       player.play().catch((e) => {
-        if (e.name !== "AbortError") console.warn("Resume play error:", e);
+        if (e.name !== "AbortError") console.warn("Resume failed:", e);
       });
     }
     setIsPlaying(true);
@@ -487,19 +545,28 @@ import { searchMusic } from "../services/api";
   }
 
   function seek(time) {
-    if (!isIframeActive) {
+    if (isIframeActive) {
+      if (ytPlayerRef.current && typeof ytPlayerRef.current.seekTo === 'function') {
+        ytPlayerRef.current.seekTo(time, true);
+      }
+    } else {
       player.currentTime = time;
-      setCurrentTime(time);
     }
+    setCurrentTime(time);
   }
 
   function setVolume(vol) {
+    volumeRef.current = Math.round(vol * 100); // store as 0-100 for YT
     // Use GainNode if DSP chain is active (player.volume is bypassed by createMediaElementSource)
     if (gainNodeRef.current) {
       gainNodeRef.current.gain.value = vol;
     }
     // Also set on the raw player as fallback (works when DSP chain hasn't initialized)
     player.volume = vol;
+    // Control YouTube player volume if iframe is active
+    if (isIframeActive && ytPlayerRef.current && typeof ytPlayerRef.current.setVolume === 'function') {
+      ytPlayerRef.current.setVolume(Math.round(vol * 100));
+    }
   }
 
   function toggleFavorite(song) {
@@ -681,29 +748,23 @@ import { searchMusic } from "../services/api";
     >
       {children}
 
-      {/* YouTube Audio Engine Fallback — must be in-viewport (1×1px) for Chrome autoplay policy */}
-      {iframeSrc && (
-        <iframe
-          id="symphony-youtube-audio-player"
-          width="1"
-          height="1"
-          src={iframeSrc}
-          allow="autoplay; encrypted-media"
-          allowFullScreen={false}
-          title="Symphony Audio Engine"
-          style={{
-            position: "fixed",
-            bottom: 0,
-            right: 0,
-            width: "1px",
-            height: "1px",
-            border: "none",
-            opacity: 0.01,
-            pointerEvents: "none",
-            zIndex: -1,
-          }}
-        />
-      )}
+      {/* YouTube Player API container — hidden 1x1px div */}
+      <div
+        ref={ytContainerRef}
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          right: 0,
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+          opacity: 0.01,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      >
+        <div id="symphony-yt-player" />
+      </div>
 
       {/* Global Symphony Toast Banner */}
       <AnimatePresence>
