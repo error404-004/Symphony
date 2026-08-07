@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getPlayer } from "../services/player";
 import { getAudio } from "../services/audio";
 import { searchMusic } from "../services/api";
+import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, supabase } from "../services/supabase";
 
   export const PlayerContext = createContext();
 
@@ -27,23 +28,118 @@ import { searchMusic } from "../services/api";
       return token !== "logged_out";
     });
 
-    const loginUser = (userData) => {
+    const [userProfile, setUserProfile] = useState(() => {
+      try {
+        const saved = localStorage.getItem("symphony_user_profile");
+        return saved ? JSON.parse(saved) : { name: "Guest User", email: "guest@symphony.audio" };
+      } catch {
+        return { name: "Guest User", email: "guest@symphony.audio" };
+      }
+    });
+
+    // Listen to Supabase auth state changes
+    useEffect(() => {
+      if (!isSupabaseConfigured) return;
+
+      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session && session.user) {
+          const user = session.user;
+          const profile = {
+            id: user.id,
+            name: user.user_metadata?.name || user.email?.split('@')[0] || "Symphony Listener",
+            email: user.email,
+            preferredVibe: user.user_metadata?.preferredVibe || "Hindi Melodies",
+            avatarColor: "from-purple-500 via-indigo-600 to-purple-800",
+            bio: "Audio Enthusiast & Music Curator • Symphony Hi-Fi Premier",
+          };
+          localStorage.setItem("symphony_auth_token", session.access_token);
+          localStorage.setItem("symphony_user_profile", JSON.stringify(profile));
+          setUserProfile(profile);
+          setIsAuthenticated(true);
+          window.dispatchEvent(new Event("symphony-profile-updated"));
+        } else if (event === 'SIGNED_OUT') {
+          localStorage.setItem("symphony_auth_token", "logged_out");
+          setIsAuthenticated(false);
+          window.dispatchEvent(new Event("symphony-profile-updated"));
+        }
+      });
+
+      return () => {
+        authListener?.subscription?.unsubscribe();
+      };
+    }, []);
+
+    const signUpUser = async (userData) => {
+      const { email, password, name, preferredVibe } = userData;
+      const { data, error } = await signUpWithEmail(email, password, { name, preferredVibe });
+
+      if (error) {
+        throw error;
+      }
+
+      const user = data?.user;
+      const profile = {
+        id: user?.id || 'demo_' + Date.now(),
+        name: name || "Guest User",
+        email: email || "guest@symphony.audio",
+        preferredVibe: preferredVibe || "Hindi Melodies",
+        avatarColor: "from-purple-500 via-indigo-600 to-purple-800",
+        bio: "Audio Enthusiast & Music Curator • Symphony Hi-Fi Premier",
+      };
+
+      localStorage.setItem("symphony_auth_token", "symphony_session_" + Date.now());
+      localStorage.setItem("symphony_user_profile", JSON.stringify(profile));
+      setUserProfile(profile);
+      setIsAuthenticated(true);
+      window.dispatchEvent(new Event("symphony-profile-updated"));
+      showToast("Welcome to Symphony, " + profile.name);
+      return profile;
+    };
+
+    const loginUser = async (userData) => {
+      const { email, password } = userData || {};
+
+      if (email && password && isSupabaseConfigured) {
+        const { data, error } = await signInWithEmail(email, password);
+        if (error) throw error;
+        const user = data?.user;
+        const profile = {
+          id: user?.id,
+          name: user?.user_metadata?.name || email.split('@')[0],
+          email: user?.email,
+          preferredVibe: user?.user_metadata?.preferredVibe || "Hindi Melodies",
+          avatarColor: "from-purple-500 via-indigo-600 to-purple-800",
+          bio: "Audio Enthusiast & Music Curator • Symphony Hi-Fi Premier",
+        };
+        localStorage.setItem("symphony_auth_token", data?.session?.access_token || "symphony_session_" + Date.now());
+        localStorage.setItem("symphony_user_profile", JSON.stringify(profile));
+        setUserProfile(profile);
+        setIsAuthenticated(true);
+        window.dispatchEvent(new Event("symphony-profile-updated"));
+        showToast("Welcome back to Symphony, " + profile.name);
+        return profile;
+      }
+
+      // Demo/Local fallback mode
       const token = "symphony_session_" + Date.now();
       localStorage.setItem("symphony_auth_token", token);
-      const userProfile = {
-        name: userData?.name || "Zade",
-        email: userData?.email || "zade@symphony.audio",
+      const userProfileData = {
+        name: userData?.name || "Guest User",
+        email: userData?.email || "guest@symphony.audio",
         avatarColor: "from-purple-500 via-indigo-600 to-purple-800",
         bio: "Audio Enthusiast & Music Curator • Symphony Hi-Fi Premier",
         genre: "Synthwave / Lo-Fi",
       };
-      localStorage.setItem("symphony_user_profile", JSON.stringify(userProfile));
+      localStorage.setItem("symphony_user_profile", JSON.stringify(userProfileData));
+      setUserProfile(userProfileData);
       window.dispatchEvent(new Event("symphony-profile-updated"));
       setIsAuthenticated(true);
-      showToast("Welcome back to Symphony, " + userProfile.name);
+      showToast("Welcome back to Symphony, " + userProfileData.name);
+      return userProfileData;
     };
 
-    const logoutUser = () => {
+    const logoutUser = async () => {
+      await signOutUser();
       localStorage.setItem("symphony_auth_token", "logged_out");
       setIsAuthenticated(false);
       showToast("Logged out of Symphony");
@@ -742,6 +838,8 @@ import { searchMusic } from "../services/api";
         setIsAutoplayEnabled,
 
         isAuthenticated,
+        userProfile,
+        signUpUser,
         loginUser,
         logoutUser,
       }}

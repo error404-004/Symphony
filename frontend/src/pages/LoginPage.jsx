@@ -22,7 +22,7 @@ import logoImg from '../assets/logo.png'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const { loginUser, isAuthenticated } = usePlayer()
+  const { loginUser, signUpUser, isAuthenticated } = usePlayer()
 
   const [mode, setMode] = useState('signin') // 'signin' | 'signup'
   const [showPassword, setShowPassword] = useState(false)
@@ -33,6 +33,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [selectedVibe, setSelectedVibe] = useState('Hindi Melodies')
 
+  const [authError, setAuthError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const vibes = [
     'Hindi Melodies',
     'Punjabi Hits',
@@ -42,30 +45,58 @@ export default function LoginPage() {
     'Rock Classics',
   ]
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setAuthError('')
+    setIsSubmitting(true)
+
     const userName = name.trim() || (mode === 'signup' ? 'Symphony Listener' : 'Guest User')
     const userEmail = email.trim() || 'guest@symphony.audio'
-    
-    if (mode === 'signup' && selectedVibe) {
-      localStorage.setItem('symphony_user_vibe', selectedVibe)
-    }
 
-    loginUser({
-      name: userName,
-      email: userEmail,
-      password,
-    })
-    navigate('/')
+    try {
+      if (mode === 'signup') {
+        if (signUpUser) {
+          await signUpUser({
+            name: userName,
+            email: userEmail,
+            password,
+            preferredVibe: selectedVibe,
+          })
+        }
+      } else {
+        if (loginUser) {
+          await loginUser({
+            name: userName,
+            email: userEmail,
+            password,
+          })
+        }
+      }
+      navigate('/')
+    } catch (err) {
+      console.error('Authentication Error:', err)
+      setAuthError(err.message || 'Authentication failed. Please check your credentials.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  const handleGuestDemo = () => {
-    loginUser({
-      name: 'Guest User',
-      email: 'guest@symphony.audio',
-      password: 'demo',
-    })
-    navigate('/')
+  const handleGuestDemo = async () => {
+    setIsSubmitting(true)
+    try {
+      if (loginUser) {
+        await loginUser({
+          name: 'Guest User',
+          email: 'guest@symphony.audio',
+          password: 'demo',
+        })
+      }
+      navigate('/')
+    } catch (err) {
+      console.error('Guest Demo Login Error:', err)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // Redirect to home if already authenticated
@@ -116,6 +147,13 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+
+        {/* Error Alert Banner */}
+        {authError && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2">
+            <span>⚠️ {authError}</span>
+          </div>
+        )}
 
         {/* Auth Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
