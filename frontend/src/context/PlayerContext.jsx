@@ -330,14 +330,53 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         }
       }
 
+      function handleAudioError(e) {
+        if (!isIframeActive && currentSong) {
+          console.warn("Direct audio stream error detected, engaging seamless auto-recovery:", e);
+          const resumeTime = player.currentTime || 0;
+          playIframeFallback(currentSong, resumeTime);
+        }
+      }
+
       player.addEventListener("timeupdate", updateTime);
       player.addEventListener("loadedmetadata", loadedMetadata);
+      player.addEventListener("error", handleAudioError);
+      player.addEventListener("stalled", handleAudioError);
 
       return () => {
         player.removeEventListener("timeupdate", updateTime);
         player.removeEventListener("loadedmetadata", loadedMetadata);
+        player.removeEventListener("error", handleAudioError);
+        player.removeEventListener("stalled", handleAudioError);
       };
-    }, [player, isIframeActive]);
+    }, [player, isIframeActive, currentSong]);
+
+    // Audio stream stall watchdog timer (catches silent cut-offs at 4-minute YouTube stream expiration)
+    useEffect(() => {
+      if (isIframeActive || !isPlaying || !currentSong) return;
+
+      let lastTime = player.currentTime;
+      let stallCount = 0;
+
+      const stallInterval = setInterval(() => {
+        if (player.paused || isIframeActive) return;
+
+        // If audio time has not advanced for 4 consecutive seconds while playing
+        if (player.currentTime === lastTime && player.currentTime > 0) {
+          stallCount++;
+          if (stallCount >= 4) {
+            console.warn("Audio playback stalled mid-stream, engaging seamless YouTube player auto-recovery...");
+            const resumeTime = player.currentTime || 0;
+            playIframeFallback(currentSong, resumeTime);
+          }
+        } else {
+          lastTime = player.currentTime;
+          stallCount = 0;
+        }
+      }, 1000);
+
+      return () => clearInterval(stallInterval);
+    }, [isPlaying, isIframeActive, currentSong, player]);
 
     // Parse "3:51" or "1:03:22" style duration strings into seconds
     function parseSongDuration(durationStr) {
@@ -503,7 +542,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     localStorage.setItem("recentlyPlayed", JSON.stringify(uniqueRecent.slice(0, 12)));
   }
 
-  function playIframeFallback(songOrId) {
+  function playIframeFallback(songOrId, startTimeSeconds = 0) {
     const videoId = typeof songOrId === "string" ? songOrId : songOrId?.videoId;
     if (!videoId) return;
 
@@ -515,7 +554,12 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     player.src = "";
     setIsIframeActive(true);
     setIsPlaying(true);
-    setCurrentTime(0);
+
+    if (startTimeSeconds > 0) {
+      setCurrentTime(startTimeSeconds);
+    } else {
+      setCurrentTime(0);
+    }
 
     // Set duration from song metadata so the progress bar can simulate movement
     const songObj = typeof songOrId === "object" ? songOrId : currentSong;
@@ -527,6 +571,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       if (ytPlayerRef.current && typeof ytPlayerRef.current.destroy === 'function') {
         try { ytPlayerRef.current.destroy(); } catch (e) { /* ignore */ }
       }
+      const startSecs = Math.floor(startTimeSeconds || 0);
       ytPlayerRef.current = new window.YT.Player('symphony-yt-player', {
         height: '1',
         width: '1',
@@ -538,11 +583,15 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
           modestbranding: 1,
           playsinline: 1,
           rel: 0,
+          start: startSecs,
           origin: window.location.origin,
         },
         events: {
           onReady: (event) => {
             event.target.setVolume(volumeRef.current);
+            if (startSecs > 0) {
+              try { event.target.seekTo(startSecs, true); } catch (e) { /* ignore */ }
+            }
             event.target.playVideo();
           },
           onStateChange: (event) => {

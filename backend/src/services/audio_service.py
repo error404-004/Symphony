@@ -15,9 +15,9 @@ def get_audio_url(video_id: str, quality: str = "high"):
     url = f"https://www.youtube.com/watch?v={video_id}"
     quality_key = (quality or "high").lower()
 
-    # Check cache first
+    # Check cache first (TTL: 5 minutes / 300s to prevent YouTube stream token expiration cut-offs)
     cached = _url_cache.get(video_id)
-    if cached and (time.time() - cached["timestamp"] < 3600):
+    if cached and (time.time() - cached["timestamp"] < 300):
         return cached["data"]
 
     # Configure JS runtime if node is present
