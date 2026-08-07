@@ -18,6 +18,8 @@ import {
   Radio,
 } from 'lucide-react'
 
+import logoImg from '../assets/logo.png'
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const { loginUser, isAuthenticated } = usePlayer()
@@ -90,23 +92,26 @@ export default function LoginPage() {
 
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-4 mb-8">
-          {/* Logo Badge */}
-          <div className="relative group">
+          {/* Official Symphony Logo Badge */}
+          <div className="relative group flex flex-col items-center justify-center">
             <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-indigo-600 to-fuchsia-600 rounded-3xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-950 border border-purple-400/40 flex items-center justify-center shadow-2xl relative text-white">
-              <Music2 className="w-8 h-8 text-purple-100 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />
-            </div>
+            <img
+              src={logoImg}
+              alt="Symphony Logo"
+              className="w-16 h-16 rounded-2xl object-cover shadow-2xl shadow-purple-500/40 border border-purple-400/40 relative z-10 group-hover:scale-105 transition-transform duration-300"
+            />
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/15 border border-purple-400/30 text-purple-300 text-[11px] font-extrabold uppercase tracking-widest w-fit mx-auto mb-2 shadow-sm">
+          {/* Centered Symphony Studio Tag & Title */}
+          <div className="flex flex-col items-center justify-center text-center space-y-2">
+            <div className="flex items-center justify-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/15 border border-purple-400/30 text-purple-300 text-[11px] font-extrabold uppercase tracking-widest w-fit shadow-sm">
               <Sparkles className="w-3 h-3 text-purple-300" />
               <span>Symphony Studio</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white pt-1">
               {mode === 'signin' ? 'Welcome Back' : 'Create Account'}
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 font-medium max-w-xs mx-auto pt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-400 font-medium max-w-xs mx-auto leading-relaxed">
               Experience Hi-Res Lossless & 3D Spatial Audio
             </p>
           </div>
