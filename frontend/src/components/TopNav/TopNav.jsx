@@ -1,7 +1,9 @@
-import { Search, Bell, User, ChevronLeft, ChevronRight, Clock, History, X, Trash2, Disc3, Music2 } from 'lucide-react'
+import { Search, Bell, User, ChevronLeft, ChevronRight, Clock, History, X, Trash2, Disc3, Music2, Play, Loader2, Plus, ArrowUpLeft } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { searchMusic } from '../../services/api'
+import usePlayer from '../../hooks/usePlayer'
 
 const pageTitles = {
   '/': 'Home',
@@ -58,15 +60,22 @@ const getPageTitle = (pathname) => {
 }
 
 /**
- * TopNav - Premium Glassmorphic Header Navigation for Symphony with Spotify-style Recent Searches.
+ * TopNav - Premium Glassmorphic Header Navigation for Symphony with Spotify-style Recent Searches & Live Search Suggestions.
  */
 export default function TopNav() {
   const location = useLocation()
   const pageTitle = getPageTitle(location.pathname)
   const navigate = useNavigate()
+  const { playSong, addSongToPlaylist, favorites, toggleFavorite } = usePlayer()
+
   const [query, setQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [recentSearches, setRecentSearches] = useState(getStoredRecentSearches)
+
+  // Live Auto-complete Suggestions state
+  const [liveSuggestions, setLiveSuggestions] = useState([])
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
 
   const searchContainerRef = useRef(null)
 
@@ -74,6 +83,32 @@ export default function TopNav() {
     const saved = localStorage.getItem('symphony_user_profile')
     return saved ? JSON.parse(saved) : { name: 'User', avatarColor: 'from-purple-500 to-indigo-600' }
   })
+
+  // Debounced Live Suggestions Fetcher
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (!trimmed) {
+      setLiveSuggestions([])
+      setIsLoadingSuggestions(false)
+      return
+    }
+
+    setIsLoadingSuggestions(true)
+    const handler = setTimeout(async () => {
+      try {
+        const data = await searchMusic(trimmed, 5)
+        const songsList = Array.isArray(data) ? data : data.songs || []
+        setLiveSuggestions(songsList)
+      } catch (err) {
+        console.error('Failed to fetch live search suggestions:', err)
+        setLiveSuggestions([])
+      } finally {
+        setIsLoadingSuggestions(false)
+      }
+    }, 250)
+
+    return () => clearTimeout(handler)
+  }, [query])
 
   useEffect(() => {
     const handleProfileUpdate = () => {
@@ -231,10 +266,25 @@ export default function TopNav() {
               {/* Dropdown Header */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 mb-1">
                 <span className="text-xs font-bold text-zinc-300 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-purple-400" />
-                  {query.trim() ? 'Search Suggestions' : 'Recent searches'}
+                  {query.trim() ? (
+                    <>
+                      <Search className="w-4 h-4 text-purple-400" />
+                      <span>Search Suggestions</span>
+                      {isLoadingSuggestions && <Loader2 className="w-3.5 h-3.5 text-purple-400 animate-spin ml-1" />}
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="w-4 h-4 text-purple-400" />
+                      <span>Recent searches</span>
+                    </>
+                  )}
                 </span>
-                {recentSearches.length > 0 && !query.trim() && (
+
+                {query.trim() ? (
+                  <span className="text-[10px] font-semibold text-zinc-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                    Enter ↵ to search all
+                  </span>
+                ) : recentSearches.length > 0 ? (
                   <button
                     onClick={clearAllRecentSearches}
                     className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1"
@@ -242,14 +292,97 @@ export default function TopNav() {
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Clear all</span>
                   </button>
-                )}
+                ) : null}
               </div>
 
-              {/* Recent Searches Items List */}
-              <div className="max-h-72 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
-                {filteredRecent.length === 0 ? (
+              {/* Suggestions / Recent Searches Items List */}
+              <div className="max-h-80 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                {query.trim() ? (
+                  /* Active Live Search Suggestions (Spotify Style) */
+                  <>
+                    {/* 1. Primary Query Suggestion */}
+                    <div
+                      onClick={() => handleExecuteSearch(query)}
+                      className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/10 text-zinc-200 hover:text-white transition-colors cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-9 h-9 rounded-md bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0 group-hover:bg-purple-500/20 group-hover:border-purple-500/40 transition-colors">
+                          <Search className="w-4 h-4 text-purple-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold truncate text-white leading-tight">
+                            "{query}" <span className="text-xs font-normal text-zinc-400">songs</span>
+                          </p>
+                          <p className="text-[11px] text-purple-300 font-medium truncate mt-0.5">
+                            Search all matching tracks & artists
+                          </p>
+                        </div>
+                      </div>
+                      <ArrowUpLeft className="w-4 h-4 text-zinc-500 group-hover:text-purple-300 transition-colors shrink-0" />
+                    </div>
+
+                    {/* 2. Live Song Results */}
+                    {liveSuggestions.length > 0 && (
+                      <div className="pt-1.5 space-y-1">
+                        <div className="px-3 pt-1 pb-1">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                            Matching Songs
+                          </span>
+                        </div>
+
+                        {liveSuggestions.map((song) => (
+                          <div
+                            key={song.videoId || song.id}
+                            onClick={() => {
+                              saveSearchQuery(song.title)
+                              playSong(song)
+                              setIsDropdownOpen(false)
+                            }}
+                            className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/10 text-zinc-200 hover:text-white transition-colors cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-3.5 min-w-0">
+                              <img
+                                src={song.thumbnail}
+                                alt={song.title}
+                                className="w-9 h-9 rounded-md object-cover border border-white/15 shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200"
+                              />
+                              <div className="min-w-0">
+                                <p className="text-sm font-bold truncate text-white leading-tight group-hover:text-purple-300 transition-colors">
+                                  {song.title}
+                                </p>
+                                <p className="text-xs text-zinc-400 truncate mt-0.5 font-medium">
+                                  Song • {song.artist || song.author || 'Artist'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                saveSearchQuery(song.title)
+                                playSong(song)
+                                setIsDropdownOpen(false)
+                              }}
+                              className="w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shadow-md shadow-purple-950/60 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
+                              title="Play song"
+                            >
+                              <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {!isLoadingSuggestions && liveSuggestions.length === 0 && (
+                      <div className="py-4 text-center text-xs text-zinc-400 font-medium">
+                        Press Enter ↵ to search all result pages for "{query}"
+                      </div>
+                    )}
+                  </>
+                ) : filteredRecent.length === 0 ? (
                   <div className="py-6 text-center text-xs text-zinc-400 font-medium">
-                    {query.trim() ? `Press Enter to search "${query}"` : 'No recent searches'}
+                    No recent searches
                   </div>
                 ) : (
                   filteredRecent.map((item) => {
