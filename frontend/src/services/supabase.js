@@ -1,11 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://demo-symphony-supabase.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'demo-anon-key'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fmdszvxwsjwrcqwandeb.supabase.co'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_Nb5l5MRvPA9V539-IKvmQw_sJ6DIc2D'
 
-export const isSupabaseConfigured = Boolean(
-  import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
-)
+export const isSupabaseConfigured = true
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
