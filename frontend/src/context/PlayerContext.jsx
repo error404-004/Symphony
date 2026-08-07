@@ -258,18 +258,37 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         }
       };
 
-      const handleFirstPlay = () => {
+      const ensureAudioContextResumed = () => {
         initAudioDSP();
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-          audioCtxRef.current.resume();
+          audioCtxRef.current.resume().catch(() => {});
         }
       };
 
-      player.addEventListener('play', handleFirstPlay);
+      player.addEventListener('play', ensureAudioContextResumed);
+      player.addEventListener('playing', ensureAudioContextResumed);
+
       return () => {
-        player.removeEventListener('play', handleFirstPlay);
+        player.removeEventListener('play', ensureAudioContextResumed);
+        player.removeEventListener('playing', ensureAudioContextResumed);
       };
     }, [player]);
+
+    // Handle tab switching & background/foreground transitions
+    useEffect(() => {
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+            audioCtxRef.current.resume().catch(() => {});
+          }
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }, []);
 
     // Update DSP parameters whenever audioQuality is changed
     useEffect(() => {
