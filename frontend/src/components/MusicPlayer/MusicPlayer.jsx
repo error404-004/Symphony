@@ -486,7 +486,24 @@ export default function MusicPlayer() {
             <ListMusic className="w-4.5 h-4.5" />
           </button>
 
-          {/* Integrated Volume Control */}
+          {/* Mobile Volume Mute Button (sm:hidden) */}
+          <button
+            onClick={() => {
+              if (isMuted) {
+                setContextVolume(volume / 100);
+                setIsMuted(false);
+              } else {
+                setContextVolume(0);
+                setIsMuted(true);
+              }
+            }}
+            className="flex sm:hidden p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all"
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted || volume === 0 ? <VolumeX className="w-4.5 h-4.5 text-zinc-500" /> : <Volume2 className="w-4.5 h-4.5 text-purple-300" />}
+          </button>
+
+          {/* Integrated Desktop Volume Control */}
           <div className="hidden sm:flex items-center gap-2.5 bg-white/[0.04] p-2 px-3.5 rounded-full border border-white/10 shadow-inner">
             <button
               onClick={() => {
@@ -498,7 +515,7 @@ export default function MusicPlayer() {
                   setIsMuted(true);
                 }
               }}
-              className="text-zinc-400 hover:text-white transition-colors"
+              className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
             >
               {isMuted || volume === 0 ? <VolumeX className="w-4 h-4 text-zinc-500" /> : <Volume2 className="w-4 h-4 text-purple-300" />}
             </button>
@@ -540,19 +557,28 @@ export default function MusicPlayer() {
             className="absolute bottom-28 right-4 z-50 w-84 max-h-[440px] glass-card backdrop-blur-2xl bg-surface-950/90 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <h3 className="text-sm font-bold text-white tracking-tight">Queue</h3>
+              <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <ListMusic className="w-4 h-4 text-purple-400" />
+                <span>Next in Queue</span>
+              </h3>
               <button
                 onClick={() => setShowQueue(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="overflow-y-auto flex-1 p-2 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="overflow-y-auto flex-1 p-3 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
               {queue.length === 0 ? (
-                <div className="text-center py-8 text-zinc-400 text-sm font-medium">
-                  Queue is empty
+                <div className="text-center py-12 px-4 flex flex-col items-center justify-center text-zinc-400 space-y-2">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-1">
+                    <ListMusic className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white">Your Queue is Empty</h4>
+                  <p className="text-xs text-zinc-400 max-w-[200px] leading-relaxed">
+                    Play a playlist or track to queue up songs automatically.
+                  </p>
                 </div>
               ) : (
                 queue.map((song, idx) => (

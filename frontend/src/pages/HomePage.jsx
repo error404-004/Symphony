@@ -120,28 +120,45 @@ export default function HomePage() {
     }
   }
 
+  const userProfile = (() => {
+    try {
+      const saved = localStorage.getItem('symphony_user_profile')
+      return saved ? JSON.parse(saved) : { name: '' }
+    } catch {
+      return { name: '' }
+    }
+  })()
+
+  const userName = userProfile.name ? userProfile.name.split(' ')[0] : ''
+
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
     async function loadHomeSections() {
+      setIsLoading(true)
       await loadSection('Top 50 Global', setTrending)
       await loadRecommendations()
+      setIsLoading(false)
     }
     loadHomeSections()
   }, [])
+
+  const isAllEmpty = !isLoading && continueListening.length === 0 && recentlyPlayed.length === 0 && filteredTrending.length === 0 && filteredRecommended.length === 0
 
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="space-y-10 sm:space-y-12 lg:space-y-14 pb-6 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative"
+      className="space-y-10 sm:space-y-12 lg:space-y-14 pb-6 px-4 sm:px-6 lg:px-8 xl:px-10 max-w-[1440px] mx-auto relative select-none"
     >
       {/* Hero Greeting Section */}
       <motion.div variants={sectionVariants} className="relative pt-4 sm:pt-6 pb-2 flex flex-col items-center justify-center text-center" style={{ zIndex: 0 }}>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-36 bg-purple-600/12 rounded-full blur-[85px] pointer-events-none" />
 
         <div className="relative flex flex-col items-center gap-1.5">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white tracking-tight leading-snug text-center">
-            {greeting.title}
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-snug text-center">
+            {userName ? `${greeting.title.replace(/ ☀️| 🎵| 🌆| 🌙/, '')}, ${userName}${greeting.emoji}` : greeting.fullTitle}
           </h1>
           <p className="text-zinc-400 text-sm sm:text-base font-normal text-center max-w-lg leading-relaxed">
             {greeting.subtitle}
@@ -262,24 +279,32 @@ function getGreeting() {
   const hour = new Date().getHours()
   if (hour >= 5 && hour < 12) {
     return {
-      title: 'Good morning ☀️',
+      title: 'Good morning',
+      emoji: ' ☀️',
+      fullTitle: 'Good morning ☀️',
       subtitle: 'ease into your day with your favorite soundscape',
     }
   }
   if (hour >= 12 && hour < 17) {
     return {
-      title: 'Midday harmonies 🎵',
+      title: 'Midday harmonies',
+      emoji: ' 🎵',
+      fullTitle: 'Midday harmonies 🎵',
       subtitle: 'light tunes and casual vibes for your afternoon',
     }
   }
   if (hour >= 17 && hour < 22) {
     return {
-      title: 'Sunset sessions 🌆',
+      title: 'Sunset sessions',
+      emoji: ' 🌆',
+      fullTitle: 'Sunset sessions 🌆',
       subtitle: 'unwind, relax, and let the music play',
     }
   }
   return {
-    title: 'Midnight resonance 🌙',
+    title: 'Midnight resonance',
+    emoji: ' 🌙',
+    fullTitle: 'Midnight resonance 🌙',
     subtitle: 'quiet melodies and soft tracks for late hours',
   }
 }

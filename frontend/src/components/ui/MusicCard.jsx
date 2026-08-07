@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { Play, Music2 } from 'lucide-react'
+import { Play, Music2, Volume2 } from 'lucide-react'
 import SongContextMenu from './SongContextMenu'
+import usePlayer from '../../hooks/usePlayer'
 
 /**
  * MusicCard - Symphony Design Language (SDL) Ultra-Premium Music/Album Card.
@@ -18,6 +19,7 @@ export default function MusicCard({
   index = 0,
   onClick,
 }) {
+  const { currentSong, isPlaying } = usePlayer()
   const displayArtist = artist || subtitle || 'Artist';
   const songData = song || {
     title,
@@ -25,6 +27,10 @@ export default function MusicCard({
     thumbnail: thumbnail || imageUrl,
     videoId,
   };
+
+  const isCurrentPlaying = Boolean(
+    isPlaying && currentSong && (currentSong.videoId === songData.videoId || (videoId && currentSong.videoId === videoId))
+  );
 
   return (
     <motion.div
@@ -81,16 +87,28 @@ export default function MusicCard({
             )}
           </div>
 
-          {/* Integrated Floating Play Button */}
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute bottom-2.5 right-2.5 w-10 h-10 rounded-xl backdrop-blur-xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/30 text-white flex items-center justify-center shadow-xl shadow-purple-950/80 opacity-0 group-hover/card:opacity-100 translate-y-2 group-hover/card:translate-y-0 transition-all duration-300 ease-out"
-            aria-label={`Play ${title}`}
-          >
-            <Play className="w-4 h-4 ml-0.5 text-white fill-white" fill="white" />
-          </motion.button>
+            {/* Playing Indicator Overlay */}
+            {isCurrentPlaying && (
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-10">
+                <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-purple-600/90 border border-purple-300/40 text-white text-xs font-bold shadow-lg">
+                  <Volume2 className="w-3.5 h-3.5 animate-pulse text-purple-200" />
+                  <span>Playing</span>
+                </div>
+              </div>
+            )}
+
+            {/* Integrated Floating Play Button */}
+            {!isCurrentPlaying && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="absolute bottom-2.5 right-2.5 w-10 h-10 rounded-xl backdrop-blur-xl bg-gradient-to-br from-purple-500 to-indigo-600 border border-white/30 text-white flex items-center justify-center shadow-xl shadow-purple-950/80 opacity-0 group-hover/card:opacity-100 translate-y-2 group-hover/card:translate-y-0 transition-all duration-300 ease-out"
+                aria-label={`Play ${title}`}
+              >
+                <Play className="w-4 h-4 ml-0.5 text-white fill-white" fill="white" />
+              </motion.button>
+            )}
         </div>
 
         {/* Card Info Header - Explicit Padding & Line Height */}

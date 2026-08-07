@@ -133,7 +133,7 @@ export default function SearchPage() {
               <TrendingUp className={`w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 ${isSpinning ? 'scale-125 text-purple-300' : 'group-hover:scale-110'}`} />
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight group-hover:text-purple-300 transition-colors">
-              Trending Topics
+              Browse Topics
             </h2>
           </button>
         </div>

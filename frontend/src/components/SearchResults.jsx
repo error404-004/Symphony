@@ -3,6 +3,16 @@ import { usePlayer } from "../context/PlayerContext";
 import { motion } from "framer-motion";
 import SongContextMenu from "./ui/SongContextMenu";
 
+function formatDuration(dur) {
+  if (!dur) return '3:30';
+  if (typeof dur === 'string' && dur.includes(':')) return dur;
+  const sec = parseInt(dur, 10);
+  if (isNaN(sec)) return dur;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
 export default function SearchResults({ songs, query, isLoading }) {
   if (isLoading) {
     return (
@@ -119,7 +129,7 @@ export default function SearchResults({ songs, query, isLoading }) {
 
               {/* Duration & Context Menu Column */}
               <div className="flex items-center justify-end gap-2 text-xs text-zinc-400 font-medium tabular-nums pr-1 group-hover:text-white transition-colors">
-                <span>{song.duration || "--:--"}</span>
+                <span>{formatDuration(song.duration)}</span>
                 <SongContextMenu song={song} />
               </div>
             </motion.div>

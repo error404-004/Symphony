@@ -21,12 +21,19 @@ const getStoredRecentSearches = () => {
   }
 }
 
+const getPageTitle = (pathname) => {
+  if (pageTitles[pathname]) return pageTitles[pathname]
+  if (pathname.startsWith('/playlists/')) return 'Playlist'
+  if (pathname.startsWith('/artists/')) return 'Artist'
+  return 'Symphony'
+}
+
 /**
  * TopNav - Premium Glassmorphic Header Navigation for Symphony with Spotify-style Recent Searches.
  */
 export default function TopNav() {
   const location = useLocation()
-  const pageTitle = pageTitles[location.pathname] || 'Symphony'
+  const pageTitle = getPageTitle(location.pathname)
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)

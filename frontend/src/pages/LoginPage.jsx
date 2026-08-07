@@ -42,9 +42,16 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const userName = name.trim() || (mode === 'signup' ? 'Symphony Listener' : 'Guest User')
+    const userEmail = email.trim() || 'guest@symphony.audio'
+    
+    if (mode === 'signup' && selectedVibe) {
+      localStorage.setItem('symphony_user_vibe', selectedVibe)
+    }
+
     loginUser({
-      name: name.trim() || (mode === 'signup' ? 'Symphony User' : 'Zade'),
-      email: email.trim() || 'zade@symphony.audio',
+      name: userName,
+      email: userEmail,
       password,
     })
     navigate('/')
@@ -52,8 +59,8 @@ export default function LoginPage() {
 
   const handleGuestDemo = () => {
     loginUser({
-      name: 'Zade',
-      email: 'zade@symphony.audio',
+      name: 'Guest User',
+      email: 'guest@symphony.audio',
       password: 'demo',
     })
     navigate('/')

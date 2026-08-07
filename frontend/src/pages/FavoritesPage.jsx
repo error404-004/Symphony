@@ -47,26 +47,35 @@ export default function FavoritesPage() {
   const isCurrentPlaylistPlaying =
     isPlaying && currentSong && favorites.some((s) => s.videoId === currentSong.videoId);
 
+  const userProfile = (() => {
+    try {
+      const saved = localStorage.getItem('symphony_user_profile')
+      return saved ? JSON.parse(saved) : { name: 'Symphony Listener' }
+    } catch {
+      return { name: 'Symphony Listener' }
+    }
+  })()
+
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-12 relative select-none"
+      className="pb-40 max-w-full mx-auto px-4 sm:px-8 space-y-6 relative select-none"
     >
-      {/* 1. Spotify-Style Ambient Hero Header Banner with Extra Bottom Clearance */}
+      {/* 1. Spotify-Style Ambient Hero Header Banner */}
       <motion.div
         variants={itemVariants}
-        className="relative rounded-3xl p-8 sm:p-12 lg:p-14 pb-14 sm:pb-18 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-8 sm:gap-12 overflow-hidden shadow-2xl mb-14"
+        className="relative rounded-3xl p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-purple-900/80 via-purple-950/40 to-transparent flex flex-col md:flex-row items-center md:items-center gap-6 sm:gap-10 overflow-hidden shadow-2xl mb-6"
       >
         {/* Background Ambient Glow */}
         <div className="absolute -top-24 -left-24 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[150px] pointer-events-none" />
 
         {/* Large Spotify-Style Cover Art */}
         <div className="relative shrink-0 group">
-          <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-60 lg:h-60 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-500 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center border border-white/20 relative overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]">
-            <Heart className="w-24 h-24 sm:w-28 sm:h-28 text-white fill-white drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)]" />
-            <span className="text-[11px] font-black uppercase tracking-widest text-purple-100/90 mt-4 backdrop-blur-md px-4 py-1 rounded-full bg-black/20 border border-white/10">
+          <div className="w-40 h-40 sm:w-48 sm:h-48 lg:w-52 lg:h-52 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-500 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center border border-white/20 relative overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]">
+            <Heart className="w-20 h-20 sm:w-24 sm:h-24 text-white fill-white drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)]" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-purple-100/90 mt-3 backdrop-blur-md px-4 py-1 rounded-full bg-black/20 border border-white/10">
               Symphony Vault
             </span>
           </div>
@@ -74,18 +83,18 @@ export default function FavoritesPage() {
 
         {/* Title & Metadata Header Info — Vertically Centered */}
         <div className="flex-1 text-center md:text-left min-w-0 z-10 py-2">
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+          <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
             <span className="text-xs font-extrabold uppercase tracking-widest text-purple-300 bg-purple-500/20 border border-purple-500/30 px-3.5 py-1 rounded-full">
               Playlist
             </span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white tracking-tight truncate drop-shadow-lg leading-tight mb-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight truncate drop-shadow-lg leading-tight mb-3">
             Liked Songs
           </h1>
 
           <div className="flex items-center justify-center md:justify-start gap-3 text-xs sm:text-sm font-semibold text-zinc-300 pt-1 flex-wrap">
-            <span className="text-white font-bold">User</span>
+            <span className="text-white font-bold">{userProfile.name}</span>
             <span className="text-zinc-500">•</span>
             <span className="text-purple-200 font-bold">
               {favorites.length} {favorites.length === 1 ? 'song' : 'songs'}
@@ -94,10 +103,10 @@ export default function FavoritesPage() {
         </div>
       </motion.div>
 
-      {/* 2. Action Controls Toolbar — Huge 64px+ Vertical Clearance */}
+      {/* 2. Action Controls Toolbar */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-4 mt-14 sm:mt-16 mb-12 pt-2 pb-4"
+        className="flex items-center justify-between px-2 my-4"
       >
         <div className="flex items-center gap-6">
           {/* Reduced Sleek Play Button (48px) */}
