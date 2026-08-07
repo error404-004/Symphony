@@ -1,4 +1,4 @@
-import { Search, Bell, User, ChevronLeft, ChevronRight, Clock, History, X, Trash2 } from 'lucide-react'
+import { Search, Bell, User, ChevronLeft, ChevronRight, Clock, History, X, Trash2, Disc3, Music2 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,6 +19,35 @@ const getStoredRecentSearches = () => {
   } catch {
     return ['Tum Hi Ho', 'Arijit Singh', 'Top 50 Global', 'Lo-fi beats']
   }
+}
+
+const getRecentItemMetadata = (itemStr) => {
+  const searchTerm = typeof itemStr === 'string' ? itemStr : itemStr?.query || itemStr?.title || ''
+  if (!searchTerm) return { title: itemStr, thumbnail: null, artist: 'Search history' }
+
+  try {
+    const recentlyPlayed = JSON.parse(localStorage.getItem('recentlyPlayed')) || []
+    const termLower = searchTerm.toLowerCase().trim()
+
+    // Match in recentlyPlayed tracks by title or artist
+    const match = recentlyPlayed.find((s) => {
+      const title = (s.title || '').toLowerCase()
+      const artist = (s.artist || s.author || '').toLowerCase()
+      return title === termLower || title.includes(termLower) || termLower.includes(title) || artist.includes(termLower)
+    })
+
+    if (match && match.thumbnail) {
+      return {
+        title: searchTerm,
+        thumbnail: match.thumbnail,
+        artist: match.artist || match.author || 'Recently played track',
+      }
+    }
+  } catch (e) {
+    /* ignore */
+  }
+
+  return { title: searchTerm, thumbnail: null, artist: 'Search history' }
 }
 
 const getPageTitle = (pathname) => {
@@ -223,38 +252,50 @@ export default function TopNav() {
                     {query.trim() ? `Press Enter to search "${query}"` : 'No recent searches'}
                   </div>
                 ) : (
-                  filteredRecent.map((item) => (
-                    <div
-                      key={item}
-                      onClick={() => {
-                        setQuery(item)
-                        handleExecuteSearch(item)
-                      }}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/10 text-zinc-200 hover:text-white transition-colors cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-9 h-9 rounded-md bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-purple-500/20 group-hover:border-purple-500/30 transition-colors">
-                          <History className="w-4 h-4 text-zinc-400 group-hover:text-purple-300 transition-colors" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold truncate text-white leading-tight">
-                            {item}
-                          </p>
-                          <p className="text-xs text-zinc-400 truncate mt-0.5 font-normal">
-                            Search history
-                          </p>
-                        </div>
-                      </div>
+                  filteredRecent.map((item) => {
+                    const meta = getRecentItemMetadata(item)
 
-                      <button
-                        onClick={(e) => removeRecentSearch(item, e)}
-                        className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/15 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
-                        title="Remove from recent searches"
+                    return (
+                      <div
+                        key={typeof item === 'string' ? item : item?.query || item?.title}
+                        onClick={() => {
+                          setQuery(meta.title)
+                          handleExecuteSearch(meta.title)
+                        }}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white/10 text-zinc-200 hover:text-white transition-colors cursor-pointer group"
                       >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          {meta.thumbnail ? (
+                            <img
+                              src={meta.thumbnail}
+                              alt={meta.title}
+                              className="w-9 h-9 rounded-md object-cover border border-white/15 shrink-0 shadow-md group-hover:scale-105 transition-transform duration-200"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-purple-900/60 via-indigo-900/60 to-surface-900 border border-purple-500/30 flex items-center justify-center shrink-0 group-hover:border-purple-400/50 transition-colors shadow-sm">
+                              <Disc3 className="w-4.5 h-4.5 text-purple-300 group-hover:text-white transition-colors" />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold truncate text-white leading-tight">
+                              {meta.title}
+                            </p>
+                            <p className="text-xs text-zinc-400 truncate mt-0.5 font-normal">
+                              {meta.artist}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={(e) => removeRecentSearch(item, e)}
+                          className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/15 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
+                          title="Remove from recent searches"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                  })
                 )}
               </div>
             </motion.div>
