@@ -79,7 +79,7 @@ export default function CreatePlaylistModal() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 12 }}
           transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-          className="relative w-full max-w-[500px] bg-[#120b29] backdrop-blur-3xl border border-purple-500/30 shadow-[0_25px_80px_rgba(0,0,0,0.8)] rounded-3xl p-6 sm:p-8 z-10 flex flex-col justify-between overflow-hidden my-auto text-left"
+          className="relative w-full max-w-[560px] bg-[#120b29] backdrop-blur-3xl border border-purple-500/30 shadow-[0_25px_80px_rgba(0,0,0,0.8)] rounded-3xl p-6 sm:p-8 z-10 flex flex-col justify-between overflow-hidden my-auto text-left"
         >
           {/* Top Specular Purple Hairline */}
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent opacity-90 rounded-t-3xl pointer-events-none" />
@@ -97,77 +97,45 @@ export default function CreatePlaylistModal() {
             <X className="w-4 h-4" />
           </button>
 
-          {/* Top Header Section */}
-          <div className="space-y-1.5 mb-6 relative z-10 pr-8">
-            <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-200 text-[10px] font-black uppercase tracking-widest w-fit shadow-md">
-              <Sparkles className="w-3 h-3 text-purple-300" />
-              <span>Symphony Studio</span>
+          {/* Header Section */}
+          <div className="flex items-center justify-between pb-4 border-b border-white/10 relative z-10 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300">
+                <Music2 className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                  Create Playlist
+                </h2>
+                <p className="text-xs text-zinc-400 font-medium">
+                  Curate your soundscape & custom track vault
+                </p>
+              </div>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Create New Playlist
-            </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed">
-              Curate your custom soundscape and track vault for your library
-            </p>
+            <button
+              onClick={handleClose}
+              className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer z-20"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          {/* Form Content */}
-          <form onSubmit={handleSubmit} className="relative z-10 space-y-5 flex-1 flex flex-col justify-between">
-            <div className="space-y-4">
-              {/* Playlist Title Input */}
-              <div className="space-y-1.5">
-                <label className="block text-[11px] font-bold text-zinc-300 uppercase tracking-wider">
-                  Playlist Title <span className="text-purple-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  autoFocus
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    if (error) setError('');
-                  }}
-                  placeholder="e.g. Late Night Vibes, Summer Highway..."
-                  className={`w-full h-11 px-4 rounded-xl bg-black/40 border ${
-                    error
-                      ? 'border-rose-500 focus:ring-rose-500/30'
-                      : 'border-white/15 focus:border-purple-400 focus:ring-2 focus:ring-purple-500/25'
-                  } text-sm font-semibold text-white placeholder:text-zinc-500 focus:outline-none transition-all shadow-inner`}
-                />
-                {error && (
-                  <p className="text-xs text-rose-400 font-bold mt-1 flex items-center gap-1">
-                    ⚠️ {error}
-                  </p>
-                )}
-              </div>
-
-              {/* Description Input */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between mb-0.5">
-                  <label className="block text-[11px] font-bold text-zinc-300 uppercase tracking-wider">
-                    Description <span className="text-zinc-500 font-normal lowercase">(optional)</span>
-                  </label>
-                  <span className="text-[10px] font-semibold text-purple-300 bg-purple-500/15 border border-purple-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <Globe className="w-3 h-3 text-purple-400" /> Public Playlist
+          {/* Form Content — Split Layout (Artwork Preview + Inputs) */}
+          <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-start">
+              {/* Left Column: Cover Artwork Preview */}
+              <div className="sm:col-span-4 flex flex-col items-center space-y-3">
+                <div className={`w-36 h-36 sm:w-40 sm:h-40 rounded-2xl bg-gradient-to-br ${selectedTheme.gradient} border border-white/20 shadow-2xl flex flex-col items-center justify-center text-white relative group overflow-hidden`}>
+                  <Music2 className="w-12 h-12 text-white/90 drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-white/70 mt-2">
+                    {selectedTheme.name}
                   </span>
                 </div>
-                <textarea
-                  value={description}
-                  rows={2}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Give your playlist a mood, description or story..."
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/15 focus:border-purple-400 focus:ring-2 focus:ring-purple-500/25 text-xs sm:text-sm font-medium text-white placeholder:text-zinc-500 focus:outline-none transition-all resize-none shadow-inner leading-relaxed"
-                />
-              </div>
 
-              {/* Theme Preset Selector */}
-              <div className="space-y-2 pt-1">
-                <label className="block text-[11px] font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                  <Palette className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Cover Theme Palette</span>
-                </label>
-                <div className="grid grid-cols-2 gap-2.5">
+                {/* Theme Palette Swatches */}
+                <div className="flex items-center gap-2 pt-1">
                   {THEME_PRESETS.map((theme) => {
                     const isSelected = selectedTheme.id === theme.id;
                     return (
@@ -175,40 +143,86 @@ export default function CreatePlaylistModal() {
                         key={theme.id}
                         type="button"
                         onClick={() => setSelectedTheme(theme)}
-                        className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer text-left ${
-                          isSelected
-                            ? 'bg-purple-900/40 border-purple-400 text-white shadow-sm'
-                            : 'bg-black/30 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
+                        title={theme.name}
+                        className={`w-7 h-7 rounded-full bg-gradient-to-br ${theme.gradient} border-2 transition-all cursor-pointer ${
+                          isSelected ? 'border-white scale-110 shadow-md ring-2 ring-purple-500/50' : 'border-transparent opacity-60 hover:opacity-100'
                         }`}
-                      >
-                        <div className={`w-6 h-6 rounded-lg bg-gradient-to-br ${theme.gradient} flex items-center justify-center shrink-0 shadow-sm`}>
-                          {isSelected && <Check className="w-3 h-3 text-white" />}
-                        </div>
-                        <span className="text-xs font-bold truncate">{theme.name}</span>
-                      </button>
+                      />
                     );
                   })}
                 </div>
               </div>
+
+              {/* Right Column: Title & Description Inputs */}
+              <div className="sm:col-span-8 space-y-4">
+                {/* Playlist Title */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-200">
+                    Playlist title <span className="text-purple-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (error) setError('');
+                    }}
+                    placeholder="My Playlist #1"
+                    className={`w-full h-11 px-4 rounded-xl bg-black/40 border ${
+                      error
+                        ? 'border-rose-500 focus:ring-rose-500/30'
+                        : 'border-white/15 focus:border-purple-400 focus:ring-2 focus:ring-purple-500/25'
+                    } text-sm font-semibold text-white placeholder:text-zinc-500 focus:outline-none transition-all shadow-inner`}
+                  />
+                  {error && (
+                    <p className="text-xs text-rose-400 font-bold mt-1">
+                      ⚠️ {error}
+                    </p>
+                  )}
+                </div>
+
+                {/* Description Textarea */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-200">
+                    Description <span className="text-zinc-500 font-normal">(optional)</span>
+                  </label>
+                  <textarea
+                    value={description}
+                    rows={3}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Add an optional description or mood..."
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/40 border border-white/15 focus:border-purple-400 focus:ring-2 focus:ring-purple-500/25 text-xs sm:text-sm font-medium text-white placeholder:text-zinc-500 focus:outline-none transition-all resize-none shadow-inner leading-relaxed"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Modal Footer Actions inside form */}
-            <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-white/10 relative z-10 shrink-0">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-zinc-400 hover:text-white hover:bg-white/10 border border-transparent transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
+            {/* Bottom Actions Bar (Cancel & Create Pill Button) */}
+            <div className="flex items-center justify-between pt-5 border-t border-white/10 mt-6">
+              <span className="text-[11px] font-medium text-zinc-400 hidden sm:inline-block">
+                Visible to everyone on your profile
+              </span>
 
-              <button
-                type="submit"
-                className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-purple-950/60 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2 border border-purple-400/30"
-              >
-                <Sparkles className="w-4 h-4 fill-white/20" />
-                <span>Create Playlist</span>
-              </button>
+              <div className="flex items-center gap-3 ml-auto">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-zinc-400 hover:text-white transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  type="submit"
+                  className="px-7 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-purple-950/60 cursor-pointer flex items-center gap-2 border border-purple-400/30 transition-all"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Create Playlist</span>
+                </motion.button>
+              </div>
             </div>
           </form>
         </motion.div>
