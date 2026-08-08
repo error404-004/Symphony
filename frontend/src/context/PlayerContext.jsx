@@ -806,13 +806,27 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     return favorites.some((item) => item.videoId === song.videoId);
   }
 
-  function createPlaylist(name, description = "") {
+  function createPlaylist(nameOrObj, descriptionStr = "") {
+    let name = "";
+    let description = "";
+    let gradient = "";
+
+    if (typeof nameOrObj === "object" && nameOrObj !== null) {
+      name = nameOrObj.name || "";
+      description = nameOrObj.description || "";
+      gradient = nameOrObj.gradient || "";
+    } else {
+      name = nameOrObj || "";
+      description = descriptionStr || "";
+    }
+
     if (!name || !name.trim()) return null;
 
     const newPlaylist = {
       id: "pl_" + Date.now(),
       name: name.trim(),
       description: description.trim(),
+      gradient: gradient || "from-purple-600 via-purple-700 to-indigo-800",
       createdAt: new Date().toISOString(),
       songs: [],
     };

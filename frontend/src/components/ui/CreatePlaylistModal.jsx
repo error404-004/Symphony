@@ -73,13 +73,13 @@ export default function CreatePlaylistModal() {
           className="fixed inset-0 bg-black/75 backdrop-blur-xl transition-opacity"
         />
 
-        {/* Square-Shaped Glassmorphic Popup Container */}
+        {/* Glassmorphic Popup Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.94, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 12 }}
           transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-          className="relative w-full max-w-[560px] bg-[#120b29] backdrop-blur-3xl border border-purple-500/30 shadow-[0_25px_80px_rgba(0,0,0,0.8)] rounded-3xl p-6 sm:p-8 z-10 flex flex-col justify-between overflow-hidden my-auto text-left"
+          className="relative w-full max-w-[620px] bg-[#120b29] backdrop-blur-3xl border border-purple-500/30 shadow-[0_25px_80px_rgba(0,0,0,0.85)] rounded-3xl p-6 sm:p-8 z-10 flex flex-col justify-between overflow-hidden my-auto text-left"
         >
           {/* Top Specular Purple Hairline */}
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent opacity-90 rounded-t-3xl pointer-events-none" />
@@ -88,27 +88,18 @@ export default function CreatePlaylistModal() {
           <div className="absolute -top-28 -right-28 w-80 h-80 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute -bottom-28 -left-28 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px] pointer-events-none" />
 
-          {/* Close button */}
-          <button
-            onClick={handleClose}
-            className="absolute top-5 right-5 p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer z-20 hover:scale-105 active:scale-95 shadow-md"
-            aria-label="Close modal"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
           {/* Header Section */}
           <div className="flex items-center justify-between pb-4 border-b border-white/10 relative z-10 mb-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300">
-                <Music2 className="w-4 h-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shadow-sm">
+                <Music2 className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
                   Create Playlist
                 </h2>
                 <p className="text-xs text-zinc-400 font-medium">
-                  Curate your soundscape & custom track vault
+                  Curate your custom soundscape & track vault
                 </p>
               </div>
             </div>
