@@ -290,6 +290,50 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       };
     }, []);
 
+    // MediaSession API Integration for OS Media Controls & Uninterrupted Background Playback
+    useEffect(() => {
+      if (!currentSong || typeof window === 'undefined' || !('mediaSession' in navigator)) return;
+
+      try {
+        navigator.mediaSession.metadata = new window.MediaMetadata({
+          title: currentSong.title || 'Symphony Track',
+          artist: currentSong.artist || currentSong.author || 'Symphony Artist',
+          album: currentSong.album || 'Symphony Music',
+          artwork: [
+            { src: currentSong.thumbnail || currentSong.cover || currentSong.coverUrl || '/logo.png', sizes: '512x512', type: 'image/png' },
+          ],
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => {
+          if (isIframeActive && ytPlayerRef.current?.playVideo) {
+            ytPlayerRef.current.playVideo();
+          } else {
+            player.play().catch(() => {});
+          }
+          setIsPlaying(true);
+        });
+
+        navigator.mediaSession.setActionHandler('pause', () => {
+          if (isIframeActive && ytPlayerRef.current?.pauseVideo) {
+            ytPlayerRef.current.pauseVideo();
+          } else {
+            player.pause();
+          }
+          setIsPlaying(false);
+        });
+
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+          playNext();
+        });
+
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+          playPrev();
+        });
+      } catch (e) {
+        console.warn('MediaSession handler setup notice:', e);
+      }
+    }, [currentSong, isIframeActive]);
+
     // Update DSP parameters whenever audioQuality is changed
     useEffect(() => {
       localStorage.setItem("symphony_audio_quality", audioQuality);
@@ -538,8 +582,16 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         player.crossOrigin = "anonymous";
         player.src = stream.audio_url;
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-          await audioCtxRef.current.resume();
+          await audioCtxRef.current.resume().catch(() => {});
         }
+
+        // If tab is in background (document.hidden) and WebAudio remains suspended by Chrome:
+        if (document.hidden && audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          console.warn("Background tab transition detected & WebAudio suspended — engaging YouTube player for background playback");
+          playIframeFallback(song);
+          return;
+        }
+
         await player.play().catch((playErr) => {
           if (playErr.name !== "AbortError") {
             playIframeFallback(song.videoId);
