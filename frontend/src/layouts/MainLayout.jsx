@@ -18,24 +18,24 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#08060f] text-white p-1 sm:p-2.5 gap-2 sm:gap-3 relative select-none">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#070412] text-white p-1 sm:p-2.5 gap-2 sm:gap-3 relative select-none">
       {/* Global Create Playlist Modal */}
       <CreatePlaylistModal />
 
       {/* Left Sidebar (Desktop View) */}
       <Sidebar />
 
-      {/* Main Content Card Panel with Ambient Glow & Watermark */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-[#0d0a18] rounded-xl sm:rounded-2xl border border-white/[0.08] relative shadow-2xl shadow-black">
+      {/* Main Content Card Panel with Ambient Glow & Newest Symphony Logo Watermark */}
+      <div className="flex flex-1 flex-col overflow-hidden bg-[#0c071e]/90 backdrop-blur-3xl rounded-xl sm:rounded-2xl border border-purple-500/20 relative shadow-2xl shadow-purple-950/80">
         
-        {/* Ambient Purple Radial Glow Orbs */}
-        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-purple-600/18 rounded-full blur-[150px] pointer-events-none z-0" />
-        <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-indigo-600/12 rounded-full blur-[150px] pointer-events-none z-0" />
-        <div className="absolute -bottom-32 right-1/3 w-[450px] h-[450px] bg-fuchsia-600/10 rounded-full blur-[150px] pointer-events-none z-0" />
+        {/* Ambient Deep Violet & Indigo Radial Glow Orbs */}
+        <div className="absolute -top-32 -right-32 w-[650px] h-[650px] bg-purple-600/22 rounded-full blur-[160px] pointer-events-none z-0" />
+        <div className="absolute top-1/4 -left-32 w-[550px] h-[550px] bg-indigo-600/15 rounded-full blur-[160px] pointer-events-none z-0" />
+        <div className="absolute -bottom-32 right-1/3 w-[500px] h-[500px] bg-fuchsia-600/12 rounded-full blur-[160px] pointer-events-none z-0" />
 
-        {/* Ultra-Subtle Watermark Logo */}
-        <div className="absolute top-6 right-16 text-purple-400/[0.025] pointer-events-none select-none z-0 rotate-[-15deg] drop-shadow-[0_0_35px_rgba(168,85,247,0.15)]">
-          <Music2 className="w-[420px] h-[420px]" />
+        {/* Official Newest Symphony Logo Ambient Watermark */}
+        <div className="absolute top-0 right-4 pointer-events-none select-none z-0 opacity-[0.065] rotate-[-12deg] filter contrast-200 brightness-150 drop-shadow-[0_0_60px_rgba(168,85,247,0.35)]">
+          <img src="/logo.png" alt="Symphony Logo Watermark" className="w-[450px] h-[450px] sm:w-[520px] sm:h-[520px] object-contain" />
         </div>
 
         {/* Top Navigation Bar */}
