@@ -247,6 +247,18 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
           compressor.connect(panner);
           panner.connect(gainNode);
           gainNode.connect(ctx.destination);
+
+          // Continuous Silent Oscillator keepalive to prevent Chrome from suspending AudioContext in background tabs
+          try {
+            const silentOsc = ctx.createOscillator();
+            const silentGain = ctx.createGain();
+            silentGain.gain.value = 0.000001; // Inaudible
+            silentOsc.connect(silentGain);
+            silentGain.connect(ctx.destination);
+            silentOsc.start();
+          } catch (e) {
+            /* ignore */
+          }
         } catch (e) {
           console.warn("WebAudio DSP Initialization fallback:", e);
           if (sourceNodeRef.current && audioCtxRef.current) {
@@ -648,12 +660,39 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     const dur = parseSongDuration(songObj?.duration);
     if (dur > 0) setDuration(dur);
 
+    const startSecs = Math.floor(startTimeSeconds || 0);
+
+    // If YouTube Player instance already exists, use loadVideoById for instant seamless playback
+    if (ytPlayerRef.current && typeof ytPlayerRef.current.loadVideoById === 'function') {
+      try {
+        ytPlayerRef.current.loadVideoById({
+          videoId: videoId,
+          startSeconds: startSecs,
+        });
+        if (typeof ytPlayerRef.current.playVideo === 'function') {
+          ytPlayerRef.current.playVideo();
+        }
+        return;
+      } catch (e) {
+        console.warn("loadVideoById fallback, recreating player:", e);
+      }
+    }
+
     // Create or reuse YouTube IFrame Player
     const createPlayer = () => {
+      // Ensure target DIV exists in container
+      if (!document.getElementById('symphony-yt-player') && ytContainerRef.current) {
+        ytContainerRef.current.innerHTML = '<div id="symphony-yt-player"></div>';
+      }
+
       if (ytPlayerRef.current && typeof ytPlayerRef.current.destroy === 'function') {
         try { ytPlayerRef.current.destroy(); } catch (e) { /* ignore */ }
       }
-      const startSecs = Math.floor(startTimeSeconds || 0);
+
+      if (!document.getElementById('symphony-yt-player') && ytContainerRef.current) {
+        ytContainerRef.current.innerHTML = '<div id="symphony-yt-player"></div>';
+      }
+
       ytPlayerRef.current = new window.YT.Player('symphony-yt-player', {
         height: '1',
         width: '1',
