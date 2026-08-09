@@ -724,8 +724,8 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     setIsPlaying(true);
   }
 
-  function playNext() {
-    // 1. Consume custom user queue first if present
+  async function playNext() {
+    // 1. Consume custom user queue first if present ("Next in Queue")
     if (customQueue.length > 0) {
       const nextSong = customQueue[0];
       setCustomQueue((prev) => prev.slice(1));
@@ -733,18 +733,29 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       return;
     }
 
-    if (queue.length === 0) return;
+    // 2. Consume normal queue if available
+    if (queue.length > 0) {
+      let nextIndex;
 
-    let nextIndex;
+      if (isShuffle) {
+        nextIndex = Math.floor(Math.random() * queue.length);
+      } else {
+        nextIndex = currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
+      }
 
-    if (isShuffle) {
-      nextIndex = Math.floor(Math.random() * queue.length);
-    } else {
-      nextIndex = currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
+      setCurrentIndex(nextIndex);
+      playSong(queue[nextIndex]);
+      return;
     }
 
-    setCurrentIndex(nextIndex);
-    playSong(queue[nextIndex]);
+    // 3. Fallback: If queue is empty, auto-fetch next genre track
+    if (currentSong) {
+      showToast("Autoplay: Loading next " + getGenreForSong(currentSong) + " track...", currentSong);
+      const nextSong = await autoFetchNextGenreTracks(currentSong);
+      if (nextSong) {
+        playSong(nextSong);
+      }
+    }
   }
 
   function addToCustomQueue(song) {
@@ -789,18 +800,26 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
   }
 
   function playPrev() {
-    if (queue.length === 0) return;
-
-    let prevIndex;
-
-    if (isShuffle) {
-      prevIndex = Math.floor(Math.random() * queue.length);
-    } else {
-      prevIndex = currentIndex > 0 ? currentIndex - 1 : queue.length - 1;
+    // If track has been playing for >3s, restart current song (Spotify standard)
+    if (player && player.currentTime > 3) {
+      seek(0);
+      return;
     }
 
-    setCurrentIndex(prevIndex);
-    playSong(queue[prevIndex]);
+    if (queue.length > 0) {
+      let prevIndex;
+
+      if (isShuffle) {
+        prevIndex = Math.floor(Math.random() * queue.length);
+      } else {
+        prevIndex = currentIndex > 0 ? currentIndex - 1 : queue.length - 1;
+      }
+
+      setCurrentIndex(prevIndex);
+      playSong(queue[prevIndex]);
+    } else {
+      seek(0);
+    }
   }
 
   function setTrackQueue(newQueue, index = 0) {
