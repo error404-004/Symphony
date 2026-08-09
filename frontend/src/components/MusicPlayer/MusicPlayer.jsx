@@ -23,6 +23,9 @@ import {
   Check,
   Search,
   Sparkles,
+  ChevronUp,
+  ChevronDown,
+  Trash2,
 } from 'lucide-react';
 
 /**
@@ -45,6 +48,9 @@ export default function MusicPlayer() {
     favorites,
     toggleFavorite,
     queue,
+    customQueue,
+    removeFromQueue,
+    moveQueueItem,
     currentIndex,
     playSong,
     playlists,
@@ -554,12 +560,13 @@ export default function MusicPlayer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="absolute bottom-28 right-4 z-50 w-84 max-h-[440px] glass-card backdrop-blur-2xl bg-surface-950/90 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 flex flex-col overflow-hidden"
+            className="absolute bottom-28 right-4 z-50 w-88 max-h-[500px] glass-card backdrop-blur-2xl bg-surface-950/95 border border-purple-500/30 rounded-2xl shadow-2xl shadow-black/90 flex flex-col overflow-hidden text-left"
           >
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/10 shrink-0">
               <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
                 <ListMusic className="w-4 h-4 text-purple-400" />
-                <span>Next in Queue</span>
+                <span>Play Queue</span>
               </h3>
               <button
                 onClick={() => setShowQueue(false)}
@@ -569,50 +576,203 @@ export default function MusicPlayer() {
               </button>
             </div>
 
-            <div className="overflow-y-auto flex-1 p-3 space-y-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
-              {queue.length === 0 ? (
-                <div className="text-center py-12 px-4 flex flex-col items-center justify-center text-zinc-400 space-y-2">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-1">
-                    <ListMusic className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-sm font-bold text-white">Your Queue is Empty</h4>
-                  <p className="text-xs text-zinc-400 max-w-[200px] leading-relaxed">
-                    Play a playlist or track to queue up songs automatically.
-                  </p>
-                </div>
-              ) : (
-                queue.map((song, idx) => (
-                  <div
-                    key={song.videoId || idx}
-                    onClick={() => playSong(song)}
-                    className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all duration-200 text-left cursor-pointer group/qitem ${
-                      idx === currentIndex
-                        ? "bg-purple-600/20 border border-purple-500/30 shadow-md"
-                        : "hover:bg-white/5 border border-transparent"
-                    }`}
-                  >
-                    <span
-                      className={`w-4 text-xs text-center font-bold ${
-                        idx === currentIndex ? "text-purple-300" : "text-zinc-400"
-                      }`}
-                    >
-                      {idx + 1}
-                    </span>
-                    <img src={song.thumbnail} alt="" className="w-10 h-10 rounded-lg object-cover border border-white/10" />
-                    <div className="min-w-0 flex-1">
-                      <p
-                        className={`text-xs font-bold truncate ${
-                          idx === currentIndex ? "text-purple-200" : "text-white"
-                        }`}
-                      >
-                        {song.title}
-                      </p>
-                      <p className="text-[11px] text-zinc-400 truncate mt-0.5">{song.artist}</p>
+            {/* Scrollable Queue Sections */}
+            <div className="overflow-y-auto flex-1 p-3 space-y-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+              {/* SECTION 1: Now Playing */}
+              {currentSong && (
+                <div className="space-y-1.5">
+                  <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 px-1">
+                    Now Playing
+                  </h4>
+                  <div className="w-full flex items-center gap-3 p-2 rounded-xl bg-purple-600/20 border border-purple-500/40 shadow-sm">
+                    <div className="relative shrink-0">
+                      <img src={currentSong.thumbnail} alt="" className="w-10 h-10 rounded-lg object-cover border border-white/15" />
+                      {isPlaying && (
+                        <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center">
+                          <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping" />
+                        </div>
+                      )}
                     </div>
-                    <SongContextMenu song={song} isInQueue={true} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-purple-200 truncate">
+                        {currentSong.title}
+                      </p>
+                      <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+                        {currentSong.artist || currentSong.author}
+                      </p>
+                    </div>
                   </div>
-                ))
+                </div>
               )}
+
+              {/* SECTION 2: Custom Queue (User Added) */}
+              {customQueue && customQueue.length > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between px-1">
+                    <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                      <span>Next in Queue</span>
+                      <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">
+                        User Added
+                      </span>
+                    </h4>
+                  </div>
+
+                  <div className="space-y-1">
+                    {customQueue.map((song, idx) => (
+                      <div
+                        key={song.videoId ? `custom_${song.videoId}_${idx}` : idx}
+                        className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200 group/customitem"
+                      >
+                        {/* Reorder Arrows */}
+                        <div className="flex flex-col gap-0.5 shrink-0 opacity-60 group-hover/customitem:opacity-100 transition-opacity">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (moveQueueItem) moveQueueItem(idx, 'up', true);
+                            }}
+                            className="p-0.5 hover:text-purple-300 disabled:opacity-20 cursor-pointer"
+                            title="Move Up"
+                          >
+                            <ChevronUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === customQueue.length - 1}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (moveQueueItem) moveQueueItem(idx, 'down', true);
+                            }}
+                            className="p-0.5 hover:text-purple-300 disabled:opacity-20 cursor-pointer"
+                            title="Move Down"
+                          >
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </div>
+
+                        {/* Artwork & Info */}
+                        <div
+                          onClick={() => playSong(song)}
+                          className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
+                        >
+                          <img src={song.thumbnail} alt="" className="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-bold text-white truncate">
+                              {song.title}
+                            </p>
+                            <p className="text-[10px] text-zinc-400 truncate">
+                              {song.artist || song.author}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Direct Remove Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (removeFromQueue) removeFromQueue(idx, true);
+                          }}
+                          className="p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer shrink-0"
+                          title="Remove from queue"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 3: Normal Queue (Playlist / Context) */}
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 px-1">
+                  Next From: Symphony Playlist
+                </h4>
+
+                {(!queue || queue.length === 0) && (!customQueue || customQueue.length === 0) ? (
+                  <div className="text-center py-8 px-4 flex flex-col items-center justify-center text-zinc-400 space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-1">
+                      <ListMusic className="w-5 h-5" />
+                    </div>
+                    <h5 className="text-xs font-bold text-white">Queue is Empty</h5>
+                    <p className="text-[11px] text-zinc-400 max-w-[180px] leading-relaxed">
+                      Symphony will auto-recommend songs based on your genre preferences!
+                    </p>
+                  </div>
+                ) : (
+                  queue.map((song, idx) => (
+                    <div
+                      key={song.videoId ? `normal_${song.videoId}_${idx}` : idx}
+                      className={`w-full flex items-center gap-2 p-2 rounded-xl transition-all duration-200 text-left ${
+                        idx === currentIndex
+                          ? "bg-purple-600/15 border border-purple-500/30"
+                          : "hover:bg-white/5 border border-transparent"
+                      } group/normitem`}
+                    >
+                      {/* Reorder Arrows */}
+                      <div className="flex flex-col gap-0.5 shrink-0 opacity-60 group-hover/normitem:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (moveQueueItem) moveQueueItem(idx, 'up', false);
+                          }}
+                          className="p-0.5 hover:text-purple-300 disabled:opacity-20 cursor-pointer"
+                          title="Move Up"
+                        >
+                          <ChevronUp className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={idx === queue.length - 1}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (moveQueueItem) moveQueueItem(idx, 'down', false);
+                          }}
+                          className="p-0.5 hover:text-purple-300 disabled:opacity-20 cursor-pointer"
+                          title="Move Down"
+                        >
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      {/* Artwork & Info */}
+                      <div
+                        onClick={() => playSong(song)}
+                        className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
+                      >
+                        <img src={song.thumbnail} alt="" className="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={`text-xs font-bold truncate ${
+                              idx === currentIndex ? "text-purple-200" : "text-white"
+                            }`}
+                          >
+                            {song.title}
+                          </p>
+                          <p className="text-[10px] text-zinc-400 truncate mt-0.5">{song.artist}</p>
+                        </div>
+                      </div>
+
+                      {/* Direct Remove Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (removeFromQueue) removeFromQueue(idx, false);
+                        }}
+                        className="p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer shrink-0"
+                        title="Remove from queue"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </motion.div>
         )}

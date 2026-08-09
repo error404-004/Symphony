@@ -17,6 +17,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     const ytContainerRef = useRef(null);
 
     const [queue, setQueue] = useState([]);
+    const [customQueue, setCustomQueue] = useState([]); // User added custom queue ("Next in Queue")
     const [currentIndex, setCurrentIndex] = useState(-1);
 
     const [isShuffle, setIsShuffle] = useState(false);
@@ -495,11 +496,20 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
     useEffect(() => {
       async function handleSongEnd() {
-        if (isRepeat && queue[currentIndex]) {
-          playSong(queue[currentIndex]);
+        if (isRepeat && currentSong) {
+          playSong(currentSong);
           return;
         }
 
+        // 1. Check custom user-added queue first ("Next in Queue")
+        if (customQueue.length > 0) {
+          const nextSong = customQueue[0];
+          setCustomQueue((prev) => prev.slice(1));
+          playSong(nextSong);
+          return;
+        }
+
+        // 2. Shuffle mode on normal queue
         if (isShuffle && queue.length > 0) {
           const randomIndex = Math.floor(Math.random() * queue.length);
           setCurrentIndex(randomIndex);
@@ -507,6 +517,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
           return;
         }
 
+        // 3. Sequential normal queue
         if (currentIndex >= 0 && currentIndex < queue.length - 1) {
           const nextIndex = currentIndex + 1;
           const nextSong = queue[nextIndex];
@@ -533,7 +544,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         player.removeEventListener("ended", handleSongEnd);
         window.removeEventListener("symphony-yt-ended", handleSongEnd);
       };
-    }, [player, currentIndex, queue, isRepeat, isShuffle, currentSong, isAutoplayEnabled]);
+    }, [player, currentIndex, queue, customQueue, isRepeat, isShuffle, currentSong, isAutoplayEnabled]);
 
     useEffect(() => {
       localStorage.setItem("favorites", JSON.stringify(favorites));
@@ -573,6 +584,13 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
     setCurrentSong(song);
 
+    // If tab is in background (document.hidden), Chrome suspends HTML5 WebAudio graph — engage YouTube player fallback immediately for uninterrupted audio
+    if (document.hidden) {
+      console.warn("Background tab playback engaged — routing through YouTube player for uninterrupted audio");
+      playIframeFallback(song);
+      return;
+    }
+
     try {
       const stream = await getAudio(song.videoId, audioQuality);
 
@@ -583,13 +601,6 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         player.src = stream.audio_url;
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
           await audioCtxRef.current.resume().catch(() => {});
-        }
-
-        // If tab is in background (document.hidden) and WebAudio remains suspended by Chrome:
-        if (document.hidden && audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-          console.warn("Background tab transition detected & WebAudio suspended — engaging YouTube player for background playback");
-          playIframeFallback(song);
-          return;
         }
 
         await player.play().catch((playErr) => {
@@ -714,6 +725,14 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
   }
 
   function playNext() {
+    // 1. Consume custom user queue first if present
+    if (customQueue.length > 0) {
+      const nextSong = customQueue[0];
+      setCustomQueue((prev) => prev.slice(1));
+      playSong(nextSong);
+      return;
+    }
+
     if (queue.length === 0) return;
 
     let nextIndex;
@@ -726,6 +745,47 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
     setCurrentIndex(nextIndex);
     playSong(queue[nextIndex]);
+  }
+
+  function addToCustomQueue(song) {
+    if (!song) return;
+    setCustomQueue((prev) => [...prev, song]);
+    showToast(`Added "${song.title || 'Track'}" to Next in Queue`);
+  }
+
+  function addToQueue(song) {
+    addToCustomQueue(song);
+  }
+
+  function removeFromQueue(index, isCustom = false) {
+    if (isCustom) {
+      setCustomQueue((prev) => {
+        const target = prev[index];
+        if (target) showToast(`Removed "${target.title || 'Track'}" from queue`);
+        return prev.filter((_, i) => i !== index);
+      });
+    } else {
+      setQueue((prev) => {
+        const target = prev[index];
+        if (target) showToast(`Removed "${target.title || 'Track'}" from queue`);
+        return prev.filter((_, i) => i !== index);
+      });
+    }
+  }
+
+  function moveQueueItem(index, direction, isCustom = false) {
+    const targetQueue = isCustom ? customQueue : queue;
+    const setTarget = isCustom ? setCustomQueue : setQueue;
+
+    if (index < 0 || index >= targetQueue.length) return;
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= targetQueue.length) return;
+
+    const updated = [...targetQueue];
+    const [movedItem] = updated.splice(index, 1);
+    updated.splice(newIndex, 0, movedItem);
+
+    setTarget(updated);
   }
 
   function playPrev() {
@@ -934,6 +994,12 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
         queue,
         setQueue,
+        customQueue,
+        setCustomQueue,
+        addToCustomQueue,
+        addToQueue,
+        removeFromQueue,
+        moveQueueItem,
         currentIndex,
         setCurrentIndex,
         playNext,

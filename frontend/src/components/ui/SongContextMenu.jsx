@@ -42,6 +42,7 @@ export default function SongContextMenu({
 
   const {
     queue,
+    customQueue,
     addToQueue,
     removeFromQueue,
     favorites,
@@ -59,7 +60,8 @@ export default function SongContextMenu({
   const isInQueue =
     propIsInQueue !== undefined
       ? propIsInQueue
-      : queue.some((item) => item.videoId === song.videoId);
+      : (customQueue && customQueue.some((item) => item.videoId === song.videoId)) ||
+        (queue && queue.some((item) => item.videoId === song.videoId));
 
   const toggleMenu = (e) => {
     e.stopPropagation();
@@ -131,7 +133,17 @@ export default function SongContextMenu({
 
   const handleRemoveFromQueue = (e) => {
     e.stopPropagation();
-    if (removeFromQueue) removeFromQueue(song);
+    if (removeFromQueue) {
+      const customIdx = customQueue ? customQueue.findIndex((item) => item.videoId === song.videoId) : -1;
+      if (customIdx !== -1) {
+        removeFromQueue(customIdx, true);
+      } else {
+        const normalIdx = queue ? queue.findIndex((item) => item.videoId === song.videoId) : -1;
+        if (normalIdx !== -1) {
+          removeFromQueue(normalIdx, false);
+        }
+      }
+    }
     setIsOpen(false);
   };
 
