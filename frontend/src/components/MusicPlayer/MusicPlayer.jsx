@@ -90,16 +90,16 @@ export default function MusicPlayer() {
   return (
     <>
       {/* Bottom Floating Glassmorphic Playback Bar - Fitted into Home Main Content Alignment */}
-      <footer className="fixed md:absolute bottom-[66px] md:bottom-3 left-2 right-2 md:left-3 md:right-3 z-30 h-[88px] sm:h-[96px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-4 sm:px-8 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
+      <footer className="fixed md:absolute bottom-[66px] md:bottom-3 left-2 right-2 md:left-3 md:right-3 z-30 h-[84px] sm:h-[90px] backdrop-blur-2xl backdrop-saturate-150 bg-[#0c0917]/95 border border-purple-500/30 rounded-2xl px-5 sm:px-8 flex items-center justify-between select-none shadow-2xl shadow-purple-950/70">
         {/* Top Specular Purple Highlight */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent opacity-80 rounded-t-2xl pointer-events-none" />
 
         {/* Left Section: Track Info & Cover */}
-        <div className="flex items-center gap-3 sm:gap-4 max-w-[42%] sm:w-1/4 sm:min-w-[220px]">
+        <div className="flex items-center gap-3 sm:gap-4 max-w-[42%] sm:w-1/4 sm:min-w-[240px] pl-1">
           {/* Cover Thumbnail with Ambient Glow */}
           <div className="relative group shrink-0">
-            <div className="absolute -inset-1 bg-purple-600/40 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            <div className="w-14 h-14 rounded-xl overflow-hidden relative bg-white/5 border border-white/15 shadow-lg shadow-black/60">
+            <div className="absolute -inset-1 bg-purple-600/30 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <div className="w-12 h-12 rounded-xl overflow-hidden relative bg-white/5 border border-white/15 shadow-lg shadow-black/60">
               {currentSong?.thumbnail ? (
                 <img
                   src={currentSong.thumbnail}
@@ -108,7 +108,7 @@ export default function MusicPlayer() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-white/5">
-                  <Music2 className="w-6 h-6 text-purple-300/40" />
+                  <Music2 className="w-5 h-5 text-purple-300/40" />
                 </div>
               )}
             </div>
@@ -469,7 +469,7 @@ export default function MusicPlayer() {
         </div>
 
         {/* Right Section: Lyrics, Queue, Volume & Fullscreen */}
-        <div className="flex items-center justify-end gap-3 w-1/4 min-w-[200px]">
+        <div className="flex items-center justify-end gap-2.5 sm:gap-3 w-1/4 min-w-[220px] pr-1">
           {/* Fullscreen Lyrics Trigger */}
           <button
             onClick={() => setIsFullscreen(true)}
