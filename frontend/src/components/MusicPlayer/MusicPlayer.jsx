@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { usePlayer } from "../../context/PlayerContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import LyricsPanel from '../Lyrics/LyricsPanel';
@@ -73,6 +74,23 @@ export default function MusicPlayer() {
   const [isHoveredProgress, setIsHoveredProgress] = useState(false);
   const [playlistSearchQuery, setPlaylistSearchQuery] = useState("");
 
+  const playlistButtonRef = useRef(null);
+  const [playlistMenuPos, setPlaylistMenuPos] = useState({ bottom: 100, left: 16 });
+
+  const togglePlaylistMenu = (e) => {
+    if (e) e.stopPropagation();
+    if (!showPlaylistMenu && playlistButtonRef.current) {
+      const rect = playlistButtonRef.current.getBoundingClientRect();
+      setPlaylistMenuPos({
+        bottom: Math.max(100, window.innerHeight - rect.top + 12),
+        left: Math.max(16, Math.min(window.innerWidth - 360, rect.left - 20)),
+      });
+      setShowPlaylistMenu(true);
+    } else {
+      setShowPlaylistMenu(false);
+    }
+  };
+
   // Sync volume to context whenever it changes
   useEffect(() => {
     setContextVolume(volume / 100);
@@ -144,8 +162,9 @@ export default function MusicPlayer() {
           {/* Add to Playlist Button & Dropdown */}
           <div className="relative">
             <button
+              ref={playlistButtonRef}
               disabled={!currentSong}
-              onClick={() => setShowPlaylistMenu(!showPlaylistMenu)}
+              onClick={togglePlaylistMenu}
               className={`p-2 rounded-xl transition-all duration-200 ${
                 currentSong
                   ? showPlaylistMenu
@@ -158,15 +177,20 @@ export default function MusicPlayer() {
               <Plus className="w-4.5 h-4.5" />
             </button>
 
-            {/* Playlist Selection Popup Menu */}
-            <AnimatePresence>
-              {showPlaylistMenu && currentSong && (
+            {/* Playlist Selection Popup Menu — Rendered via Portal to prevent overflow clipping */}
+            {showPlaylistMenu && currentSong && createPortal(
+              <AnimatePresence>
                 <motion.div
                   initial={{ opacity: 0, y: 12, scale: 0.94 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 12, scale: 0.94 }}
                   transition={{ type: "spring", stiffness: 340, damping: 26 }}
-                  className="absolute bottom-full mb-4 left-0 z-[100] w-80 sm:w-[350px] bg-gradient-to-br from-[#140b2e]/95 via-[#0c061c]/95 to-[#06030f]/95 backdrop-blur-3xl border-2 border-purple-500/40 rounded-3xl p-6 shadow-[0_25px_85px_rgba(168,85,247,0.5)] overflow-hidden flex flex-col text-left"
+                  style={{
+                    bottom: `${playlistMenuPos.bottom}px`,
+                    left: `${playlistMenuPos.left}px`,
+                  }}
+                  className="fixed z-[99999] w-80 sm:w-[350px] bg-gradient-to-br from-[#140b2e]/98 via-[#0c061c]/98 to-[#06030f]/98 backdrop-blur-3xl border-2 border-purple-500/40 rounded-3xl p-6 shadow-[0_25px_85px_rgba(168,85,247,0.6)] overflow-hidden flex flex-col text-left select-none"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {/* Top Specular Hairline */}
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent opacity-90 rounded-t-3xl pointer-events-none" />
@@ -340,8 +364,9 @@ export default function MusicPlayer() {
                     </button>
                   </div>
                 </motion.div>
-              )}
-            </AnimatePresence>
+              </AnimatePresence>,
+              document.body
+            )}
           </div>
         </div>
 
