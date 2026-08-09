@@ -115,16 +115,47 @@ export default function PlaylistPage() {
 
   useEffect(() => {
     async function loadRecommended() {
+      if (!playlist) return;
+
       try {
-        const data = await searchMusic("Top Trending Music", 6);
+        let searchQuery = "";
+        const playlistName = playlist.name || "";
+        const existingIds = (playlist.songs || []).map((s) => s.videoId);
+
+        if (playlist.songs && playlist.songs.length > 0) {
+          // Extract top artists from current playlist tracks
+          const artists = Array.from(
+            new Set(
+              playlist.songs
+                .map((s) => s.artist || s.author)
+                .filter(Boolean)
+            )
+          ).slice(0, 3);
+
+          if (artists.length > 0) {
+            searchQuery = `${playlistName} ${artists.join(" ")} music songs`;
+          } else {
+            const firstSong = playlist.songs[0];
+            searchQuery = `${firstSong.title} ${playlistName} music`;
+          }
+        } else {
+          // Empty playlist — recommend based on playlist title and description
+          searchQuery = `${playlistName} ${playlist.description || "music popular songs"}`;
+        }
+
+        const data = await searchMusic(searchQuery, 14);
         const songsList = Array.isArray(data) ? data : data?.songs || [];
-        setRecommendedSongs(songsList.slice(0, 6));
+
+        // Exclude songs already inside the playlist
+        const filtered = songsList.filter((s) => !existingIds.includes(s.videoId));
+        setRecommendedSongs(filtered.slice(0, 8));
       } catch (err) {
-        console.error(err);
+        console.error("Contextual playlist recommendation error:", err);
       }
     }
+
     loadRecommended();
-  }, []);
+  }, [playlist?.id, playlist?.songs?.length, playlist?.name]);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
