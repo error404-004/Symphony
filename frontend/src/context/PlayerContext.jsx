@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPlayer } from "../services/player";
-import { getAudio } from "../services/audio";
+import { getAudio, pingBackend } from "../services/audio";
 import { searchMusic } from "../services/api";
 import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, supabase } from "../services/supabase";
 
@@ -191,8 +191,9 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     const iframeTimerRef = useRef(null);
     const volumeRef = useRef(75); // track current volume 0-100 for YT player
 
-    // Load YouTube IFrame API script once
+    // Load YouTube IFrame API script once & ping Render backend cold-start
     useEffect(() => {
+      pingBackend();
       if (window.YT && window.YT.Player) return;
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
@@ -617,7 +618,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
         await player.play().catch((playErr) => {
           if (playErr.name !== "AbortError") {
-            playIframeFallback(song.videoId);
+            playIframeFallback(song);
           }
         });
         setIsPlaying(true);
@@ -669,6 +670,12 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
           videoId: videoId,
           startSeconds: startSecs,
         });
+        if (typeof ytPlayerRef.current.unMute === 'function') {
+          try { ytPlayerRef.current.unMute(); } catch (e) {}
+        }
+        if (typeof ytPlayerRef.current.setVolume === 'function') {
+          try { ytPlayerRef.current.setVolume(volumeRef.current); } catch (e) {}
+        }
         if (typeof ytPlayerRef.current.playVideo === 'function') {
           ytPlayerRef.current.playVideo();
         }

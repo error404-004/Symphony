@@ -1,5 +1,14 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://symphony-backend-s7lt.onrender.com";
 
+// Background ping to wake up Render backend cold-start
+export function pingBackend() {
+    try {
+        fetch(`${API_BASE}/health`, { mode: "no-cors" }).catch(() => {});
+    } catch (e) {
+        /* ignore ping errors */
+    }
+}
+
 export async function getAudio(videoId, quality = "high") {
     // Strip non-ASCII / emoji characters from quality string to avoid URL encoding mismatch
     const cleanQuality = typeof quality === "string"
@@ -7,9 +16,9 @@ export async function getAudio(videoId, quality = "high") {
         : "high";
 
     try {
-        // 10-second timeout to give backend server enough time to extract stream URLs
+        // Fast 2.5-second timeout — if Render backend is cold-starting, switch immediately to 0-latency iframe fallback
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
 
         const response = await fetch(
             `${API_BASE}/audio/${videoId}?quality=${encodeURIComponent(cleanQuality)}`,
@@ -27,7 +36,7 @@ export async function getAudio(videoId, quality = "high") {
         if (e.name !== "AbortError") {
             console.warn("Backend audio fetch error, using iframe fallback:", e);
         } else {
-            console.warn("Backend audio fetch timed out after 10s, using iframe fallback");
+            console.warn("Backend audio stream fetch timed out after 2.5s, engaging instant iframe playback");
         }
     }
 
