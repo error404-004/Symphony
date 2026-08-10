@@ -694,9 +694,10 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       }
 
       ytPlayerRef.current = new window.YT.Player('symphony-yt-player', {
-        height: '1',
-        width: '1',
+        height: '200',
+        width: '320',
         videoId: videoId,
+        host: 'https://www.youtube-nocookie.com',
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -709,11 +710,18 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         },
         events: {
           onReady: (event) => {
-            event.target.setVolume(volumeRef.current);
+            try {
+              const iframe = document.getElementById('symphony-yt-player');
+              if (iframe && iframe.tagName === 'IFRAME') {
+                iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+              }
+            } catch (e) {}
+            try { event.target.unMute(); } catch (e) {}
+            try { event.target.setVolume(volumeRef.current); } catch (e) {}
             if (startSecs > 0) {
               try { event.target.seekTo(startSecs, true); } catch (e) { /* ignore */ }
             }
-            event.target.playVideo();
+            try { event.target.playVideo(); } catch (e) {}
           },
           onStateChange: (event) => {
             // YT.PlayerState.ENDED === 0
@@ -1104,19 +1112,19 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     >
       {children}
 
-      {/* YouTube Player API container — hidden 1x1px div */}
+      {/* YouTube Player API container */}
       <div
         ref={ytContainerRef}
         style={{
           position: 'fixed',
-          bottom: 0,
-          right: 0,
-          width: '1px',
-          height: '1px',
+          top: '-9999px',
+          left: '-9999px',
+          width: '320px',
+          height: '200px',
           overflow: 'hidden',
           opacity: 0.01,
           pointerEvents: 'none',
-          zIndex: -1,
+          zIndex: -9999,
         }}
       >
         <div id="symphony-yt-player" />

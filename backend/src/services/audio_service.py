@@ -24,14 +24,15 @@ def get_audio_url(video_id: str, quality: str = "high"):
     has_node = bool(shutil.which("node"))
     js_runtimes = {"node": {}} if has_node else {}
 
-    # Strategy 1: yt-dlp with node JS solver & player client fallback
-    for client in ["android_vr", "android", "ios", "mweb", "web"]:
+    # Strategy 1: yt-dlp with node JS solver & player client fallback (android/ios first for speed)
+    for client in ["android", "ios", "mweb", "web", "android_vr"]:
         ydl_opts = {
             "format": "bestaudio/best",
             "quiet": True,
             "noplaylist": True,
             "nocheckcertificate": True,
             "geo_bypass": True,
+            "socket_timeout": 5,
             "extractor_args": {"youtube": {"player_client": [client]}}
         }
         if js_runtimes:

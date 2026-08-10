@@ -29,13 +29,14 @@ def debug_audio(video_id: str):
 
     js_runtimes = {"node": {}} if has_node else {}
 
-    for client in ["android_vr", "android", "ios", "mweb", "web"]:
+    for client in ["android", "ios", "mweb", "web", "android_vr"]:
         ydl_opts = {
             "format": "bestaudio/best",
             "quiet": True,
             "noplaylist": True,
             "nocheckcertificate": True,
             "geo_bypass": True,
+            "socket_timeout": 5,
             "extractor_args": {"youtube": {"player_client": [client]}}
         }
         if js_runtimes:

@@ -7,10 +7,9 @@ export async function getAudio(videoId, quality = "high") {
         : "high";
 
     try {
-        // 3-second timeout — Render free tier sleeps and can take 30-60s to wake up.
-        // We don't wait that long; just fall back to iframe immediately.
+        // 10-second timeout to give backend server enough time to extract stream URLs
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const response = await fetch(
             `${API_BASE}/audio/${videoId}?quality=${encodeURIComponent(cleanQuality)}`,
@@ -27,8 +26,9 @@ export async function getAudio(videoId, quality = "high") {
     } catch (e) {
         if (e.name !== "AbortError") {
             console.warn("Backend audio fetch error, using iframe fallback:", e);
+        } else {
+            console.warn("Backend audio fetch timed out after 10s, using iframe fallback");
         }
-        // AbortError = timeout — silently fall through to iframe
     }
 
     // Return null → PlayerContext will call playIframeFallback immediately
