@@ -210,6 +210,13 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
           const ctx = new AudioCtx();
           audioCtxRef.current = ctx;
 
+          // Automatically auto-resume AudioContext whenever Chrome attempts to suspend it in background tabs
+          ctx.onstatechange = () => {
+            if (ctx.state === 'suspended') {
+              ctx.resume().catch(() => {});
+            }
+          };
+
           const source = ctx.createMediaElementSource(player);
           sourceNodeRef.current = source;
 
@@ -288,21 +295,30 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       };
     }, [player]);
 
-    // Handle tab switching & background/foreground transitions
+    // Handle tab switching & background/foreground transitions seamlessly
     useEffect(() => {
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-          if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-            audioCtxRef.current.resume().catch(() => {});
-          }
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          audioCtxRef.current.resume().catch(() => {});
+        }
+        if (player && !player.paused) {
+          player.play().catch(() => {});
+        }
+        if (isIframeActive && ytPlayerRef.current?.playVideo) {
+          try { ytPlayerRef.current.unMute(); } catch (e) {}
+          try { ytPlayerRef.current.playVideo(); } catch (e) {}
         }
       };
 
       document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('focus', handleVisibilityChange);
+      window.addEventListener('blur', handleVisibilityChange);
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', handleVisibilityChange);
+        window.removeEventListener('blur', handleVisibilityChange);
       };
-    }, []);
+    }, [player, isIframeActive]);
 
     // MediaSession API Integration for OS Media Controls & Uninterrupted Background Playback
     useEffect(() => {
@@ -596,13 +612,6 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     if (!song) return;
 
     setCurrentSong(song);
-
-    // If tab is in background (document.hidden), Chrome suspends HTML5 WebAudio graph — engage YouTube player fallback immediately for uninterrupted audio
-    if (document.hidden) {
-      console.warn("Background tab playback engaged — routing through YouTube player for uninterrupted audio");
-      playIframeFallback(song);
-      return;
-    }
 
     try {
       const stream = await getAudio(song.videoId, audioQuality);
