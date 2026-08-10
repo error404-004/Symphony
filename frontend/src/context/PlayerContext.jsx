@@ -301,24 +301,25 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
           audioCtxRef.current.resume().catch(() => {});
         }
-        if (player && !player.paused) {
-          player.play().catch(() => {});
-        }
-        if (isIframeActive && ytPlayerRef.current?.playVideo) {
-          try { ytPlayerRef.current.unMute(); } catch (e) {}
-          try { ytPlayerRef.current.playVideo(); } catch (e) {}
+        // Strictly only resume playback if the user has NOT paused the track
+        if (isPlaying) {
+          if (!isIframeActive && player && player.paused) {
+            player.play().catch(() => {});
+          }
+          if (isIframeActive && ytPlayerRef.current?.playVideo) {
+            try { ytPlayerRef.current.unMute(); } catch (e) {}
+            try { ytPlayerRef.current.playVideo(); } catch (e) {}
+          }
         }
       };
 
       document.addEventListener('visibilitychange', handleVisibilityChange);
       window.addEventListener('focus', handleVisibilityChange);
-      window.addEventListener('blur', handleVisibilityChange);
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('focus', handleVisibilityChange);
-        window.removeEventListener('blur', handleVisibilityChange);
       };
-    }, [player, isIframeActive]);
+    }, [player, isIframeActive, isPlaying]);
 
     // MediaSession API Integration for OS Media Controls & Uninterrupted Background Playback
     useEffect(() => {
