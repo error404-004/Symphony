@@ -32,7 +32,9 @@ export async function getAudio(videoId, quality = "high") {
             }
         }
     } catch (e) {
-        console.warn("Backend stream pending, engaging YouTube player fallback:", e);
+        if (e.name !== "AbortError") {
+            console.warn("Backend stream error, engaging YouTube fallback:", e);
+        }
     }
 
     // Return null → PlayerContext will engage embedded YouTube player fallback
