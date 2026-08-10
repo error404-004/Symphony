@@ -663,29 +663,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
     const startSecs = Math.floor(startTimeSeconds || 0);
 
-    // If YouTube Player instance already exists, use loadVideoById for instant seamless playback
-    if (ytPlayerRef.current && typeof ytPlayerRef.current.loadVideoById === 'function') {
-      try {
-        ytPlayerRef.current.loadVideoById({
-          videoId: videoId,
-          startSeconds: startSecs,
-        });
-        if (typeof ytPlayerRef.current.unMute === 'function') {
-          try { ytPlayerRef.current.unMute(); } catch (e) {}
-        }
-        if (typeof ytPlayerRef.current.setVolume === 'function') {
-          try { ytPlayerRef.current.setVolume(volumeRef.current); } catch (e) {}
-        }
-        if (typeof ytPlayerRef.current.playVideo === 'function') {
-          ytPlayerRef.current.playVideo();
-        }
-        return;
-      } catch (e) {
-        console.warn("loadVideoById fallback, recreating player:", e);
-      }
-    }
-
-    // Create or reuse YouTube IFrame Player
+    // Create or reuse YouTube IFrame Player cleanly for every track change
     const createPlayer = () => {
       // Ensure target DIV exists in container
       if (!document.getElementById('symphony-yt-player') && ytContainerRef.current) {
