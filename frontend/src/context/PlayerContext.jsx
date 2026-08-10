@@ -1125,19 +1125,19 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     >
       {children}
 
-      {/* YouTube Player API container — Positioned in viewport bounds so Chrome never silences off-screen audio */}
+      {/* YouTube Player API container — 200x200px satisfies YouTube embed policy while remaining invisible */}
       <div
         ref={ytContainerRef}
         style={{
           position: 'fixed',
           bottom: '0px',
-          left: '0px',
-          width: '1px',
-          height: '1px',
+          right: '0px',
+          width: '200px',
+          height: '200px',
           overflow: 'hidden',
           opacity: 0.001,
           pointerEvents: 'none',
-          zIndex: 0,
+          zIndex: -1,
         }}
       >
         <div id="symphony-yt-player" />
