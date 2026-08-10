@@ -704,7 +704,6 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         height: '200',
         width: '320',
         videoId: videoId,
-        host: 'https://www.youtube-nocookie.com',
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -713,6 +712,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
           playsinline: 1,
           rel: 0,
           start: startSecs,
+          enablejsapi: 1,
           origin: window.location.origin,
         },
         events: {
@@ -731,6 +731,12 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
             try { event.target.playVideo(); } catch (e) {}
           },
           onStateChange: (event) => {
+            // YT.PlayerState.PLAYING === 1
+            if (event.data === 1) {
+              setIsPlaying(true);
+              try { event.target.unMute(); } catch (e) {}
+              try { event.target.setVolume(volumeRef.current || 75); } catch (e) {}
+            }
             // YT.PlayerState.ENDED === 0
             if (event.data === 0) {
               setIsPlaying(false);
@@ -1119,19 +1125,19 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     >
       {children}
 
-      {/* YouTube Player API container */}
+      {/* YouTube Player API container — Positioned in viewport bounds so Chrome never silences off-screen audio */}
       <div
         ref={ytContainerRef}
         style={{
           position: 'fixed',
-          top: '-9999px',
-          left: '-9999px',
-          width: '320px',
-          height: '200px',
+          bottom: '0px',
+          left: '0px',
+          width: '1px',
+          height: '1px',
           overflow: 'hidden',
-          opacity: 0.01,
+          opacity: 0.001,
           pointerEvents: 'none',
-          zIndex: -9999,
+          zIndex: 0,
         }}
       >
         <div id="symphony-yt-player" />
