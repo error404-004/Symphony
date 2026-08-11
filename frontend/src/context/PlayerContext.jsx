@@ -628,6 +628,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         setIframeSrc("");
         player.crossOrigin = "anonymous";
         player.src = stream.audio_url;
+        player.volume = (volumeRef.current || 75) / 100;
         if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
           await audioCtxRef.current.resume().catch(() => {});
         }
