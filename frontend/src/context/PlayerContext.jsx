@@ -288,10 +288,12 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
 
       player.addEventListener('play', ensureAudioContextResumed);
       player.addEventListener('playing', ensureAudioContextResumed);
+      player.addEventListener('timeupdate', ensureAudioContextResumed);
 
       return () => {
         player.removeEventListener('play', ensureAudioContextResumed);
         player.removeEventListener('playing', ensureAudioContextResumed);
+        player.removeEventListener('timeupdate', ensureAudioContextResumed);
       };
     }, [player]);
 
@@ -415,6 +417,10 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       function updateTime() {
         if (!isIframeActive) {
           setCurrentTime(player.currentTime);
+        }
+        // Continuous WebAudio Keep-Alive: Resumes AudioContext on every timeupdate tick if Chrome attempts background suspension
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          audioCtxRef.current.resume().catch(() => {});
         }
       }
 
