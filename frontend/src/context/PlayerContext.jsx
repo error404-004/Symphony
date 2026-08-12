@@ -732,6 +732,11 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
               try { event.target.unMute(); } catch (e) {}
               try { event.target.setVolume(volumeRef.current || 75); } catch (e) {}
             }
+            // YT.PlayerState.PAUSED === 2 (if Chrome attempts background tab pause while active)
+            if (event.data === 2 && isPlaying && document.hidden) {
+              try { event.target.unMute(); } catch (e) {}
+              try { event.target.playVideo(); } catch (e) {}
+            }
             // YT.PlayerState.ENDED === 0
             if (event.data === 0) {
               setIsPlaying(false);
