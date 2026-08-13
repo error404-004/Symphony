@@ -655,8 +655,11 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
   }
 
   function playIframeFallback(songOrId, startTimeSeconds = 0) {
-    const videoId = typeof songOrId === "string" ? songOrId : songOrId?.videoId;
-    if (!videoId) return;
+    const rawVideoId = typeof songOrId === "string" ? songOrId : songOrId?.videoId;
+    if (!rawVideoId) return;
+
+    const isSearchQuery = typeof rawVideoId === "string" && rawVideoId.startsWith("yt_");
+    const cleanQuery = isSearchQuery ? decodeURIComponent(rawVideoId.replace("yt_", "")) : rawVideoId;
 
     try {
       player.pause();
@@ -695,10 +698,9 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         ytContainerRef.current.innerHTML = '<div id="symphony-yt-player"></div>';
       }
 
-      ytPlayerRef.current = new window.YT.Player('symphony-yt-player', {
+      const playerConfig = {
         height: '200',
         width: '320',
-        videoId: videoId,
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -745,7 +747,16 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
             }
           },
         },
-      });
+      };
+
+      if (isSearchQuery) {
+        playerConfig.playerVars.listType = 'search';
+        playerConfig.playerVars.list = cleanQuery;
+      } else {
+        playerConfig.videoId = cleanQuery;
+      }
+
+      ytPlayerRef.current = new window.YT.Player('symphony-yt-player', playerConfig);
     };
 
     if (window.YT && window.YT.Player) {
