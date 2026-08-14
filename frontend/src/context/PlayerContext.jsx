@@ -701,6 +701,7 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       const playerConfig = {
         height: '200',
         width: '320',
+        host: 'https://www.youtube.com',
         playerVars: {
           autoplay: 1,
           controls: 0,

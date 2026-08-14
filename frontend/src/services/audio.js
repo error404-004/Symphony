@@ -17,7 +17,7 @@ export async function getAudio(videoId, quality = "high") {
 
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
         const response = await fetch(
             `${API_BASE}/audio/${videoId}?quality=${encodeURIComponent(cleanQuality)}`,

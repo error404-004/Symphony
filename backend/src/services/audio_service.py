@@ -12,8 +12,29 @@ def get_audio_url(video_id: str, quality: str = "high"):
     Extract high-fidelity direct audio stream URLs using pytubefix, yt-dlp, and public audio resolvers.
     Uses multi-engine & client fallback strategy with Node.js JS solver to bypass YouTube bot detection on cloud servers.
     """
-    url = f"https://www.youtube.com/watch?v={video_id}"
+    if not video_id:
+        return None
+
     quality_key = (quality or "high").lower()
+
+    # If video_id is an iTunes fallback query (yt_Artist Title), resolve it to a real YouTube videoId first
+    if isinstance(video_id, str) and video_id.startswith("yt_"):
+        try:
+            clean_query = urllib.parse.unquote(video_id.replace("yt_", "")).strip()
+            if clean_query:
+                from src.services.ytmusic_service import search_music
+                results = search_music(clean_query, limit=1)
+                if results and len(results) > 0 and results[0].get("videoId"):
+                    video_id = results[0]["videoId"]
+                else:
+                    return None
+            else:
+                return None
+        except Exception as e:
+            print(f"Failed to resolve iTunes query '{video_id}' to YouTube videoId:", e)
+            return None
+
+    url = f"https://www.youtube.com/watch?v={video_id}"
 
     # Check cache first (TTL: 5 minutes / 300s to prevent YouTube stream token expiration cut-offs)
     cached = _url_cache.get(video_id)
@@ -75,10 +96,14 @@ def get_audio_url(video_id: str, quality: str = "high"):
 
     # Strategy 3: Public stream APIs fallback
     stream_apis = [
+        f"https://api.piped.privacydev.net/streams/{video_id}",
+        f"https://pipedapi.drgns.space/streams/{video_id}",
+        f"https://piped-api.garudalinux.org/streams/{video_id}",
+        f"https://invidious.drgns.space/api/v1/videos/{video_id}",
+        f"https://vid.puffyan.us/api/v1/videos/{video_id}",
+        f"https://invidious.lunar.icu/api/v1/videos/{video_id}",
+        f"https://inv.riverside.rocks/api/v1/videos/{video_id}",
         f"https://pipedapi.kavin.rocks/streams/{video_id}",
-        f"https://api.piped.video/streams/{video_id}",
-        f"https://inv.tux.pizza/api/v1/videos/{video_id}",
-        f"https://invidious.nerdvpn.de/api/v1/videos/{video_id}",
     ]
     for api_url in stream_apis:
         try:

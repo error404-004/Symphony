@@ -75,10 +75,9 @@ def get_audio(video_id: str, request: Request, quality: str = "high"):
     except Exception as e:
         print(f"Error fetching audio metadata for {video_id}:", e)
 
-    # Always return HTTP 200 with proxy stream endpoint to guarantee zero 404 errors
     return {
         "title": "Track",
-        "audio_url": f"{base_url}/audio/stream/{video_id}?quality={encoded_q}",
+        "audio_url": None,
         "quality": clean_quality
     }
 
