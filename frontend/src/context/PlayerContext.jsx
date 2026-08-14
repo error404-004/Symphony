@@ -201,91 +201,87 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       firstScript.parentNode.insertBefore(tag, firstScript);
     }, []);
 
-    useEffect(() => {
-      const initAudioDSP = () => {
-        if (audioCtxRef.current || !player) return;
+    const initAudioDSP = () => {
+      if (audioCtxRef.current || !player) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        audioCtxRef.current = ctx;
+
+        // Automatically auto-resume AudioContext whenever Chrome attempts to suspend it in background tabs
+        ctx.onstatechange = () => {
+          if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+          }
+        };
+
+        const source = ctx.createMediaElementSource(player);
+        sourceNodeRef.current = source;
+
+        const compressor = ctx.createDynamicsCompressor();
+        compressor.threshold.value = -12;
+        compressor.knee.value = 30;
+        compressor.ratio.value = 8;
+        compressor.attack.value = 0.003;
+        compressor.release.value = 0.25;
+        compressorRef.current = compressor;
+
+        const bassFilter = ctx.createBiquadFilter();
+        bassFilter.type = "lowshelf";
+        bassFilter.frequency.value = 120;
+        bassFilter.gain.value = 4.5;
+        eqBassRef.current = bassFilter;
+
+        const trebleFilter = ctx.createBiquadFilter();
+        trebleFilter.type = "highshelf";
+        trebleFilter.frequency.value = 8000;
+        trebleFilter.gain.value = 3.5;
+        eqTrebleRef.current = trebleFilter;
+
+        const panner = ctx.createStereoPanner();
+        panner.pan.value = 0.15;
+        pannerRef.current = panner;
+
+        // GainNode for volume control (player.volume has no effect after createMediaElementSource)
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = (volumeRef.current || 75) / 100;
+        gainNodeRef.current = gainNode;
+
+        source.connect(bassFilter);
+        bassFilter.connect(trebleFilter);
+        trebleFilter.connect(compressor);
+        compressor.connect(panner);
+        panner.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        // Continuous Silent Oscillator keepalive to prevent Chrome from suspending AudioContext in background tabs
         try {
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (!AudioCtx) return;
-          const ctx = new AudioCtx();
-          audioCtxRef.current = ctx;
-
-          // Automatically auto-resume AudioContext whenever Chrome attempts to suspend it in background tabs
-          ctx.onstatechange = () => {
-            if (ctx.state === 'suspended') {
-              ctx.resume().catch(() => {});
-            }
-          };
-
-          const source = ctx.createMediaElementSource(player);
-          sourceNodeRef.current = source;
-
-          const compressor = ctx.createDynamicsCompressor();
-          compressor.threshold.value = -12;
-          compressor.knee.value = 30;
-          compressor.ratio.value = 8;
-          compressor.attack.value = 0.003;
-          compressor.release.value = 0.25;
-          compressorRef.current = compressor;
-
-          const bassFilter = ctx.createBiquadFilter();
-          bassFilter.type = "lowshelf";
-          bassFilter.frequency.value = 120;
-          bassFilter.gain.value = 4.5;
-          eqBassRef.current = bassFilter;
-
-          const trebleFilter = ctx.createBiquadFilter();
-          trebleFilter.type = "highshelf";
-          trebleFilter.frequency.value = 8000;
-          trebleFilter.gain.value = 3.5;
-          eqTrebleRef.current = trebleFilter;
-
-          const panner = ctx.createStereoPanner();
-          panner.pan.value = 0.15;
-          pannerRef.current = panner;
-
-          // GainNode for volume control (player.volume has no effect after createMediaElementSource)
-          const gainNode = ctx.createGain();
-          gainNode.gain.value = 0.75; // default 75%
-          gainNodeRef.current = gainNode;
-
-          source.connect(bassFilter);
-          bassFilter.connect(trebleFilter);
-          trebleFilter.connect(compressor);
-          compressor.connect(panner);
-          panner.connect(gainNode);
-          gainNode.connect(ctx.destination);
-
-          // Continuous Silent Oscillator keepalive to prevent Chrome from suspending AudioContext in background tabs
-          try {
-            const silentOsc = ctx.createOscillator();
-            const silentGain = ctx.createGain();
-            silentGain.gain.value = 0.000001; // Inaudible
-            silentOsc.connect(silentGain);
-            silentGain.connect(ctx.destination);
-            silentOsc.start();
-          } catch (e) {
-            /* ignore */
-          }
+          const silentOsc = ctx.createOscillator();
+          const silentGain = ctx.createGain();
+          silentGain.gain.value = 0.000001; // Inaudible
+          silentOsc.connect(silentGain);
+          silentGain.connect(ctx.destination);
+          silentOsc.start();
         } catch (e) {
-          console.warn("WebAudio DSP Initialization fallback:", e);
-          if (sourceNodeRef.current && audioCtxRef.current) {
-            try {
-              sourceNodeRef.current.connect(audioCtxRef.current.destination);
-            } catch (e) {
-              /* ignore fallback error */
-            }
-          }
+          /* ignore */
         }
-      };
+      } catch (e) {
+        console.warn("WebAudio DSP Initialization fallback:", e);
+      }
+    };
 
-      const ensureAudioContextResumed = () => {
-        initAudioDSP();
-        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-          audioCtxRef.current.resume().catch(() => {});
-        }
-      };
+    const ensureAudioContextResumed = () => {
+      initAudioDSP();
+      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume().catch(() => {});
+      }
+      if (gainNodeRef.current) {
+        gainNodeRef.current.gain.value = (volumeRef.current || 75) / 100;
+      }
+    };
 
+    useEffect(() => {
       player.addEventListener('play', ensureAudioContextResumed);
       player.addEventListener('playing', ensureAudioContextResumed);
       player.addEventListener('timeupdate', ensureAudioContextResumed);
@@ -618,6 +614,9 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
   async function playSong(song) {
     if (!song) return;
 
+    // Immediately trigger AudioContext resume within synchronous user click gesture
+    ensureAudioContextResumed();
+
     setCurrentSong(song);
 
     try {
@@ -629,9 +628,10 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
         player.crossOrigin = "anonymous";
         player.src = stream.audio_url;
         player.volume = (volumeRef.current || 75) / 100;
-        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-          await audioCtxRef.current.resume().catch(() => {});
+        if (gainNodeRef.current) {
+          gainNodeRef.current.gain.value = (volumeRef.current || 75) / 100;
         }
+        ensureAudioContextResumed();
 
         await player.play().catch((playErr) => {
           if (playErr.name !== "AbortError") {
@@ -784,8 +784,11 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
   }
 
   function resumeSong() {
+    ensureAudioContextResumed();
     if (isIframeActive) {
       if (ytPlayerRef.current && typeof ytPlayerRef.current.playVideo === 'function') {
+        try { ytPlayerRef.current.unMute(); } catch (e) {}
+        try { ytPlayerRef.current.setVolume(volumeRef.current || 75); } catch (e) {}
         ytPlayerRef.current.playVideo();
       }
     } else if (currentSong) {
