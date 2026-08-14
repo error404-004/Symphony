@@ -427,8 +427,8 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       }
 
       function handleAudioError(e) {
-        if (!isIframeActive && currentSong) {
-          console.warn("Direct audio stream error detected, engaging seamless auto-recovery:", e);
+        if (!isIframeActive && currentSong && player.error) {
+          console.warn("Direct audio stream error detected, engaging seamless auto-recovery:", player.error);
           const resumeTime = player.currentTime || 0;
           playIframeFallback(currentSong, resumeTime);
         }
@@ -437,13 +437,11 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       player.addEventListener("timeupdate", updateTime);
       player.addEventListener("loadedmetadata", loadedMetadata);
       player.addEventListener("error", handleAudioError);
-      player.addEventListener("stalled", handleAudioError);
 
       return () => {
         player.removeEventListener("timeupdate", updateTime);
         player.removeEventListener("loadedmetadata", loadedMetadata);
         player.removeEventListener("error", handleAudioError);
-        player.removeEventListener("stalled", handleAudioError);
       };
     }, [player, isIframeActive, currentSong]);
 
