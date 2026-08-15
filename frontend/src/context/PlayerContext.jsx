@@ -13,6 +13,8 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     const [currentSong, setCurrentSong] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isIframeActive, setIsIframeActive] = useState(false);
+    const isIframeActiveRef = useRef(false);
+    const isSwitchingToIframeRef = useRef(false);
     const ytPlayerRef = useRef(null);
     const ytContainerRef = useRef(null);
 
@@ -427,7 +429,8 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       }
 
       function handleAudioError(e) {
-        if (!isIframeActive && currentSong && player.error) {
+        if (isSwitchingToIframeRef.current || isIframeActiveRef.current || isIframeActive) return;
+        if (currentSong && player.error) {
           console.warn("Direct audio stream error detected, engaging seamless auto-recovery:", player.error);
           const resumeTime = player.currentTime || 0;
           playIframeFallback(currentSong, resumeTime);
@@ -621,6 +624,8 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
       const stream = await getAudio(song.videoId, audioQuality);
 
       if (stream && stream.audio_url) {
+        isSwitchingToIframeRef.current = false;
+        isIframeActiveRef.current = false;
         setIsIframeActive(false);
         setIframeSrc("");
         player.crossOrigin = "anonymous";
@@ -659,13 +664,16 @@ import { signUpWithEmail, signInWithEmail, signOutUser, isSupabaseConfigured, su
     const isSearchQuery = typeof rawVideoId === "string" && rawVideoId.startsWith("yt_");
     const cleanQuery = isSearchQuery ? decodeURIComponent(rawVideoId.replace("yt_", "")) : rawVideoId;
 
+    isSwitchingToIframeRef.current = true;
+    isIframeActiveRef.current = true;
+    setIsIframeActive(true);
+
     try {
       player.pause();
     } catch (e) {
       /* ignore interrupt pause */
     }
     player.src = "";
-    setIsIframeActive(true);
     setIsPlaying(true);
 
     if (startTimeSeconds > 0) {
